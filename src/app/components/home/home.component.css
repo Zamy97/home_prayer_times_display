@@ -70,15 +70,6 @@
   background: var(--navy);
   color: #fff;
 }
-.light {
-  background: var(--panel);
-  color: var(--text);
-  border-color: var(--line-dark);
-}
-.light.cell {
-  border-right: 2px solid var(--line-dark);
-  border-bottom: 2px solid var(--line-dark);
-}
 
 /* Highlight the next upcoming prayer row */
 .cell.is-next {
@@ -284,5 +275,14 @@
     height: auto;
     gap: 14px;
   }
+}
+
+@media (min-width: 1200px) and (max-resolution: 1.5dppx) {
+  .now,.time,.jumTime{font-weight:700}
+  .prayer{font-size:36px}
+  .colLabel{font-size:24px}
+  .time{font-size:96px}
+  .sunRow{font-size:24px}
+  .sunTime{font-size:30px}
 }
 
