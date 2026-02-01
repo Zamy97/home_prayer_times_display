@@ -100,7 +100,6 @@
   font-size: 22px;
   text-transform: uppercase;
   opacity: 0.95;
-  transform: translateX(0.12em);
 }
 .time {
   font-family: var(--font-num);
@@ -126,13 +125,9 @@
   min-height: 0;
 }
 
-.panelTop {
-  text-align: center;
-  font-family: var(--font-ui);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.hijri,.greg{color:var(--navy)}
+.panelTop{text-align:center;font-family:var(--font-ui);text-transform:uppercase;letter-spacing:.06em;background:var(--navy);color:#fff;padding:18px 22px}
+.panelTop .rule{background:rgba(255,255,255,.55)}
+.panelTop + .rule{margin:10px 0 22px 0}
 .hijri {
   font-size: 28px;
   margin: 0;
@@ -163,9 +158,6 @@
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
   white-space: nowrap;
   max-width: 100%;
-}
-.now .nowMain {
-  display: inline-block;
 }
 .now .nowSide {
   display: flex;
