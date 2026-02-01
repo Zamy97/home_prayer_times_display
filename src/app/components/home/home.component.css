@@ -14,6 +14,10 @@
   --line-dark: rgba(0, 0, 0, 0.35);
   --white: #ffffff;
   --text: #111111;
+
+  /* More readable fonts (no external downloads) */
+  --font-ui: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  --font-num: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
 
 :host * {
@@ -85,9 +89,9 @@
 }
 
 .prayer {
-  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
-  letter-spacing: 0.04em;
-  font-size: 28px;
+  font-family: var(--font-ui);
+  letter-spacing: 0.02em;
+  font-size: 32px;
   text-transform: uppercase;
 }
 
@@ -100,23 +104,23 @@
   gap: 10px;
 }
 .colLabel {
-  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
-  letter-spacing: 0.45em;
-  font-size: 20px;
+  font-family: var(--font-ui);
+  letter-spacing: 0.22em;
+  font-size: 22px;
   text-transform: uppercase;
   opacity: 0.95;
   transform: translateX(0.12em);
 }
 .time {
-  font-family: "Didot", "Bodoni 72", "Baskerville", "Times New Roman", serif;
-  font-size: 74px;
+  font-family: var(--font-num);
+  font-size: 82px;
   line-height: 0.95;
-  letter-spacing: 0.02em;
-  font-variant-numeric: lining-nums;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 .ampm {
   font-family: inherit;
-  font-size: 26px;
+  font-size: 28px;
   letter-spacing: 0.06em;
   margin-left: 6px;
   vertical-align: 18px;
@@ -133,17 +137,17 @@
 
 .panelTop {
   text-align: center;
-  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #111;
 }
 .hijri {
-  font-size: 26px;
+  font-size: 28px;
   margin: 0;
 }
 .greg {
-  font-size: 22px;
+  font-size: 24px;
   margin: 10px 0 0 0;
 }
 .rule {
@@ -156,7 +160,7 @@
   text-align: left;
 }
 .now {
-  font-family: "Didot", "Bodoni 72", "Baskerville", "Times New Roman", serif;
+  font-family: var(--font-num);
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -196,10 +200,10 @@
   width: 100%;
 }
 .jumTitle {
-  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 26px;
+  font-size: 28px;
   margin: 0 0 10px 0;
 }
 .jumGrid {
@@ -209,8 +213,8 @@
   align-items: end;
 }
 .jumTime {
-  font-family: "Didot", "Bodoni 72", "Baskerville", "Times New Roman", serif;
-  font-size: 44px;
+  font-family: var(--font-num);
+  font-size: 48px;
   margin: 0;
 }
 .jumTime .ampm {
@@ -219,10 +223,10 @@
   margin-left: 6px;
 }
 .jumLabel {
-  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 16px;
+  font-size: 18px;
   margin: 6px 0 0 0;
 }
 
@@ -232,28 +236,29 @@
   color: #fff;
   height: 92px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   padding: 10px 26px;
-  gap: 14px;
+  gap: 28px;
 }
 .sunRow {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 18px;
+  font-size: 22px;
 }
 .sunTime {
-  font-family: "Didot", "Bodoni 72", "Baskerville", "Times New Roman", serif;
-  font-size: 22px;
+  font-family: var(--font-num);
+  font-size: 28px;
   letter-spacing: 0.02em;
 }
 .sunTime .ampm {
-  font-size: 14px;
+  font-size: 16px;
   vertical-align: 8px;
   margin-left: 4px;
 }
@@ -273,6 +278,11 @@
   }
   .now {
     font-size: clamp(110px, 12vw, 160px);
+  }
+  .sunBar {
+    flex-direction: column;
+    height: auto;
+    gap: 14px;
   }
 }
 
