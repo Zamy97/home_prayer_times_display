@@ -160,7 +160,7 @@ app-home .rule {
 
 /* Tighten the gap between header divider and clock */
 app-home .panelTop + .rule {
-  margin: 6px 0 6px;
+  margin: 2px 0 4px;
 }
 
 app-home .panelMid {
@@ -175,7 +175,7 @@ app-home .now {
   font-size: clamp(290px, 20vw, 520px);
   line-height: 1;
   letter-spacing: 0;
-  margin: 0 0 10px 0;
+  margin: 0 0 6px 0;
   color: #000;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
   white-space: nowrap;
@@ -186,7 +186,7 @@ app-home .countdown {
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 22px;
+  font-size: 26px;
   color: rgba(0, 0, 0, 0.72);
 }
 
@@ -360,10 +360,13 @@ app-home .icon {
     margin: 4px 0 6px;
   }
   app-home .panelTop + .rule {
-    margin: 4px 0 4px;
+    margin: 0 0 2px;
   }
   app-home .countdown {
-    font-size: 26px;
+    font-size: 40px;
+  }
+  app-home .countdownTime {
+    font-size: 1.15em;
   }
 }
 
