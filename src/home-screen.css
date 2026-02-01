@@ -165,6 +165,7 @@ app-home .panelTop + .rule {
 
 app-home .panelMid {
   text-align: left;
+  margin-top: -10px;
 }
 
 app-home .now {
@@ -356,6 +357,9 @@ app-home .icon {
   app-home .panelTop {
     padding: 12px 16px;
     border-bottom-width: 3px;
+  }
+  app-home .panelMid {
+    margin-top: -16px;
   }
   app-home .rule {
     margin: 4px 0 6px;
