@@ -1,0 +1,178 @@
+<main class="board" aria-label="Prayer times screen">
+  <section class="content">
+    <!-- Left panel (current time + date) -->
+    <aside class="panel" aria-label="Date panel">
+      <header class="panelTop">
+        <p class="hijri">{{ hijriDateLabel || '-----' }}</p>
+        <p class="greg">{{ gregDateLabel || '-----' }}</p>
+        <div class="rule" aria-hidden="true"></div>
+      </header>
+
+      <div class="panelMid">
+        <div class="now" aria-label="Current time">
+          <span class="nowMain">{{ nowTime }}</span>
+          <span class="nowSide" aria-label="Seconds and meridiem">
+            <span class="seconds">:{{ nowSeconds }}</span>
+            <span class="ampm">{{ nowAmPm }}</span>
+          </span>
+        </div>
+        <div class="rule" aria-hidden="true" style="margin: 14px 0 16px 0"></div>
+
+        <div class="jum">
+          <p class="jumTitle">JUMU'AH</p>
+          <div class="jumGrid">
+            <div>
+              <p class="jumTime">1:00<span class="ampm">PM</span></p>
+              <p class="jumLabel">STARTS</p>
+            </div>
+            <div>
+              <p class="jumTime">1:30<span class="ampm">PM</span></p>
+              <p class="jumLabel">JUMU'AH</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sunBar" aria-label="Sunrise and sunset">
+        <div class="sunRow">
+          <svg
+            class="icon"
+            viewBox="0 0 64 36"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M8 26C14 16 22 10 32 10C42 10 50 16 56 26"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path d="M32 6V1" stroke="white" stroke-width="3" stroke-linecap="round" />
+            <path
+              d="M20 10L16 6"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path
+              d="M44 10L48 6"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path
+              d="M8 30H56"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+              opacity="0.85"
+            />
+          </svg>
+          <span>SUNRISE</span>
+          <span class="sunTime"
+            >{{ sunrise?.time ?? '-----' }}<span class="ampm">{{ sunrise?.ampm }}</span></span
+          >
+        </div>
+        <div class="sunRow">
+          <svg
+            class="icon"
+            viewBox="0 0 64 36"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M8 22C14 32 22 36 32 36C42 36 50 32 56 22"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path
+              d="M32 30V35"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path
+              d="M20 26L16 30"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path
+              d="M44 26L48 30"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path
+              d="M8 16H56"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+              opacity="0.85"
+            />
+          </svg>
+          <span>SUNSET</span>
+          <span class="sunTime"
+            >{{ sunset?.time ?? '-----' }}<span class="ampm">{{ sunset?.ampm }}</span></span
+          >
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right prayer grid -->
+    <div class="grid" aria-label="Prayer times grid">
+      <!-- Row 1 (FAJR) -->
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'fajr'">FAJR</div>
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'fajr'">
+        <div class="timeStack">
+          <div class="colLabel">STARTS</div>
+          <div class="time">
+            {{ times?.fajr?.time ?? '-----' }}<span class="ampm">{{ times?.fajr?.ampm }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2 (DHUHR) -->
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'dhuhr'">DHUHR</div>
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'dhuhr'">
+        <div class="time">
+          {{ times?.dhuhr?.time ?? '-----' }}<span class="ampm">{{ times?.dhuhr?.ampm }}</span>
+        </div>
+      </div>
+
+      <!-- Row 3 (ASR) -->
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'asr'">ASR</div>
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'asr'">
+        <div class="time">
+          {{ times?.asr?.time ?? '-----' }}<span class="ampm">{{ times?.asr?.ampm }}</span>
+        </div>
+      </div>
+
+      <!-- Row 4 (MAGHRIB) -->
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'maghrib'">MAGHRIB</div>
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'maghrib'">
+        <div class="time">
+          {{ times?.maghrib?.time ?? '-----' }}
+          <span class="ampm">{{ times?.maghrib?.ampm }}</span>
+        </div>
+      </div>
+
+      <!-- Row 5 (ISHA) -->
+      <div
+        class="cell dark prayer row-last"
+        [class.is-next]="nextPrayerKey === 'isha'"
+      >
+        ISHA
+      </div>
+      <div class="cell dark row-last" [class.is-next]="nextPrayerKey === 'isha'">
+        <div class="time">
+          {{ times?.isha?.time ?? '-----' }}<span class="ampm">{{ times?.isha?.ampm }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+

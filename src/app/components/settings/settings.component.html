@@ -1,0 +1,46 @@
+<div class="wrap">
+  <h1>Settings</h1>
+  <p class="muted">
+    Choose your location and calculation settings. These are saved on this device.
+    Visit <code>/settings</code> anytime to update them.
+  </p>
+
+  <div class="grid">
+    <label class="field">
+      <div class="label">Timezone</div>
+      <input class="input" [value]="timezone" disabled />
+      <div class="hint">Uses your device timezone.</div>
+    </label>
+
+    <label class="field">
+      <div class="label">Calculation method</div>
+      <select class="input" [(ngModel)]="method" name="method">
+        <option *ngFor="let m of methodOptions" [ngValue]="m.value">{{ m.label }}</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <div class="label">Asr</div>
+      <select class="input" [(ngModel)]="asr" name="asr">
+        <option *ngFor="let a of asrOptions" [ngValue]="a.value">{{ a.label }}</option>
+      </select>
+    </label>
+
+    <div class="row">
+      <label class="field">
+        <div class="label">Latitude</div>
+        <input class="input" [(ngModel)]="lat" name="lat" placeholder="e.g. 43.6532" />
+      </label>
+      <label class="field">
+        <div class="label">Longitude</div>
+        <input class="input" [(ngModel)]="lng" name="lng" placeholder="e.g. -79.3832" />
+      </label>
+    </div>
+
+    <div class="actions">
+      <button class="btn" type="button" (click)="useCurrentLocation()">Use current location</button>
+      <button class="btn primary" type="button" (click)="save()">Save</button>
+    </div>
+  </div>
+</div>
+

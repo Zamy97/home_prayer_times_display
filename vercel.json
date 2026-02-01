@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/angular-17-crud/browser",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

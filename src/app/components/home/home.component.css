@@ -1,0 +1,278 @@
+:host {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: #000;
+  color: #111;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Theme vars (component-scoped; replaces :root from standalone HTML) */
+  --navy: #07233c;
+  --panel: #e4e1df;
+  --line: rgba(255, 255, 255, 0.32);
+  --line-dark: rgba(0, 0, 0, 0.35);
+  --white: #ffffff;
+  --text: #111111;
+}
+
+:host * {
+  box-sizing: border-box;
+}
+
+/* Board */
+.board {
+  width: 100vw;
+  height: 100vh;
+  background: var(--white);
+  border: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1.28fr 1fr; /* left grid + right panel (wider clock panel) */
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Right prayer grid */
+.grid {
+  display: grid;
+  grid-template-columns: 0.82fr 2.32fr; /* prayer + starts (removed iqamah column) */
+  grid-template-rows: repeat(5, 1fr);
+  border-left: 6px solid #fff; /* thick divider between panels */
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border-right: 2px solid var(--line);
+  border-bottom: 2px solid var(--line);
+}
+.grid > .cell:nth-child(2n) {
+  border-right: none;
+} /* last column in each row */
+.row-last {
+  border-bottom: none;
+}
+
+.dark {
+  background: var(--navy);
+  color: #fff;
+}
+.light {
+  background: var(--panel);
+  color: var(--text);
+  border-color: var(--line-dark);
+}
+.light.cell {
+  border-right: 2px solid var(--line-dark);
+  border-bottom: 2px solid var(--line-dark);
+}
+
+/* Highlight the next upcoming prayer row */
+.cell.is-next {
+  background: var(--panel);
+  color: var(--text);
+  border-right-color: var(--line-dark);
+  border-bottom-color: var(--line-dark);
+}
+
+.prayer {
+  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  letter-spacing: 0.04em;
+  font-size: 28px;
+  text-transform: uppercase;
+}
+
+.timeStack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.colLabel {
+  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  letter-spacing: 0.45em;
+  font-size: 20px;
+  text-transform: uppercase;
+  opacity: 0.95;
+  transform: translateX(0.12em);
+}
+.time {
+  font-family: "Didot", "Bodoni 72", "Baskerville", "Times New Roman", serif;
+  font-size: 74px;
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  font-variant-numeric: lining-nums;
+}
+.ampm {
+  font-family: inherit;
+  font-size: 26px;
+  letter-spacing: 0.06em;
+  margin-left: 6px;
+  vertical-align: 18px;
+}
+
+/* Left panel */
+.panel {
+  background: var(--panel);
+  padding: 34px 36px 0 36px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 0;
+}
+
+.panelTop {
+  text-align: center;
+  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #111;
+}
+.hijri {
+  font-size: 26px;
+  margin: 0;
+}
+.greg {
+  font-size: 22px;
+  margin: 10px 0 0 0;
+}
+.rule {
+  height: 2px;
+  background: rgba(0, 0, 0, 0.55);
+  margin: 18px 0 22px 0;
+}
+
+.panelMid {
+  text-align: left;
+}
+.now {
+  font-family: "Didot", "Bodoni 72", "Baskerville", "Times New Roman", serif;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: clamp(290px, 20vw, 520px); /* bigger, but bounded by width */
+  line-height: 1;
+  letter-spacing: 0;
+  margin: 2px 0 12px 0;
+  color: #000;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  max-width: 100%;
+}
+.now .nowMain {
+  display: inline-block;
+}
+.now .nowSide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+  margin-top: 0.18em;
+}
+.now .seconds {
+  font-size: clamp(68px, 5.2vh, 128px);
+  letter-spacing: 0.02em;
+  opacity: 0.95;
+}
+.now .ampm {
+  font-size: clamp(54px, 4.6vh, 104px);
+  letter-spacing: 0.06em;
+  margin-top: 10px;
+}
+
+.jum {
+  text-align: center;
+  margin-top: 18px;
+  width: 100%;
+}
+.jumTitle {
+  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 26px;
+  margin: 0 0 10px 0;
+}
+.jumGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  align-items: end;
+}
+.jumTime {
+  font-family: "Didot", "Bodoni 72", "Baskerville", "Times New Roman", serif;
+  font-size: 44px;
+  margin: 0;
+}
+.jumTime .ampm {
+  font-size: 18px;
+  vertical-align: 12px;
+  margin-left: 6px;
+}
+.jumLabel {
+  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 16px;
+  margin: 6px 0 0 0;
+}
+
+.sunBar {
+  margin-top: 26px;
+  background: var(--navy);
+  color: #fff;
+  height: 92px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 26px;
+  gap: 14px;
+}
+.sunRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 18px;
+}
+.sunTime {
+  font-family: "Didot", "Bodoni 72", "Baskerville", "Times New Roman", serif;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+}
+.sunTime .ampm {
+  font-size: 14px;
+  vertical-align: 8px;
+  margin-left: 4px;
+}
+.icon {
+  width: 34px;
+  height: 20px;
+  opacity: 0.9;
+}
+
+/* Keep fidelity on smaller screens */
+@media (max-width: 900px) {
+  .panel {
+    padding: 22px 22px 0 22px;
+  }
+  .time {
+    font-size: 56px;
+  }
+  .now {
+    font-size: clamp(110px, 12vw, 160px);
+  }
+}
+
