@@ -135,6 +135,7 @@ app-home .panelTop {
   background: var(--navy);
   color: #fff;
   padding: 18px 22px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.65);
 }
 
 app-home .dateRow {
@@ -158,10 +159,8 @@ app-home .rule {
   margin: 10px 0 12px;
 }
 
-/* Tighten the gap between header divider and clock */
 app-home .panelTop + .rule {
-  background: rgba(255, 255, 255, 0.65);
-  margin: 2px 0 4px;
+  display: none;
 }
 
 app-home .panelMid {
@@ -356,13 +355,13 @@ app-home .icon {
   }
   app-home .panelTop {
     padding: 12px 16px;
+    border-bottom-width: 3px;
   }
   app-home .rule {
     margin: 4px 0 6px;
   }
   app-home .panelTop + .rule {
-    background: rgba(255, 255, 255, 0.65);
-    margin: 0 0 2px;
+    display: none;
   }
   app-home .countdown {
     font-size: 40px;
