@@ -259,7 +259,6 @@
   opacity: 0.9;
 }
 
-/* Keep fidelity on smaller screens */
 @media (max-width: 900px) {
   .panel {
     padding: 22px 22px 0 22px;
@@ -282,7 +281,10 @@
   .prayer{font-size:36px}
   .colLabel{font-size:24px}
   .time{font-size:96px}
-  .sunRow{font-size:24px}
-  .sunTime{font-size:30px}
+  .hijri{font-size:34px}
+  .greg{font-size:30px}
+  .sunRow{font-size:28px}
+  .sunTime{font-size:38px}
+  .sunTime .ampm{font-size:20px}
 }
 

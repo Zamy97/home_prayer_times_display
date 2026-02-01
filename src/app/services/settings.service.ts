@@ -12,7 +12,8 @@ export type PrayerSettings = {
 };
 
 const DEFAULT_SETTINGS: PrayerSettings = {
-  coords: null,
+  // Default location (ZIP 48015) so the app works out-of-the-box on kiosk devices.
+  coords: { lat: 42.4788, lng: -83.0248 },
   method: 'ISNA',
   asr: 'Hanafi',
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
