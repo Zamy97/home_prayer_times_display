@@ -98,7 +98,7 @@
 }
 .time {
   font-family: var(--font-num);
-  font-size: 110px;
+  font-size: 112px;
   line-height: 0.95;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums lining-nums;
@@ -131,7 +131,7 @@
 .rule {
   height: 2px;
   background: rgba(0, 0, 0, 0.55);
-  margin: 18px 0 22px 0;
+  margin: 10px 0 12px;
 }
 
 .panelMid {
@@ -268,5 +268,6 @@
   .sunRow{font-size:28px}
   .sunTime{font-size:38px}
   .sunTime .ampm{font-size:20px}
+  .rule{margin:8px 0 10px}
 }
 
