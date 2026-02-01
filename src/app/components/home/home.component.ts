@@ -12,6 +12,8 @@ import { SettingsService } from '../../services/settings.service';
 })
 export class HomeComponent implements OnInit {
   nextPrayerKey: 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha' | null = null;
+  nextPrayerLabel = 'PRAYER';
+  nextPrayerCountdown = '';
 
   hijriDateLabel = '';
   gregDateLabel = '';
@@ -38,6 +40,9 @@ export class HomeComponent implements OnInit {
   private settings = this.settingsService.getSettings();
   private lastDateKey = this.prayerTimes.getLocalDateKey();
   private prayerInstants: Partial<Record<'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha', number>> = {};
+  private nextPrayerAtMs: number | null = null;
+  private tomorrowFajrAtMs: number | null = null;
+  private tomorrowFajrForDateKey: string | null = null;
 
   private readonly timeFormatter = new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
@@ -143,6 +148,8 @@ export class HomeComponent implements OnInit {
       maghrib: this.parseTimeToEpoch(raw.maghrib, today) ?? undefined,
       isha: this.parseTimeToEpoch(raw.isha, today) ?? undefined,
     };
+    this.tomorrowFajrAtMs = null;
+    this.tomorrowFajrForDateKey = null;
     this.updateNextPrayer(new Date());
   }
 
@@ -184,12 +191,45 @@ export class HomeComponent implements OnInit {
       const t = this.prayerInstants[key];
       if (typeof t === 'number' && nowMs < t) {
         this.nextPrayerKey = key;
+        this.nextPrayerAtMs = t;
+        this.nextPrayerLabel = key.toUpperCase();
         return;
       }
     }
 
     // If we're after Isha, the next prayer is Fajr (tomorrow).
     this.nextPrayerKey = 'fajr';
+    this.nextPrayerLabel = 'FAJR';
+
+    if (!this.settings.coords) {
+      this.nextPrayerAtMs = null;
+      return;
+    }
+
+    const todayKey = this.prayerTimes.getLocalDateKey(now);
+    if (this.tomorrowFajrForDateKey !== todayKey) {
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowTimes = this.prayerTimes.computeTimes(this.settings, tomorrow);
+      this.tomorrowFajrAtMs = this.parseTimeToEpoch(tomorrowTimes.fajr, tomorrow);
+      this.tomorrowFajrForDateKey = todayKey;
+    }
+    this.nextPrayerAtMs = this.tomorrowFajrAtMs;
+  }
+
+  private updateCountdown(now: Date): void {
+    if (!this.nextPrayerAtMs || !this.nextPrayerKey) {
+      this.nextPrayerCountdown = '';
+      return;
+    }
+
+    let diff = Math.max(0, this.nextPrayerAtMs - now.getTime());
+    const totalSeconds = Math.floor(diff / 1000);
+    const hh = Math.floor(totalSeconds / 3600);
+    const mm = Math.floor((totalSeconds % 3600) / 60);
+    const ss = totalSeconds % 60;
+
+    this.nextPrayerCountdown = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
   }
 
   private updateDateLabels(date: Date): void {
@@ -229,6 +269,7 @@ export class HomeComponent implements OnInit {
 
     // Update next-prayer highlight as time passes.
     if (this.times?.raw) this.updateNextPrayer(date);
+    this.updateCountdown(date);
   }
 }
 

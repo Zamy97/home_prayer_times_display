@@ -57,14 +57,7 @@ export class PrayerTimesService {
    * Computes prayer times for today and stores them in localStorage.
    */
   computeAndCacheTodayTimes(settings: PrayerSettings): PrayerTimesCache {
-    if (!settings.coords) {
-      throw new Error('Prayer settings missing coords');
-    }
-
-    const prayTime = new PrayTime(settings.method).format('12h').round('nearest').adjust({ asr: settings.asr });
-    prayTime.location([settings.coords.lat, settings.coords.lng]).timezone(settings.timezone);
-    const times = prayTime.times(new Date());
-
+    const times = this.computeTimes(settings, new Date());
     const payload: PrayerTimesCache = {
       dateKey: this.getLocalDateKey(),
       settings,
@@ -78,6 +71,16 @@ export class PrayerTimesService {
       // ignore storage failures (private mode / full storage)
     }
     return payload;
+  }
+
+  computeTimes(settings: PrayerSettings, date: Date): PrayTimeTimes<string> {
+    if (!settings.coords) {
+      throw new Error('Prayer settings missing coords');
+    }
+
+    const prayTime = new PrayTime(settings.method).format('12h').round('nearest').adjust({ asr: settings.asr });
+    prayTime.location([settings.coords.lat, settings.coords.lng]).timezone(settings.timezone);
+    return prayTime.times(date);
   }
 }
 
