@@ -37,7 +37,7 @@
 
 .content {
   display: grid;
-  grid-template-columns: 1.28fr 1fr; /* left grid + right panel (wider clock panel) */
+  grid-template-columns: 1.28fr 1fr;
   gap: 0;
   flex: 1;
   min-height: 0;
@@ -131,8 +131,8 @@
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #111;
 }
+.hijri,.greg{color:var(--navy)}
 .hijri {
   font-size: 28px;
   margin: 0;
@@ -251,12 +251,10 @@
 .sunTime .ampm {
   font-size: 16px;
   vertical-align: 8px;
-  margin-left: 4px;
 }
 .icon {
   width: 34px;
   height: 20px;
-  opacity: 0.9;
 }
 
 @media (max-width: 900px) {
