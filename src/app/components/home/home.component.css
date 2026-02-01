@@ -119,9 +119,7 @@
   min-height: 0;
 }
 
-.panelTop{text-align:center;font-family:var(--font-ui);text-transform:uppercase;letter-spacing:.06em;background:var(--navy);color:#fff;padding:18px 22px}
-.panelTop .rule{background:rgba(255,255,255,.55)}
-.dateRow{display:flex;justify-content:center;align-items:baseline;gap:42px}
+.panelTop{text-align:center;font-family:var(--font-ui);text-transform:uppercase;letter-spacing:.06em;background:var(--navy);color:#fff;padding:18px 22px}.dateRow{display:flex;justify-content:center;align-items:baseline;gap:42px}
 .hijri {
   font-size: 40px;
 }
@@ -149,7 +147,6 @@
   color: #000;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
   white-space: nowrap;
-  max-width: 100%;
 }
 .now .nowSide {
   display: flex;
@@ -268,6 +265,8 @@
   .sunRow{font-size:28px}
   .sunTime{font-size:38px}
   .sunTime .ampm{font-size:20px}
-  .rule{margin:8px 0 10px}
+  .panel{padding:22px 28px 0}
+  .panelTop{padding:12px 16px}
+  .rule{margin:4px 0 6px}
 }
 
