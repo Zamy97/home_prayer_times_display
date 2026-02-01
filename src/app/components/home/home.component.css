@@ -7,7 +7,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Theme vars (component-scoped; replaces :root from standalone HTML) */
   --navy: #07233c;
   --panel: #e4e1df;
   --line: rgba(255, 255, 255, 0.32);
@@ -15,7 +14,6 @@
   --white: #ffffff;
   --text: #111111;
 
-  /* More readable fonts (no external downloads) */
   --font-ui: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   --font-num: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
@@ -24,7 +22,6 @@
   box-sizing: border-box;
 }
 
-/* Board */
 .board {
   width: 100vw;
   height: 100vh;
@@ -43,12 +40,11 @@
   min-height: 0;
 }
 
-/* Right prayer grid */
 .grid {
   display: grid;
-  grid-template-columns: 0.82fr 2.32fr; /* prayer + starts (removed iqamah column) */
+  grid-template-columns: 0.82fr 2.32fr;
   grid-template-rows: repeat(5, 1fr);
-  border-left: 6px solid #fff; /* thick divider between panels */
+  border-left: 6px solid #fff;
 }
 
 .cell {
@@ -61,7 +57,7 @@
 }
 .grid > .cell:nth-child(2n) {
   border-right: none;
-} /* last column in each row */
+}
 .row-last {
   border-bottom: none;
 }
@@ -71,7 +67,6 @@
   color: #fff;
 }
 
-/* Highlight the next upcoming prayer row */
 .cell.is-next {
   background: var(--panel);
   color: var(--text);
@@ -116,7 +111,6 @@
   vertical-align: 18px;
 }
 
-/* Left panel */
 .panel {
   background: var(--panel);
   padding: 34px 36px 0 36px;
@@ -127,7 +121,6 @@
 
 .panelTop{text-align:center;font-family:var(--font-ui);text-transform:uppercase;letter-spacing:.06em;background:var(--navy);color:#fff;padding:18px 22px}
 .panelTop .rule{background:rgba(255,255,255,.55)}
-.panelTop + .rule{margin:10px 0 22px 0}
 .hijri {
   font-size: 28px;
   margin: 0;
