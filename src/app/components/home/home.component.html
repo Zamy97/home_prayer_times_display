@@ -3,8 +3,10 @@
     <!-- Left panel (current time + date) -->
     <aside class="panel" aria-label="Date panel">
       <header class="panelTop">
-        <p class="hijri">{{ hijriDateLabel || '-----' }}</p>
-        <p class="greg">{{ gregDateLabel || '-----' }}</p>
+        <div class="dateRow">
+          <span class="hijri">{{ hijriDateLabel || '-----' }}</span>
+          <span class="greg">{{ gregDateLabel || '-----' }}</span>
+        </div>
       </header>
       <div class="rule" aria-hidden="true"></div>
 

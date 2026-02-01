@@ -15,7 +15,7 @@
   --text: #111111;
 
   --font-ui: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  --font-num: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  --font-num: var(--font-ui);
 }
 
 :host * {
@@ -98,14 +98,14 @@
 }
 .time {
   font-family: var(--font-num);
-  font-size: 82px;
+  font-size: 110px;
   line-height: 0.95;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums lining-nums;
 }
 .ampm {
   font-family: inherit;
-  font-size: 28px;
+  font-size: 30px;
   letter-spacing: 0.06em;
   margin-left: 6px;
   vertical-align: 18px;
@@ -121,13 +121,12 @@
 
 .panelTop{text-align:center;font-family:var(--font-ui);text-transform:uppercase;letter-spacing:.06em;background:var(--navy);color:#fff;padding:18px 22px}
 .panelTop .rule{background:rgba(255,255,255,.55)}
+.dateRow{display:flex;justify-content:center;align-items:baseline;gap:42px}
 .hijri {
-  font-size: 28px;
-  margin: 0;
+  font-size: 40px;
 }
 .greg {
-  font-size: 24px;
-  margin: 10px 0 0 0;
+  font-size: 40px;
 }
 .rule {
   height: 2px;
@@ -143,7 +142,7 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  font-size: clamp(290px, 20vw, 520px); /* bigger, but bounded by width */
+  font-size: clamp(290px, 20vw, 520px);
   line-height: 1;
   letter-spacing: 0;
   margin: 2px 0 12px 0;
@@ -247,7 +246,7 @@
     padding: 22px 22px 0 22px;
   }
   .time {
-    font-size: 56px;
+    font-size: 60px;
   }
   .now {
     font-size: clamp(110px, 12vw, 160px);
@@ -263,7 +262,7 @@
   .now,.time,.jumTime{font-weight:700}
   .prayer{font-size:36px}
   .colLabel{font-size:24px}
-  .time{font-size:96px}
+  .time{font-size:104px}
   .hijri{font-size:34px}
   .greg{font-size:30px}
   .sunRow{font-size:28px}
