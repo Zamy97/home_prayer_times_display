@@ -45,20 +45,6 @@ export class SettingsComponent implements OnInit {
     this.lng = s.coords?.lng?.toString() ?? '';
   }
 
-  useCurrentLocation(): void {
-    if (!('geolocation' in navigator)) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        this.lat = pos.coords.latitude.toFixed(6);
-        this.lng = pos.coords.longitude.toFixed(6);
-      },
-      () => {
-        // ignore
-      },
-      { enableHighAccuracy: false, maximumAge: 60 * 60 * 1000, timeout: 10_000 },
-    );
-  }
-
   save(): void {
     const coords = this.parseCoords();
     const next: PrayerSettings = {

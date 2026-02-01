@@ -115,22 +115,7 @@ export class HomeComponent implements OnInit {
       this.applyTimes(raw);
       return;
     }
-
-    // Fallback: attempt geolocation once, and save it into settings (so it becomes stable).
-    if (!('geolocation' in navigator)) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const next = {
-          ...this.settings,
-          coords: { lat: pos.coords.latitude, lng: pos.coords.longitude },
-        };
-        this.settingsService.saveSettings(next);
-      },
-      () => {
-        // no-op
-      },
-      { enableHighAccuracy: false, maximumAge: 60 * 60 * 1000, timeout: 10_000 },
-    );
+    // No geolocation fallback: this app must run without permission prompts (e.g. Raspberry Pi kiosk).
   }
 
   private applyTimes(raw: PrayTimeTimes<string>): void {

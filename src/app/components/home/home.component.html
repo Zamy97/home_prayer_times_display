@@ -31,6 +31,17 @@
             </div>
           </div>
         </div>
+
+        @if (!times?.raw) {
+        <div style="margin-top: 18px; text-align: center">
+          <div style="font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase">
+            Location needed
+          </div>
+          <div style="margin-top: 6px; opacity: 0.75">
+            Set latitude/longitude in <span style="font-family: monospace">/settings</span>
+          </div>
+        </div>
+        }
       </div>
 
       <div class="sunBar" aria-label="Sunrise and sunset">
