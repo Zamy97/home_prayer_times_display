@@ -160,6 +160,7 @@ app-home .rule {
 
 /* Tighten the gap between header divider and clock */
 app-home .panelTop + .rule {
+  background: rgba(255, 255, 255, 0.65);
   margin: 2px 0 4px;
 }
 
@@ -360,6 +361,7 @@ app-home .icon {
     margin: 4px 0 6px;
   }
   app-home .panelTop + .rule {
+    background: rgba(255, 255, 255, 0.65);
     margin: 0 0 2px;
   }
   app-home .countdown {
