@@ -1,0 +1,23 @@
+<div class="wrap">
+  <h1>Setup</h1>
+
+  <div *ngIf="state.kind === 'working'" class="card ok">
+    <div class="title">{{ state.message }}</div>
+  </div>
+
+  <div *ngIf="state.kind === 'error'" class="card err">
+    <div class="title">{{ state.message }}</div>
+    <div class="details" *ngIf="state.details">{{ state.details }}</div>
+
+    <div class="actions">
+      <a class="btn" routerLink="/settings">Open Settings</a>
+      <a class="btn primary" routerLink="/">Go Home</a>
+    </div>
+  </div>
+
+  <div class="hint">
+    Example:
+    <code>/setup?lat=42.4788&amp;lng=-83.0248&amp;method=ISNA&amp;asr=Hanafi</code>
+  </div>
+</div>
+

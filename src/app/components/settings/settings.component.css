@@ -51,6 +51,24 @@ h1 {
   margin-top: 6px;
 }
 
+.share {
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.share h2 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+.shareRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
 .btn {
   padding: 10px 14px;
   border-radius: 10px;
@@ -67,6 +85,10 @@ h1 {
 
 @media (max-width: 560px) {
   .row {
+    grid-template-columns: 1fr;
+  }
+
+  .shareRow {
     grid-template-columns: 1fr;
   }
 }

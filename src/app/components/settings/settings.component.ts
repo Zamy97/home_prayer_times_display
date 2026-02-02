@@ -36,6 +36,34 @@ export class SettingsComponent implements OnInit {
   lat = '';
   lng = '';
 
+  get setupLink(): string {
+    const lat = Number(this.lat);
+    const lng = Number(this.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return '';
+    if (lat < -90 || lat > 90) return '';
+    if (lng < -180 || lng > 180) return '';
+
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const params = new URLSearchParams({
+      lat: String(lat),
+      lng: String(lng),
+      method: this.method,
+      asr: this.asr,
+      timezone: this.timezone,
+    });
+    return `${origin}/setup?${params.toString()}`;
+  }
+
+  async copySetupLink(): Promise<void> {
+    const link = this.setupLink;
+    if (!link) return;
+    try {
+      await navigator.clipboard.writeText(link);
+    } catch {
+      // ignore (kiosk devices may block clipboard)
+    }
+  }
+
   ngOnInit(): void {
     const s = this.settingsService.getSettings();
     this.method = s.method;
@@ -54,7 +82,7 @@ export class SettingsComponent implements OnInit {
       timezone: this.timezone,
     };
     this.settingsService.saveSettings(next);
-    this.router.navigate(['/home']);
+    this.router.navigate(['/']);
   }
 
   private parseCoords(): PrayerSettings['coords'] {
