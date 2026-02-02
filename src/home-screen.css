@@ -173,7 +173,8 @@ app-home .panelMid {
 
 app-home .clockBlock {
   text-align: left;
-  padding-top: 10px;
+  padding-top: 26px;
+  padding-left: 12px;
 }
 
 app-home .jumuBlock {
@@ -371,7 +372,8 @@ app-home .icon {
     border-bottom-width: 3px;
   }
   app-home .clockBlock {
-    padding-top: 14px;
+    padding-top: 34px;
+    padding-left: 16px;
   }
   app-home .rule {
     margin: 4px 0 6px;
