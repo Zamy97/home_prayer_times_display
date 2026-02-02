@@ -350,19 +350,22 @@ app-home .icon {
     font-size: 104px;
   }
   app-home .hijri {
-    font-size: 34px;
+    font-size: 66px;
   }
   app-home .greg {
-    font-size: 30px;
+    font-size: 62px;
   }
   app-home .sunRow {
-    font-size: 28px;
+    font-size: 50px;
   }
   app-home .sunTime {
-    font-size: 38px;
+    font-size: 60px;
   }
   app-home .sunTime .ampm {
-    font-size: 20px;
+    font-size: 30px;
+  }
+  app-home .jumuBlock {
+    margin-top: -26px;
   }
   app-home .panel {
     padding: 22px 28px 0;
