@@ -26,6 +26,15 @@
       </select>
     </label>
 
+    <label class="field">
+      <div class="label">Layout</div>
+      <select class="input" [(ngModel)]="panelLeft" name="panelLeft">
+        <option [ngValue]="true">Clock & date on left</option>
+        <option [ngValue]="false">Clock & date on right</option>
+      </select>
+      <div class="hint">Choose which side shows the clock and prayer times grid.</div>
+    </label>
+
     <div class="row">
       <label class="field">
         <div class="label">Latitude</div>

@@ -9,6 +9,8 @@ export type PrayerSettings = {
   method: PrayTimeMethod;
   asr: AsrMethod;
   timezone: string; // IANA tz (e.g. America/Toronto)
+  /** true = clock/date panel on left, false = on right */
+  panelLeft: boolean;
 };
 
 const DEFAULT_SETTINGS: PrayerSettings = {
@@ -17,6 +19,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   method: 'ISNA',
   asr: 'Hanafi',
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  panelLeft: true,
 };
 
 @Injectable({ providedIn: 'root' })
@@ -49,6 +52,7 @@ export class SettingsService {
         method: (parsed.method as PrayTimeMethod) ?? DEFAULT_SETTINGS.method,
         asr: (parsed.asr as AsrMethod) ?? DEFAULT_SETTINGS.asr,
         timezone: parsed.timezone ?? DEFAULT_SETTINGS.timezone,
+        panelLeft: parsed.panelLeft ?? DEFAULT_SETTINGS.panelLeft,
       };
     } catch {
       return DEFAULT_SETTINGS;

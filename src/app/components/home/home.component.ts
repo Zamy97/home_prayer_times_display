@@ -49,6 +49,11 @@ export class HomeComponent implements OnInit {
   private hotCornerTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly hotCornerHoldMs = 1800;
 
+  /** From settings: true = clock/date panel on left */
+  get panelLeft(): boolean {
+    return this.settings.panelLeft ?? true;
+  }
+
   private readonly timeFormatter = new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
     minute: '2-digit',

@@ -40,8 +40,8 @@ app-home .hotCorner {
   position: fixed;
   top: 0;
   right: 0;
-  width: 90px;
-  height: 90px;
+  width: 160px;
+  height: 160px;
   z-index: 10000;
   background: transparent;
   outline: none;
@@ -51,17 +51,39 @@ app-home .hotCorner {
 
 app-home .content {
   display: grid;
-  grid-template-columns: 1.28fr 1fr;
+  grid-template-columns: 1fr 1.28fr;
   gap: 0;
   flex: 1;
   min-height: 0;
+}
+
+/* Default: prayer grid left, clock panel right */
+app-home .content .grid {
+  order: 0;
+}
+app-home .content .panel {
+  order: 1;
+}
+
+/* Toggle: clock panel left, prayer grid right */
+app-home .content.panel-left {
+  grid-template-columns: 1.28fr 1fr;
+}
+app-home .content.panel-left .panel {
+  order: 0;
+}
+app-home .content.panel-left .grid {
+  order: 1;
+  border-right: none;
+  border-left: 6px solid #fff;
 }
 
 app-home .grid {
   display: grid;
   grid-template-columns: 0.82fr 2.32fr;
   grid-template-rows: repeat(5, 1fr);
-  border-left: 6px solid #fff;
+  border-left: none;
+  border-right: 6px solid #fff;
 }
 
 app-home .cell {

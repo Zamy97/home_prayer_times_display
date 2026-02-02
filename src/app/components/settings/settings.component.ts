@@ -36,6 +36,8 @@ export class SettingsComponent implements OnInit {
   timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   lat = '';
   lng = '';
+  /** true = clock/date panel on left */
+  panelLeft = true;
 
   // If the page is opened as a "setup link", we apply query params and redirect home.
   private didHandleLink = false;
@@ -75,6 +77,7 @@ export class SettingsComponent implements OnInit {
     this.timezone = s.timezone;
     this.lat = s.coords?.lat?.toString() ?? '';
     this.lng = s.coords?.lng?.toString() ?? '';
+    this.panelLeft = s.panelLeft ?? true;
 
     // Handle "setup via link" on /settings?lat=...&lng=...
     const qp = this.route.snapshot.queryParamMap;
@@ -92,6 +95,7 @@ export class SettingsComponent implements OnInit {
       method: this.method,
       asr: this.asr,
       timezone: this.timezone,
+      panelLeft: this.panelLeft,
     };
     this.settingsService.saveSettings(next);
     this.router.navigate(['/']);
@@ -127,6 +131,7 @@ export class SettingsComponent implements OnInit {
       method,
       asr,
       timezone,
+      panelLeft: current.panelLeft ?? true,
     };
 
     this.settingsService.saveSettings(next);

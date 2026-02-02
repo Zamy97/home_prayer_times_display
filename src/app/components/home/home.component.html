@@ -15,8 +15,59 @@
     (keyup.space)="onHotCornerUp($event)"
   ></div>
 
-  <section class="content">
-    <!-- Left panel (current time + date) -->
+  <section class="content" [class.panel-left]="panelLeft">
+    <div class="grid" aria-label="Prayer times grid">
+      <!-- Row 1 (FAJR) -->
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'fajr'">FAJR</div>
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'fajr'">
+        <div class="timeStack">
+          <div class="colLabel">STARTS</div>
+          <div class="time">
+            {{ times?.fajr?.time ?? '-----' }}<span class="ampm">{{ times?.fajr?.ampm }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2 (DHUHR) -->
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'dhuhr'">DHUHR</div>
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'dhuhr'">
+        <div class="time">
+          {{ times?.dhuhr?.time ?? '-----' }}<span class="ampm">{{ times?.dhuhr?.ampm }}</span>
+        </div>
+      </div>
+
+      <!-- Row 3 (ASR) -->
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'asr'">ASR</div>
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'asr'">
+        <div class="time">
+          {{ times?.asr?.time ?? '-----' }}<span class="ampm">{{ times?.asr?.ampm }}</span>
+        </div>
+      </div>
+
+      <!-- Row 4 (MAGHRIB) -->
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'maghrib'">MAGHRIB</div>
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'maghrib'">
+        <div class="time">
+          {{ times?.maghrib?.time ?? '-----' }}
+          <span class="ampm">{{ times?.maghrib?.ampm }}</span>
+        </div>
+      </div>
+
+      <!-- Row 5 (ISHA) -->
+      <div
+        class="cell dark prayer row-last"
+        [class.is-next]="nextPrayerKey === 'isha'"
+      >
+        ISHA
+      </div>
+      <div class="cell dark row-last" [class.is-next]="nextPrayerKey === 'isha'">
+        <div class="time">
+          {{ times?.isha?.time ?? '-----' }}<span class="ampm">{{ times?.isha?.ampm }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel (current time + date) -->
     <aside class="panel" aria-label="Date panel">
       <header class="panelTop">
         <div class="dateRow">
@@ -159,58 +210,6 @@
         </div>
       </div>
     </aside>
-
-    <!-- Right prayer grid -->
-    <div class="grid" aria-label="Prayer times grid">
-      <!-- Row 1 (FAJR) -->
-      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'fajr'">FAJR</div>
-      <div class="cell dark" [class.is-next]="nextPrayerKey === 'fajr'">
-        <div class="timeStack">
-          <div class="colLabel">STARTS</div>
-          <div class="time">
-            {{ times?.fajr?.time ?? '-----' }}<span class="ampm">{{ times?.fajr?.ampm }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 2 (DHUHR) -->
-      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'dhuhr'">DHUHR</div>
-      <div class="cell dark" [class.is-next]="nextPrayerKey === 'dhuhr'">
-        <div class="time">
-          {{ times?.dhuhr?.time ?? '-----' }}<span class="ampm">{{ times?.dhuhr?.ampm }}</span>
-        </div>
-      </div>
-
-      <!-- Row 3 (ASR) -->
-      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'asr'">ASR</div>
-      <div class="cell dark" [class.is-next]="nextPrayerKey === 'asr'">
-        <div class="time">
-          {{ times?.asr?.time ?? '-----' }}<span class="ampm">{{ times?.asr?.ampm }}</span>
-        </div>
-      </div>
-
-      <!-- Row 4 (MAGHRIB) -->
-      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'maghrib'">MAGHRIB</div>
-      <div class="cell dark" [class.is-next]="nextPrayerKey === 'maghrib'">
-        <div class="time">
-          {{ times?.maghrib?.time ?? '-----' }}
-          <span class="ampm">{{ times?.maghrib?.ampm }}</span>
-        </div>
-      </div>
-
-      <!-- Row 5 (ISHA) -->
-      <div
-        class="cell dark prayer row-last"
-        [class.is-next]="nextPrayerKey === 'isha'"
-      >
-        ISHA
-      </div>
-      <div class="cell dark row-last" [class.is-next]="nextPrayerKey === 'isha'">
-        <div class="time">
-          {{ times?.isha?.time ?? '-----' }}<span class="ampm">{{ times?.isha?.ampm }}</span>
-        </div>
-      </div>
-    </div>
   </section>
 </main>
 
