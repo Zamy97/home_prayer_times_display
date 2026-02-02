@@ -35,6 +35,20 @@ app-home .board {
   flex-direction: column;
 }
 
+/* Hidden "hot corner" to open /settings on kiosk displays */
+app-home .hotCorner {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 90px;
+  height: 90px;
+  z-index: 10000;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
 app-home .content {
   display: grid;
   grid-template-columns: 1.28fr 1fr;

@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PrayTimeMethod } from '../../lib/praytime';
 import { AsrMethod, PrayerSettings, SettingsService } from '../../services/settings.service';
 
@@ -10,6 +10,7 @@ import { AsrMethod, PrayerSettings, SettingsService } from '../../services/setti
 })
 export class SettingsComponent implements OnInit {
   private readonly settingsService = inject(SettingsService);
+  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
   readonly methodOptions: Array<{ value: PrayTimeMethod; label: string }> = [
@@ -36,6 +37,9 @@ export class SettingsComponent implements OnInit {
   lat = '';
   lng = '';
 
+  // If the page is opened as a "setup link", we apply query params and redirect home.
+  private didHandleLink = false;
+
   get setupLink(): string {
     const lat = Number(this.lat);
     const lng = Number(this.lng);
@@ -51,7 +55,7 @@ export class SettingsComponent implements OnInit {
       asr: this.asr,
       timezone: this.timezone,
     });
-    return `${origin}/setup?${params.toString()}`;
+    return `${origin}/settings?${params.toString()}`;
   }
 
   async copySetupLink(): Promise<void> {
@@ -71,6 +75,14 @@ export class SettingsComponent implements OnInit {
     this.timezone = s.timezone;
     this.lat = s.coords?.lat?.toString() ?? '';
     this.lng = s.coords?.lng?.toString() ?? '';
+
+    // Handle "setup via link" on /settings?lat=...&lng=...
+    const qp = this.route.snapshot.queryParamMap;
+    const latRaw = qp.get('lat') ?? qp.get('latitude');
+    const lngRaw = qp.get('lng') ?? qp.get('lon') ?? qp.get('longitude');
+    if (latRaw != null || lngRaw != null) {
+      void this.applyLinkParamsAndRedirect();
+    }
   }
 
   save(): void {
@@ -92,6 +104,61 @@ export class SettingsComponent implements OnInit {
     if (lat < -90 || lat > 90) return null;
     if (lng < -180 || lng > 180) return null;
     return { lat, lng };
+  }
+
+  private async applyLinkParamsAndRedirect(): Promise<void> {
+    if (this.didHandleLink) return;
+    this.didHandleLink = true;
+
+    const qp = this.route.snapshot.queryParamMap;
+    const lat = this.parseNumber(qp.get('lat') ?? qp.get('latitude'));
+    const lng = this.parseNumber(qp.get('lng') ?? qp.get('lon') ?? qp.get('longitude'));
+
+    if (lat == null || lng == null) return;
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return;
+
+    const current = this.settingsService.getSettings();
+    const method = this.parseMethod(qp.get('method')) ?? current.method;
+    const asr = this.parseAsr(qp.get('asr')) ?? current.asr;
+    const timezone = (qp.get('timezone') ?? qp.get('tz') ?? current.timezone).trim();
+
+    const next: PrayerSettings = {
+      coords: { lat, lng },
+      method,
+      asr,
+      timezone,
+    };
+
+    this.settingsService.saveSettings(next);
+    await this.router.navigate(['/'], { replaceUrl: true });
+  }
+
+  private parseNumber(raw: string | null): number | null {
+    if (!raw) return null;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  private parseMethod(raw: string | null): PrayTimeMethod | null {
+    if (!raw) return null;
+    const allowed: PrayTimeMethod[] = [
+      'ISNA',
+      'MWL',
+      'Egypt',
+      'Makkah',
+      'Karachi',
+      'Singapore',
+      'France',
+      'Russia',
+      'Tehran',
+      'Jafari',
+    ];
+    return allowed.includes(raw as PrayTimeMethod) ? (raw as PrayTimeMethod) : null;
+  }
+
+  private parseAsr(raw: string | null): AsrMethod | null {
+    if (!raw) return null;
+    return raw === 'Hanafi' || raw === 'Standard' ? (raw as AsrMethod) : null;
   }
 }
 

@@ -1,4 +1,20 @@
 <main class="board" aria-label="Prayer times screen">
+  <!-- Hidden hot-corner: press & hold to open settings -->
+  <div
+    class="hotCorner"
+    role="button"
+    tabindex="0"
+    aria-label="Open settings (press and hold)"
+    (pointerdown)="onHotCornerDown($event)"
+    (pointerup)="onHotCornerUp($event)"
+    (pointercancel)="onHotCornerUp($event)"
+    (pointerleave)="onHotCornerUp($event)"
+    (keydown.enter)="onHotCornerDown($event)"
+    (keydown.space)="onHotCornerDown($event)"
+    (keyup.enter)="onHotCornerUp($event)"
+    (keyup.space)="onHotCornerUp($event)"
+  ></div>
+
   <section class="content">
     <!-- Left panel (current time + date) -->
     <aside class="panel" aria-label="Date panel">

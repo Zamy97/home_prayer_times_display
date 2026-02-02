@@ -1,5 +1,6 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { interval, startWith } from 'rxjs';
 import { PrayerTimesService } from '../../services/prayer-times.service';
 import { PrayTimeTimes } from '../../lib/praytime';
@@ -37,12 +38,16 @@ export class HomeComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly prayerTimes = inject(PrayerTimesService);
   private readonly settingsService = inject(SettingsService);
+  private readonly router = inject(Router);
   private settings = this.settingsService.getSettings();
   private lastDateKey = this.prayerTimes.getLocalDateKey();
   private prayerInstants: Partial<Record<'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha', number>> = {};
   private nextPrayerAtMs: number | null = null;
   private tomorrowFajrAtMs: number | null = null;
   private tomorrowFajrForDateKey: string | null = null;
+
+  private hotCornerTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly hotCornerHoldMs = 1800;
 
   private readonly timeFormatter = new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
@@ -94,7 +99,28 @@ export class HomeComponent implements OnInit {
     this.destroyRef.onDestroy(() => {
       document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('focus', onFocus);
+      this.clearHotCornerTimer();
     });
+  }
+
+  onHotCornerDown(evt?: Event): void {
+    evt?.preventDefault?.();
+    this.clearHotCornerTimer();
+    this.hotCornerTimer = setTimeout(() => {
+      void this.router.navigate(['/settings']);
+    }, this.hotCornerHoldMs);
+  }
+
+  onHotCornerUp(evt?: Event): void {
+    evt?.preventDefault?.();
+    this.clearHotCornerTimer();
+  }
+
+  private clearHotCornerTimer(): void {
+    if (this.hotCornerTimer) {
+      clearTimeout(this.hotCornerTimer);
+      this.hotCornerTimer = null;
+    }
   }
 
   private refreshIfDateChanged(force = false): void {
