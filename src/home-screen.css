@@ -372,8 +372,8 @@ app-home .icon {
     border-bottom-width: 3px;
   }
   app-home .clockBlock {
-    padding-top: 44px;
-    padding-left: 24px;
+    padding-top: 64px;
+    padding-left: 44px;
   }
   app-home .rule {
     margin: 4px 0 6px;
