@@ -139,6 +139,13 @@ app-home .colLabel {
   opacity: 0.95;
 }
 
+app-home .cell.is-next .colLabel {
+  background: rgba(7, 35, 60, 0.4);
+  color: var(--navy);
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
 app-home .time {
   font-family: var(--font-num);
   font-size: 112px;
