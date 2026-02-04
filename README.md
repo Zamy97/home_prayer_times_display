@@ -1,72 +1,181 @@
-# Angular 17 example project: CRUD with Rest API
+# Prayer Times Display
 
-Build an Angular 17 CRUD example App to consume Rest APIs, display, modify & search data.
+An Angular 17 single-page application that shows **Islamic prayer times**, a **live clock**, **countdown to the next prayer**, and **sunrise/sunset** on a full-screen display. Designed for **kiosk use** (Raspberry Pi, laptop, monitor, or TV)—no mobile layout; desktop-only.
 
-Tutorial Application in that:
-- Each Tutorial has id, title, description, published status.
-- We can create, retrieve, update, delete Tutorials.
-- There is a Search bar for finding Tutorials by title.
+---
 
-![angular-17-crud-example](angular-17-crud-example.png)
+## Features
 
-Run `ng serve --port 8081` for a dev server. Navigate to `http://localhost:8081/`. The app will automatically reload if you change any of the source files.
+### Home screen (`/`)
 
-For instruction, please visit:
-> [Angular 17 CRUD example with Rest API](https://www.bezkoder.com/angular-17-crud-example/)
+- **Prayer times grid**  
+  Five daily prayers with start times in 12-hour format (AM/PM):
+  - **Fajr** (with “STARTS” label)
+  - **Dhuhr**
+  - **Asr**
+  - **Maghrib**
+  - **Isha**
 
-More Practice:
-> [Angular 17 Pagination example](https://www.bezkoder.com/angular-17-pagination-ngx/)
+- **Next-prayer highlight**  
+  The row of the *next* prayer is visually highlighted (light background, dark text). When Fajr is next, the “STARTS” label has a distinct background.
 
-> [Angular 17 JWT Authentication & Authorization example](https://www.bezkoder.com/angular-17-jwt-auth/)
+- **Live clock**  
+  Current time with seconds and AM/PM, updated every second.
 
-> [Angular 17 File upload example with Progress bar](https://www.bezkoder.com/angular-17-file-upload/)
+- **Countdown**  
+  “NEXT [FAJR|DHUHR|ASR|MAGHRIB|ISHA] IN HH:MM:SS” until the next prayer. After Isha, countdown is to tomorrow’s Fajr.
 
-> [Angular 17 Form Validation example](https://www.bezkoder.com/angular-17-form-validation/)
+- **Dual dates**  
+  - **Hijri** (Islamic calendar), e.g. “RABIʻ AL-THANI 11”
+  - **Gregorian**, e.g. “SUNDAY, DEC 8”
 
-Fullstack with Node:
+- **Jumu'ah**  
+  Fixed display: 1:00 PM (STARTS) and 1:30 PM (JUMU'AH).
 
-> [Angular 17 + Node Express + MySQL example](https://www.bezkoder.com/angular-17-node-js-express-mysql/)
+- **Sunrise & sunset**  
+  Computed from the same location and shown with icons in a bar at the bottom of the panel.
 
-> [Angular 17 + Node Express + PostgreSQL example](https://www.bezkoder.com/angular-17-node-js-express-postgresql/)
+- **Layout toggle**  
+  Settings let you choose:
+  - **Clock & date on left** — prayer grid on the right
+  - **Clock & date on right** — prayer grid on the left  
 
-> [Angular 17 + Node Express + MongoDB example](https://www.bezkoder.com/angular-17-node-js-express-mongodb/)
+  Same two-column layout; only the order of the columns changes.
 
-> [Angular 17 + Node Express: File upload example](https://www.bezkoder.com/angular-17-node-express-file-upload/)
+- **Kiosk entry to settings**  
+  A **hot corner** (top-right, 160×160 px) is invisible. **Press and hold** for ~1.8 seconds to open `/settings` without a visible button, so the main screen stays clean.
 
-Fullstack with Spring Boot:
+- **No geolocation**  
+  Location is **only** set via Settings (lat/lng). No browser geolocation prompts, so it runs reliably on headless or kiosk devices.
 
-> [Angular 17 + Spring Boot example](https://www.bezkoder.com/spring-boot-angular-17-crud/)
+- **Automatic refresh**  
+  - Prayer times recompute when the calendar day changes (and every 5 minutes as a safeguard).
+  - When the tab becomes visible or the window gains focus, times refresh (covers sleep, DST, or long idle).
+  - When settings change (e.g. new location or method), times recompute immediately.
 
-> [Angular 17 + Spring Boot + MySQL example](https://www.bezkoder.com/spring-boot-angular-17-mysql/)
+- **Caching**  
+  Today’s prayer times are cached in `localStorage` by date and settings (coords, method, asr, timezone). Cache is reused until date or settings change.
 
-> [Angular 17 + Spring Boot + PostgreSQL example](https://www.bezkoder.com/spring-boot-angular-17-postgresql/)
+---
 
-> [Angular 17 + Spring Boot + MongoDB example](https://www.bezkoder.com/spring-boot-angular-17-mongodb/)
+## Settings (`/settings`)
 
-> [Angular 17 + Spring Boot: File upload example](https://www.bezkoder.com/angular-17-spring-boot-file-upload/)
+- **Latitude / Longitude**  
+  Required for prayer times. Default is a fixed coordinate (ZIP 48015) so the app works out of the box.
 
-Fullstack with Django:
-> [Angular + Django example](https://www.bezkoder.com/django-angular-13-crud-rest-framework/)
+- **Calculation method**  
+  Dropdown: ISNA (North America), MWL, Egypt, Makkah, Karachi, Singapore, France, Russia, Tehran, Jafari. Default: **ISNA**.
 
-> [Angular + Django + MySQL](https://www.bezkoder.com/django-angular-mysql/)
+- **Asr**  
+  **Hanafi** or **Standard**. Default: **Hanafi**.
 
-> [Angular + Django + PostgreSQL](https://www.bezkoder.com/django-angular-postgresql/)
+- **Timezone**  
+  Read-only; uses the device timezone (`Intl.DateTimeFormat().resolvedOptions().timeZone`).
 
-> [Angular + Django + MongoDB](https://www.bezkoder.com/django-angular-mongodb/)
+- **Layout**  
+  “Clock & date on left” or “Clock & date on right” (see above).
 
-Security:
-> [Angular 17 + Spring Boot: JWT Authentication and Authorization example](https://www.bezkoder.com/angular-17-spring-boot-jwt-auth/)
+- **Save**  
+  Persists to `localStorage` and navigates back to `/`.
 
-> [Angular 17 + Node.js Express: JWT Authentication and Authorization example](https://www.bezkoder.com/node-js-angular-17-jwt-auth/)
+### Shareable setup link
 
-Serverless with Firebase:
-> [Angular 17 Firebase CRUD with Realtime DataBase](https://www.bezkoder.com/angular-17-firebase-crud/)
+- **Generate link**  
+  With valid lat/lng, the page shows a URL like:  
+  `https://yoursite.com/settings?lat=43.65&lng=-79.38&method=ISNA&asr=Hanafi&timezone=America%2FToronto`
 
-> [Angular 17 Firestore CRUD example](https://www.bezkoder.com/angular-17-firestore-crud/)
+- **Use on another device**  
+  Open that URL on another device (e.g. a second Raspberry Pi). The app applies those settings to that device’s `localStorage` and redirects to `/`. No manual form fill.
 
-> [Angular 17 Firebase Storage: File Upload/Display/Delete example](https://www.bezkoder.com/angular-17-firebase-storage/)
+- **Copy**  
+  “Copy” copies the link to the clipboard (may be blocked on some kiosks).
 
-Integration (run back-end & front-end on same server/port)
-> [How to integrate Angular with Node Restful Services](https://bezkoder.com/integrate-angular-12-node-js/)
+---
 
-> [How to Integrate Angular with Spring Boot Rest API](https://bezkoder.com/integrate-angular-12-spring-boot/)
+## Setup route (`/setup`)
+
+- **Backward compatibility only.**  
+  Old links used `/setup?lat=...&lng=...`. Visiting `/setup?...` redirects to `/settings?...` with the same query params so the same “setup via link” behavior applies.
+
+---
+
+## Tech stack
+
+- **Angular 17** (NgModule, not standalone)
+- **Routing:** `''` and `home` → Home, `settings` → Settings, `setup` → redirect to Settings, `**` → Home
+- **State:** No backend. Settings and prayer-times cache live in **localStorage**.
+- **Prayer math:** Embedded **PrayTime** algorithm (TypeScript port of [praytimes.org](https://praytimes.org) v3.2, MIT). All calculations run in the browser; no external prayer-time API.
+
+---
+
+## Project structure
+
+```
+src/
+  app/
+    app.component.ts          # Root; title "Prayer Times"; <router-outlet>
+    app.module.ts             # Declares Home, Settings, Setup; imports Router, Forms, HttpClient
+    app-routing.module.ts     # Routes: '', home, settings, setup, **
+    components/
+      home/
+        home.component.ts     # Clock, prayer grid, countdown, dates, sunrise/sunset, hot corner
+        home.component.html  # Two-column layout; grid + panel (dates, clock, countdown, Jumu'ah, sun bar)
+      settings/
+        settings.component.ts # Form: lat, lng, method, asr, timezone, layout; save; setup-link handling
+        settings.component.html
+      setup/
+        setup.component.ts   # Redirects to /settings with same query params
+        setup.component.html
+    lib/
+      praytime.ts            # PrayTime class: methods (ISNA, MWL, …), asr (Hanafi/Standard), location, timezone, times(date)
+    services/
+      settings.service.ts    # BehaviorSubject<PrayerSettings>; load/save localStorage; key prayerSettings.v1
+      prayer-times.service.ts # getCachedTodayTimes, computeAndCacheTodayTimes; cache key prayerTimes.v3
+  home-screen.css             # All home-screen styles (scoped to app-home); two-column grid; hot corner; no mobile breakpoints
+  styles.css                  # Global styles; @import home-screen.css
+  index.html
+```
+
+- **Styles:** Home screen CSS is in `src/home-screen.css`, imported from `src/styles.css`, to stay under Angular’s component style budget. `home.component.css` only contains a short note.
+- **Assets:** Bootstrap is still referenced in `angular.json` (legacy); the UI is custom CSS in `home-screen.css` and settings/setup component CSS.
+
+---
+
+## Configuration
+
+- **Default settings** (see `settings.service.ts`):  
+  `coords` = fixed default (ZIP 48015), `method` = ISNA, `asr` = Hanafi, `timezone` = device, `panelLeft` = true.
+- **Storage keys:** `prayerSettings.v1`, `prayerTimes.v3`. Bumping the suffix invalidates old caches.
+
+---
+
+## Build & run
+
+- **Develop:** `ng serve` (default port 4200). Use `ng serve --port 8081` if you prefer 8081.
+- **Production build:** `ng build`
+- **Output:** `dist/angular-17-crud/browser` (used by Vercel config below).
+
+---
+
+## Deployment (Vercel)
+
+- **vercel.json**  
+  - `buildCommand`: `npm run build`  
+  - `outputDirectory`: `dist/angular-17-crud/browser`  
+  - `rewrites`: all routes `/(.*)` → `/index.html` for client-side routing.
+
+Deploy with Vercel; the SPA will serve correctly and setup links will work on any deployed origin.
+
+---
+
+## Summary
+
+| Item | Detail |
+|------|--------|
+| **Purpose** | Full-screen prayer times + clock for kiosks (Pi, laptop, monitor, TV) |
+| **Prayer source** | Client-side PrayTime (praytimes.org); no API calls |
+| **Location** | Manual only (Settings); no geolocation |
+| **Persistence** | localStorage (settings + daily prayer cache) |
+| **Layout** | Two columns; optional swap (clock/date left or right) |
+| **Kiosk entry** | Hot corner (hold ~1.8 s) → Settings |
+| **Setup at scale** | Shareable `/settings?lat=...&lng=...` link to clone settings to other devices |
