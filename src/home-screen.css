@@ -403,7 +403,7 @@ app-home .icon {
   }
   app-home .clockBlock {
     padding-top: 73px;
-    padding-left: 54px;
+    padding-left: 46px; /* 8px left of default so two-digit clock seconds don’t sit too close to panel */
   }
   app-home .rule {
     margin: 4px 0 6px;
