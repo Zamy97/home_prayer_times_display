@@ -78,7 +78,7 @@
       <div class="rule" aria-hidden="true"></div>
 
       <div class="panelMid">
-        <div class="clockBlock">
+        <div class="clockBlock" [class.clock-two-digits]="isTwoDigitHour">
           <div class="now" aria-label="Current time">
             <span class="nowMain">{{ nowTime }}</span>
             <span class="nowSide" aria-label="Seconds and meridiem">

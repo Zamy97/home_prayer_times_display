@@ -22,6 +22,8 @@ export class HomeComponent implements OnInit {
   nowTime = '';
   nowSeconds = '';
   nowAmPm = '';
+  /** True when the displayed hour is two digits (10, 11, 12) for layout tweaks */
+  isTwoDigitHour = false;
 
   sunrise: { time: string; ampm: string } | null = null;
   sunset: { time: string; ampm: string } | null = null;
@@ -288,6 +290,9 @@ export class HomeComponent implements OnInit {
     this.nowTime = `${hour}:${minute}`;
     this.nowSeconds = second;
     this.nowAmPm = dayPeriod;
+    // 12h display: two-digit hours are 10, 11, 12 (use date so we don't depend on formatter string)
+    const hour12 = date.getHours() % 12 || 12;
+    this.isTwoDigitHour = hour12 >= 10;
 
     // Ensure date/prayer-times switch over immediately at midnight.
     const currentKey = this.prayerTimes.getLocalDateKey(date);

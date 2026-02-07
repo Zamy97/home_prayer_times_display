@@ -219,6 +219,10 @@ app-home .clockBlock {
   padding-top: 52px;
   padding-left: 28px;
 }
+/* When hour is 10, 11, or 12 the clock is wider; nudge left so seconds stay clear of the panel */
+app-home .clockBlock.clock-two-digits {
+  transform: translateX(-25px);
+}
 
 app-home .jumuBlock {
   text-align: center;
@@ -403,7 +407,10 @@ app-home .icon {
   }
   app-home .clockBlock {
     padding-top: 73px;
-    padding-left: 46px; /* 8px left of default so two-digit clock seconds don’t sit too close to panel */
+    padding-left: 54px; /* 8px left of default so two-digit clock seconds don’t sit too close to panel */
+  }
+  app-home .clockBlock.clock-two-digits {
+    transform: translateX(-25px);
   }
   app-home .rule {
     margin: 4px 0 6px;
