@@ -153,7 +153,7 @@ src/
 
 - **Develop:** `ng serve` (default port 4200). Use `ng serve --port 8081` if you prefer 8081.
 - **Production build:** `ng build`
-- **Output:** `dist/angular-17-crud/browser` (used by Vercel config below).
+- **Output:** `dist/home-prayer-times-display/browser` (used by Vercel config below).
 
 ---
 
@@ -161,7 +161,7 @@ src/
 
 - **vercel.json**  
   - `buildCommand`: `npm run build`  
-  - `outputDirectory`: `dist/angular-17-crud/browser`  
+  - `outputDirectory`: `dist/home-prayer-times-display/browser`  
   - `rewrites`: all routes `/(.*)` → `/index.html` for client-side routing.
 
 Deploy with Vercel; the SPA will serve correctly and setup links will work on any deployed origin.

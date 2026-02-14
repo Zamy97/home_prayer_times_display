@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular-17-crud": {
+    "home-prayer-times-display": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -23,7 +23,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/angular-17-crud",
+            "outputPath": "dist/home-prayer-times-display",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -72,10 +72,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "angular-17-crud:build:production"
+              "buildTarget": "home-prayer-times-display:build:production"
             },
             "development": {
-              "buildTarget": "angular-17-crud:build:development"
+              "buildTarget": "home-prayer-times-display:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -83,7 +83,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "angular-17-crud:build"
+            "buildTarget": "home-prayer-times-display:build"
           }
         },
         "test": {

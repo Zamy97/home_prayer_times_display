@@ -1,6 +1,6 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/angular-17-crud/browser",
+  "outputDirectory": "dist/home-prayer-times-display/browser",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
