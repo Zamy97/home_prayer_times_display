@@ -1,6 +1,6 @@
 # Prayer Times Display
 
-An Angular 17 single-page application that shows **Islamic prayer times**, a **live clock**, **countdown to the next prayer**, and **sunrise/sunset** on a full-screen display. Designed for **kiosk use** (Raspberry Pi, laptop, monitor, or TV)—no mobile layout; desktop-only.
+An Angular 17 single-page application that shows **Islamic prayer times**, a **live clock**, **countdown to the next prayer**, and **sunrise/sunset** on a full-screen display. Designed for **kiosk use** (Raspberry Pi, laptop, monitor, or TV) and **responsive** for any screen size—from phones to large displays.
 
 ---
 
@@ -136,7 +136,7 @@ src/
   index.html
 ```
 
-- **Styles:** Home screen CSS is in `src/home-screen.css`, imported from `src/styles.css`, to stay under Angular’s component style budget. `home.component.css` only contains a short note.
+- **Styles:** Home screen CSS is in `src/home-screen.css`, imported from `src/styles.css`, to stay under Angular’s component style budget. Layout is responsive: fluid typography and breakpoints at 900px (stacked grid/panel) and 480px (compact layout); safe-area and `100dvh` for notched/small screens. `home.component.css` only contains a short note.
 - **Assets:** Bootstrap is still referenced in `angular.json` (legacy); the UI is custom CSS in `home-screen.css` and settings/setup component CSS.
 
 ---

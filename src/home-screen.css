@@ -26,22 +26,28 @@ app-home * {
 }
 
 app-home .board {
-  width: 100vw;
+  width: 100%;
+  min-width: 100vw;
   height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--white);
   border: 0;
   box-shadow: none;
   display: flex;
   flex-direction: column;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  box-sizing: border-box;
 }
 
 /* Hidden "hot corner" to open /settings on kiosk displays */
 app-home .hotCorner {
   position: fixed;
-  top: 0;
-  right: 0;
-  width: 160px;
-  height: 160px;
+  top: env(safe-area-inset-top, 0);
+  right: env(safe-area-inset-right, 0);
+  width: clamp(80px, 20vw, 160px);
+  height: clamp(80px, 20vw, 160px);
   z-index: 10000;
   background: transparent;
   outline: none;
@@ -84,13 +90,15 @@ app-home .grid {
   grid-template-rows: repeat(5, 1fr);
   border-left: none;
   border-right: 6px solid #fff;
+  min-width: 0;
+  min-height: 0;
 }
 
 app-home .cell {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 18px;
+  padding: 0 clamp(8px, 1.5vw, 18px);
   border-right: 2px solid var(--line);
   border-bottom: 2px solid var(--line);
 }
@@ -118,7 +126,7 @@ app-home .cell.is-next {
 app-home .prayer {
   font-family: var(--font-ui);
   letter-spacing: 0.02em;
-  font-size: 32px;
+  font-size: clamp(18px, 3.5vw, 36px);
   text-transform: uppercase;
 }
 
@@ -128,13 +136,13 @@ app-home .timeStack {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: clamp(4px, 1vw, 10px);
 }
 
 app-home .colLabel {
   font-family: var(--font-ui);
   letter-spacing: 0.22em;
-  font-size: 22px;
+  font-size: clamp(14px, 2.2vw, 24px);
   text-transform: uppercase;
   opacity: 0.95;
 }
@@ -148,26 +156,27 @@ app-home .cell.is-next .colLabel {
 
 app-home .time {
   font-family: var(--font-num);
-  font-size: 112px;
+  font-size: clamp(44px, 10vw, 112px);
   line-height: 0.95;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-app-home .ampm {
+app-home .time .ampm {
   font-family: inherit;
-  font-size: 30px;
+  font-size: clamp(14px, 2.5vw, 30px);
   letter-spacing: 0.06em;
-  margin-left: 6px;
-  vertical-align: 18px;
+  margin-left: 4px;
+  vertical-align: 0.2em;
 }
 
 app-home .panel {
   background: var(--panel);
-  padding: 34px 36px 0 36px;
+  padding: clamp(16px, 3.5vw, 36px) clamp(16px, 3.5vw, 36px) 0;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  min-width: 0;
 }
 
 app-home .panelTop {
@@ -177,7 +186,7 @@ app-home .panelTop {
   letter-spacing: 0.06em;
   background: var(--navy);
   color: #fff;
-  padding: 18px 22px;
+  padding: clamp(10px, 1.8vw, 22px) clamp(12px, 2vw, 22px);
   border-bottom: 2px solid rgba(255, 255, 255, 0.65);
 }
 
@@ -185,15 +194,16 @@ app-home .dateRow {
   display: flex;
   justify-content: center;
   align-items: baseline;
-  gap: 42px;
+  gap: clamp(16px, 3vw, 42px);
+  flex-wrap: wrap;
 }
 
 app-home .hijri {
-  font-size: 40px;
+  font-size: clamp(20px, 4vw, 66px);
 }
 
 app-home .greg {
-  font-size: 40px;
+  font-size: clamp(20px, 3.8vw, 62px);
 }
 
 app-home .rule {
@@ -216,8 +226,8 @@ app-home .panelMid {
 
 app-home .clockBlock {
   text-align: left;
-  padding-top: 52px;
-  padding-left: 28px;
+  padding-top: clamp(20px, 4vw, 52px);
+  padding-left: clamp(12px, 2vw, 28px);
 }
 /* When hour is 10, 11, or 12 the clock is wider; nudge left so seconds stay clear of the panel */
 app-home .clockBlock.clock-two-digits {
@@ -247,7 +257,7 @@ app-home .countdown {
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 26px;
+  font-size: clamp(14px, 2.2vw, 40px);
   color: rgba(0, 0, 0, 0.72);
 }
 
@@ -293,7 +303,7 @@ app-home .jumTitle {
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 28px;
+  font-size: clamp(18px, 2.5vw, 28px);
   margin: 0 0 10px 0;
 }
 
@@ -306,34 +316,35 @@ app-home .jumGrid {
 
 app-home .jumTime {
   font-family: var(--font-num);
-  font-size: 48px;
+  font-size: clamp(28px, 4vw, 48px);
   margin: 0;
 }
 
 app-home .jumTime .ampm {
-  font-size: 18px;
-  vertical-align: 12px;
-  margin-left: 6px;
+  font-size: clamp(12px, 1.5vw, 18px);
+  vertical-align: 0.25em;
+  margin-left: 4px;
 }
 
 app-home .jumLabel {
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 18px;
+  font-size: clamp(12px, 1.6vw, 18px);
   margin: 6px 0 0 0;
 }
 
 app-home .sunBar {
-  margin-top: 26px;
+  margin-top: clamp(12px, 2vw, 26px);
   background: var(--navy);
   color: #fff;
-  height: 92px;
+  min-height: clamp(56px, 10vw, 92px);
   display: flex;
   flex-direction: row;
   justify-content: center;
-  padding: 10px 26px;
-  gap: 28px;
+  padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 26px);
+  gap: clamp(12px, 2vw, 28px);
+  flex-wrap: wrap;
 }
 
 app-home .sunRow {
@@ -341,27 +352,76 @@ app-home .sunRow {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: clamp(6px, 1vw, 12px);
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 22px;
+  font-size: clamp(14px, 2vw, 22px);
+  min-width: 0;
 }
 
 app-home .sunTime {
   font-family: var(--font-num);
-  font-size: 28px;
+  font-size: clamp(16px, 2.2vw, 28px);
   letter-spacing: 0.02em;
 }
 
 app-home .sunTime .ampm {
-  font-size: 16px;
-  vertical-align: 8px;
+  font-size: clamp(10px, 1.2vw, 16px);
+  vertical-align: 0.3em;
 }
 
 app-home .icon {
-  width: 34px;
-  height: 20px;
+  width: clamp(24px, 3.5vw, 34px);
+  height: clamp(14px, 2vw, 20px);
+  flex-shrink: 0;
+}
+
+/* Tablet and below: stack grid above panel so both fit narrow viewports */
+@media (max-width: 900px) {
+  app-home .content {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  app-home .content .grid {
+    order: 0;
+    border-right: none;
+    border-bottom: 6px solid #fff;
+    min-height: min(40vh, 320px);
+    grid-template-rows: repeat(5, 1fr);
+  }
+
+  app-home .content .panel {
+    order: 1;
+  }
+
+  app-home .content.panel-left .panel {
+    order: 0;
+  }
+  app-home .content.panel-left .grid {
+    order: 1;
+    border-left: none;
+    border-bottom: 6px solid #fff;
+    border-top: 6px solid #fff;
+  }
+}
+
+/* Small phones: compact layout and sun bar can wrap */
+@media (max-width: 480px) {
+  app-home .content .grid {
+    min-height: min(36vh, 280px);
+  }
+
+  app-home .sunBar {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  app-home .sunRow {
+    flex: none;
+  }
 }
 
 /* Large screens: slightly bigger typography */
