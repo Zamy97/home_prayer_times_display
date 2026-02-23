@@ -78,31 +78,12 @@ An Angular 17 single-page application that shows **Islamic prayer times**, a **l
 - **Save**  
   Persists to `localStorage` and navigates back to `/`.
 
-### Shareable setup link
-
-- **Generate link**  
-  With valid lat/lng, the page shows a URL like:  
-  `https://yoursite.com/settings?lat=43.65&lng=-79.38&method=ISNA&asr=Hanafi&timezone=America%2FToronto`
-
-- **Use on another device**  
-  Open that URL on another device (e.g. a second Raspberry Pi). The app applies those settings to that device’s `localStorage` and redirects to `/`. No manual form fill.
-
-- **Copy**  
-  “Copy” copies the link to the clipboard (may be blocked on some kiosks).
-
----
-
-## Setup route (`/setup`)
-
-- **Backward compatibility only.**  
-  Old links used `/setup?lat=...&lng=...`. Visiting `/setup?...` redirects to `/settings?...` with the same query params so the same “setup via link” behavior applies.
-
 ---
 
 ## Tech stack
 
 - **Angular 17** (NgModule, not standalone)
-- **Routing:** `''` and `home` → Home, `settings` → Settings, `setup` → redirect to Settings, `**` → Home
+- **Routing:** `''` and `home` → Home, `settings` → Settings, `setup` → redirect to Settings (no URL-based setup), `**` → Home
 - **State:** No backend. Settings and prayer-times cache live in **localStorage**.
 - **Prayer math:** Embedded **PrayTime** algorithm (TypeScript port of [praytimes.org](https://praytimes.org) v3.2, MIT). All calculations run in the browser; no external prayer-time API.
 
@@ -114,18 +95,15 @@ An Angular 17 single-page application that shows **Islamic prayer times**, a **l
 src/
   app/
     app.component.ts          # Root; title "Prayer Times"; <router-outlet>
-    app.module.ts             # Declares Home, Settings, Setup; imports Router, Forms, HttpClient
-    app-routing.module.ts     # Routes: '', home, settings, setup, **
+    app.module.ts             # Declares Home, Settings; imports Router, Forms, HttpClient
+    app-routing.module.ts     # Routes: '', home, settings, setup→settings, **
     components/
       home/
         home.component.ts     # Clock, prayer grid, countdown, dates, sunrise/sunset, hot corner
         home.component.html  # Two-column layout; grid + panel (dates, clock, countdown, Jumu'ah, sun bar)
       settings/
-        settings.component.ts # Form: lat, lng, method, asr, timezone, layout; save; setup-link handling
+        settings.component.ts # Form: lat, lng, method, asr, timezone, layout; save
         settings.component.html
-      setup/
-        setup.component.ts   # Redirects to /settings with same query params
-        setup.component.html
     lib/
       praytime.ts            # PrayTime class: methods (ISNA, MWL, …), asr (Hanafi/Standard), location, timezone, times(date)
     services/
@@ -137,7 +115,7 @@ src/
 ```
 
 - **Styles:** Home screen CSS is in `src/home-screen.css`, imported from `src/styles.css`, to stay under Angular’s component style budget. `home.component.css` only contains a short note.
-- **Assets:** Bootstrap is still referenced in `angular.json` (legacy); the UI is custom CSS in `home-screen.css` and settings/setup component CSS.
+- **Assets:** Bootstrap is still referenced in `angular.json` (legacy); the UI is custom CSS in `home-screen.css` and settings component CSS.
 
 ---
 
@@ -164,7 +142,7 @@ src/
   - `outputDirectory`: `dist/home-prayer-times-display/browser`  
   - `rewrites`: all routes `/(.*)` → `/index.html` for client-side routing.
 
-Deploy with Vercel; the SPA will serve correctly and setup links will work on any deployed origin.
+Deploy with Vercel; the SPA will serve correctly.
 
 ---
 
@@ -178,4 +156,3 @@ Deploy with Vercel; the SPA will serve correctly and setup links will work on an
 | **Persistence** | localStorage (settings + daily prayer cache) |
 | **Layout** | Two columns; optional swap (clock/date left or right) |
 | **Kiosk entry** | Hot corner (hold ~1.8 s) → Settings |
-| **Setup at scale** | Shareable `/settings?lat=...&lng=...` link to clone settings to other devices |

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { PrayTimeMethod } from '../../lib/praytime';
+import { GeoError, GeolocationService } from '../../services/geolocation.service';
 import { AsrMethod, PrayerSettings, SettingsService } from '../../services/settings.service';
 
 @Component({
@@ -10,8 +11,11 @@ import { AsrMethod, PrayerSettings, SettingsService } from '../../services/setti
 })
 export class SettingsComponent implements OnInit {
   private readonly settingsService = inject(SettingsService);
-  private readonly route = inject(ActivatedRoute);
+  private readonly geolocation = inject(GeolocationService);
   private readonly router = inject(Router);
+
+  /** 'loading' while requesting, null when idle, message when error */
+  geoStatus: 'loading' | null | string = null;
 
   readonly methodOptions: Array<{ value: PrayTimeMethod; label: string }> = [
     { value: 'ISNA', label: 'ISNA (North America)' },
@@ -39,37 +43,6 @@ export class SettingsComponent implements OnInit {
   /** true = clock/date panel on left */
   panelLeft = true;
 
-  // If the page is opened as a "setup link", we apply query params and redirect home.
-  private didHandleLink = false;
-
-  get setupLink(): string {
-    const lat = Number(this.lat);
-    const lng = Number(this.lng);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return '';
-    if (lat < -90 || lat > 90) return '';
-    if (lng < -180 || lng > 180) return '';
-
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const params = new URLSearchParams({
-      lat: String(lat),
-      lng: String(lng),
-      method: this.method,
-      asr: this.asr,
-      timezone: this.timezone,
-    });
-    return `${origin}/settings?${params.toString()}`;
-  }
-
-  async copySetupLink(): Promise<void> {
-    const link = this.setupLink;
-    if (!link) return;
-    try {
-      await navigator.clipboard.writeText(link);
-    } catch {
-      // ignore (kiosk devices may block clipboard)
-    }
-  }
-
   ngOnInit(): void {
     const s = this.settingsService.getSettings();
     this.method = s.method;
@@ -78,14 +51,27 @@ export class SettingsComponent implements OnInit {
     this.lat = s.coords?.lat?.toString() ?? '';
     this.lng = s.coords?.lng?.toString() ?? '';
     this.panelLeft = s.panelLeft ?? true;
+  }
 
-    // Handle "setup via link" on /settings?lat=...&lng=...
-    const qp = this.route.snapshot.queryParamMap;
-    const latRaw = qp.get('lat') ?? qp.get('latitude');
-    const lngRaw = qp.get('lng') ?? qp.get('lon') ?? qp.get('longitude');
-    if (latRaw != null || lngRaw != null) {
-      void this.applyLinkParamsAndRedirect();
-    }
+  useMyLocation(): void {
+    this.geoStatus = 'loading';
+    this.geolocation.getCurrentPosition().subscribe({
+      next: (pos) => {
+        this.lat = String(Math.round(pos.lat * 10000) / 10000);
+        this.lng = String(Math.round(pos.lng * 10000) / 10000);
+        this.geoStatus = null;
+      },
+      error: (err: GeoError) => {
+        this.geoStatus =
+          err === 'permission_denied'
+            ? 'Location permission denied.'
+            : err === 'timeout'
+              ? 'Location request timed out.'
+              : err === 'unsupported'
+                ? 'Geolocation is not supported.'
+                : 'Could not get location.';
+      },
+    });
   }
 
   save(): void {
@@ -108,62 +94,6 @@ export class SettingsComponent implements OnInit {
     if (lat < -90 || lat > 90) return null;
     if (lng < -180 || lng > 180) return null;
     return { lat, lng };
-  }
-
-  private async applyLinkParamsAndRedirect(): Promise<void> {
-    if (this.didHandleLink) return;
-    this.didHandleLink = true;
-
-    const qp = this.route.snapshot.queryParamMap;
-    const lat = this.parseNumber(qp.get('lat') ?? qp.get('latitude'));
-    const lng = this.parseNumber(qp.get('lng') ?? qp.get('lon') ?? qp.get('longitude'));
-
-    if (lat == null || lng == null) return;
-    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return;
-
-    const current = this.settingsService.getSettings();
-    const method = this.parseMethod(qp.get('method')) ?? current.method;
-    const asr = this.parseAsr(qp.get('asr')) ?? current.asr;
-    const timezone = (qp.get('timezone') ?? qp.get('tz') ?? current.timezone).trim();
-
-    const next: PrayerSettings = {
-      coords: { lat, lng },
-      method,
-      asr,
-      timezone,
-      panelLeft: current.panelLeft ?? true,
-    };
-
-    this.settingsService.saveSettings(next);
-    await this.router.navigate(['/'], { replaceUrl: true });
-  }
-
-  private parseNumber(raw: string | null): number | null {
-    if (!raw) return null;
-    const n = Number(raw);
-    return Number.isFinite(n) ? n : null;
-  }
-
-  private parseMethod(raw: string | null): PrayTimeMethod | null {
-    if (!raw) return null;
-    const allowed: PrayTimeMethod[] = [
-      'ISNA',
-      'MWL',
-      'Egypt',
-      'Makkah',
-      'Karachi',
-      'Singapore',
-      'France',
-      'Russia',
-      'Tehran',
-      'Jafari',
-    ];
-    return allowed.includes(raw as PrayTimeMethod) ? (raw as PrayTimeMethod) : null;
-  }
-
-  private parseAsr(raw: string | null): AsrMethod | null {
-    if (!raw) return null;
-    return raw === 'Hanafi' || raw === 'Standard' ? (raw as AsrMethod) : null;
   }
 }
 

@@ -35,18 +35,116 @@ app-home .board {
   flex-direction: column;
 }
 
-/* Hidden "hot corner" to open /settings on kiosk displays */
+/* Hidden "hot corner" (top-left): press & hold to open settings */
 app-home .hotCorner {
   position: fixed;
-  top: 0;
-  right: 0;
-  width: 160px;
-  height: 160px;
+  top: env(safe-area-inset-top, 0);
+  left: env(safe-area-inset-left, 0);
+  width: clamp(80px, 20vw, 160px);
+  height: clamp(80px, 20vw, 160px);
   z-index: 10000;
   background: transparent;
   outline: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Top-right: current temperature */
+app-home .tempCorner {
+  position: fixed;
+  top: env(safe-area-inset-top, 0);
+  right: env(safe-area-inset-right, 0);
+  z-index: 9999;
+  padding: clamp(8px, 1.5vw, 14px) clamp(12px, 2vw, 20px);
+  font-family: var(--font-ui);
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-variant-numeric: tabular-nums;
+  color: var(--navy);
+  background: var(--panel);
+  border-bottom-left-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Landing prompt to use browser geolocation */
+app-home .geoPromptBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+app-home .geoPromptCard {
+  width: min(560px, 92vw);
+  background: var(--white);
+  color: var(--text);
+  border-radius: 14px;
+  padding: clamp(16px, 2.5vw, 22px);
+  box-shadow: 0 14px 50px rgba(0, 0, 0, 0.35);
+  font-family: var(--font-ui);
+}
+
+app-home .geoPromptTitle {
+  font-size: clamp(18px, 2.2vw, 26px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+app-home .geoPromptText {
+  margin-top: 10px;
+  font-size: clamp(14px, 1.8vw, 18px);
+  opacity: 0.85;
+  line-height: 1.35;
+}
+
+app-home .geoPromptError {
+  margin-top: 10px;
+  color: #c00;
+  font-size: clamp(13px, 1.6vw, 16px);
+}
+
+app-home .geoPromptActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+app-home .geoPromptBtn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: #fff;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+app-home .geoPromptBtn.primary {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+app-home .geoPromptBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+app-home .geoPromptSmall {
+  margin-top: 12px;
+  font-size: clamp(12px, 1.4vw, 14px);
+  opacity: 0.75;
+}
+
+app-home .geoPromptSmall a {
+  color: var(--navy);
+  font-weight: 700;
 }
 
 app-home .content {
@@ -320,8 +418,55 @@ app-home .jumLabel {
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 18px;
+  font-size: clamp(12px, 1.6vw, 18px);
   margin: 6px 0 0 0;
+}
+
+app-home .locationNeeded {
+  margin-top: 18px;
+  text-align: center;
+}
+
+app-home .locationNeededTitle {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+app-home .locationNeededHint {
+  margin-top: 6px;
+  opacity: 0.75;
+}
+
+app-home .locationBtn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 18px;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--navy);
+  background: var(--panel);
+  color: var(--navy);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+app-home .locationBtn:hover {
+  background: var(--navy);
+  color: #fff;
+}
+
+app-home .locationError {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #c00;
+}
+
+app-home .locationNeeded a {
+  color: var(--navy);
+  font-weight: 600;
 }
 
 app-home .sunBar {

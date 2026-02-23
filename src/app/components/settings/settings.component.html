@@ -46,24 +46,17 @@
       </label>
     </div>
 
+    <div class="geoRow">
+      <button class="btn" type="button" [disabled]="geoStatus === 'loading'" (click)="useMyLocation()">
+        {{ geoStatus === 'loading' ? 'Getting location…' : 'Use my location' }}
+      </button>
+      @if (geoStatus && geoStatus !== 'loading') {
+        <span class="geoError">{{ geoStatus }}</span>
+      }
+    </div>
+
     <div class="actions">
       <button class="btn primary" type="button" (click)="save()">Save</button>
-    </div>
-  </div>
-
-  <div class="share">
-    <h2>Share setup link</h2>
-    <p class="muted">
-      Open this link on another device/house to apply the same settings automatically.
-    </p>
-
-    <div class="shareRow">
-      <input class="input" [value]="setupLink" readonly placeholder="Enter valid lat/lng above to generate link" />
-      <button class="btn" type="button" [disabled]="!setupLink" (click)="copySetupLink()">Copy</button>
-    </div>
-
-    <div class="hint">
-      You can also bookmark it on the Raspberry Pi (kiosk) once configured.
     </div>
   </div>
 </div>

@@ -1,5 +1,5 @@
 <main class="board" aria-label="Prayer times screen">
-  <!-- Hidden hot-corner: press & hold to open settings -->
+  <!-- Hidden hot corner (top-left): press & hold to open settings -->
   <div
     class="hotCorner"
     role="button"
@@ -14,6 +14,46 @@
     (keyup.enter)="onHotCornerUp($event)"
     (keyup.space)="onHotCornerUp($event)"
   ></div>
+
+  <!-- Top-right: current temperature -->
+  <div class="tempCorner" aria-label="Current temperature">
+    @if (currentTempF !== null) {
+      {{ currentTempF | number:'1.0-0' }}°F
+    } @else {
+      <span aria-hidden="true">--</span>
+    }
+  </div>
+
+  @if (showGeoPrompt) {
+  <div class="geoPromptBackdrop" role="dialog" aria-modal="true" aria-label="Use current location">
+    <div class="geoPromptCard">
+      <div class="geoPromptTitle">Use your current location?</div>
+      <div class="geoPromptText">
+        We’ll use it to calculate prayer times and save it on this device.
+      </div>
+
+      @if (geoStatus && geoStatus !== 'loading') {
+        <div class="geoPromptError">{{ geoStatus }}</div>
+      }
+
+      <div class="geoPromptActions">
+        <button
+          type="button"
+          class="geoPromptBtn primary"
+          [disabled]="geoStatus === 'loading'"
+          (click)="useMyLocation()"
+        >
+          {{ geoStatus === 'loading' ? 'Getting location…' : 'Use my location' }}
+        </button>
+        <button type="button" class="geoPromptBtn" (click)="dismissGeoPrompt()">Not now</button>
+      </div>
+
+      <div class="geoPromptSmall">
+        You can also set latitude/longitude in <a routerLink="/settings">Settings</a>.
+      </div>
+    </div>
+  </div>
+  }
 
   <section class="content" [class.panel-left]="panelLeft">
     <div class="grid" aria-label="Prayer times grid">
@@ -110,14 +150,19 @@
           </div>
         </div>
 
-        @if (!times?.raw) {
-        <div style="margin-top: 18px; text-align: center">
-          <div style="font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase">
-            Location needed
-          </div>
-          <div style="margin-top: 6px; opacity: 0.75">
-            Set latitude/longitude in <span style="font-family: monospace">/settings</span>
-          </div>
+        @if (!times?.raw && !showGeoPrompt) {
+        <div class="locationNeeded">
+          <div class="locationNeededTitle">Location needed</div>
+          @if (geoStatus === 'loading') {
+            <div class="locationNeededHint">Getting location…</div>
+          } @else if (geoStatus) {
+            <div class="locationError">{{ geoStatus }}</div>
+          } @else {
+            <button type="button" class="locationBtn" (click)="useMyLocation()">Use my location</button>
+            <div class="locationNeededHint">
+              Or set latitude/longitude in <a routerLink="/settings">Settings</a>
+            </div>
+          }
         </div>
         }
       </div>

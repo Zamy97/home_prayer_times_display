@@ -5,6 +5,8 @@ import { interval, startWith } from 'rxjs';
 import { PrayerTimesService } from '../../services/prayer-times.service';
 import { PrayTimeTimes } from '../../lib/praytime';
 import { SettingsService } from '../../services/settings.service';
+import { WeatherService } from '../../services/weather.service';
+import { GeoError, GeolocationService } from '../../services/geolocation.service';
 
 @Component({
   selector: 'app-home',
@@ -27,6 +29,15 @@ export class HomeComponent implements OnInit {
 
   sunrise: { time: string; ampm: string } | null = null;
   sunset: { time: string; ampm: string } | null = null;
+  /** Current temperature in °F (from Open-Meteo); null if unavailable */
+  currentTempF: number | null = null;
+
+  /** 'loading' while requesting location, null when idle, message when error */
+  geoStatus: 'loading' | null | string = null;
+
+  /** True while we are prompting the user to use browser geolocation */
+  showGeoPrompt = false;
+
   times:
     | ({
         fajr: { time: string; ampm: string };
@@ -40,6 +51,8 @@ export class HomeComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly prayerTimes = inject(PrayerTimesService);
   private readonly settingsService = inject(SettingsService);
+  private readonly weatherService = inject(WeatherService);
+  private readonly geolocation = inject(GeolocationService);
   private readonly router = inject(Router);
   private settings = this.settingsService.getSettings();
   private lastDateKey = this.prayerTimes.getLocalDateKey();
@@ -78,6 +91,9 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.updateDateLabels(new Date());
 
+    // On first landing: prompt to use current location if coords aren't set yet.
+    if (!this.settings.coords) this.showGeoPrompt = true;
+
     interval(1000)
       .pipe(startWith(0), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.setNow(new Date()));
@@ -87,9 +103,17 @@ export class HomeComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((s) => {
         this.settings = s;
+        if (s.coords) this.showGeoPrompt = false;
         this.loadFromCache();
         this.loadPrayerTimes();
+        this.fetchTemperature();
       });
+
+    this.fetchTemperature();
+    // Refresh temperature periodically (e.g. every 15 min)
+    interval(15 * 60 * 1000)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.fetchTemperature());
 
     // 3) Recompute when the day changes (robust for 24/7 screens)
     interval(5 * 60 * 1000)
@@ -128,6 +152,47 @@ export class HomeComponent implements OnInit {
       clearTimeout(this.hotCornerTimer);
       this.hotCornerTimer = null;
     }
+  }
+
+  useMyLocation(): void {
+    this.geoStatus = 'loading';
+    this.geolocation.getCurrentPosition().subscribe({
+      next: (pos) => {
+        this.settingsService.saveSettings({
+          ...this.settings,
+          coords: { lat: pos.lat, lng: pos.lng },
+        });
+        this.geoStatus = null;
+        this.showGeoPrompt = false;
+      },
+      error: (err: GeoError) => {
+        this.geoStatus =
+          err === 'permission_denied'
+            ? 'Location permission denied.'
+            : err === 'timeout'
+              ? 'Location request timed out.'
+              : err === 'unsupported'
+                ? 'Geolocation is not supported.'
+                : 'Could not get location.';
+      },
+    });
+  }
+
+  dismissGeoPrompt(): void {
+    this.showGeoPrompt = false;
+    if (this.geoStatus === 'loading') return;
+    this.geoStatus = null;
+  }
+
+  private fetchTemperature(): void {
+    const coords = this.settings.coords;
+    if (!coords) {
+      this.currentTempF = null;
+      return;
+    }
+    this.weatherService
+      .getCurrentTempF(coords.lat, coords.lng)
+      .subscribe((temp) => (this.currentTempF = temp));
   }
 
   private refreshIfDateChanged(force = false): void {
