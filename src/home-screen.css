@@ -49,16 +49,18 @@ app-home .hotCorner {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Top-right: current temperature */
+/* Top-right: current temperature (large and bold for visibility from a distance) */
 app-home .tempCorner {
   position: fixed;
   top: env(safe-area-inset-top, 0);
   right: env(safe-area-inset-right, 0);
   z-index: 9999;
-  padding: clamp(8px, 1.5vw, 14px) clamp(12px, 2vw, 20px);
+  padding: clamp(10px, 2vw, 18px) clamp(14px, 2.5vw, 24px);
   font-family: var(--font-ui);
-  font-size: clamp(18px, 2.5vw, 28px);
+  font-size: clamp(26px, 4.5vw, 48px);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+  line-height: 1.1;
   color: var(--navy);
   background: var(--panel);
   border-bottom-left-radius: 8px;
