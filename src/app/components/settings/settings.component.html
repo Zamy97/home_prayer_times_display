@@ -7,9 +7,47 @@
 
   <div class="grid">
     <label class="field">
+      <div class="label">City</div>
+      <select
+        class="input"
+        [ngModel]="selectedCityId"
+        (ngModelChange)="selectedCityId = $event; onCityChange()"
+        name="city"
+      >
+        <option [ngValue]="otherCityId">Other (enter coordinates below)</option>
+        @for (city of cities; track city.id) {
+          <option [ngValue]="city.id">{{ city.name }}</option>
+        }
+      </select>
+      <div class="hint">Pick a city or choose Other to enter latitude/longitude.</div>
+    </label>
+
+    @if (selectedCityId === otherCityId) {
+    <div class="row">
+      <label class="field">
+        <div class="label">Latitude</div>
+        <input class="input" [(ngModel)]="lat" name="lat" placeholder="e.g. 43.6532" />
+      </label>
+      <label class="field">
+        <div class="label">Longitude</div>
+        <input class="input" [(ngModel)]="lng" name="lng" placeholder="e.g. -79.3832" />
+      </label>
+    </div>
+
+    <div class="geoRow">
+      <button class="btn" type="button" [disabled]="geoStatus === 'loading'" (click)="useMyLocation()">
+        {{ geoStatus === 'loading' ? 'Getting location…' : 'Use my location' }}
+      </button>
+      @if (geoStatus && geoStatus !== 'loading') {
+        <span class="geoError">{{ geoStatus }}</span>
+      }
+    </div>
+    }
+
+    <label class="field">
       <div class="label">Timezone</div>
       <input class="input" [value]="timezone" disabled />
-      <div class="hint">Uses your device timezone.</div>
+      <div class="hint">{{ selectedCityId === otherCityId ? 'Uses your device timezone.' : 'From selected city.' }}</div>
     </label>
 
     <label class="field">
@@ -34,26 +72,6 @@
       </select>
       <div class="hint">Choose which side shows the clock and prayer times grid.</div>
     </label>
-
-    <div class="row">
-      <label class="field">
-        <div class="label">Latitude</div>
-        <input class="input" [(ngModel)]="lat" name="lat" placeholder="e.g. 43.6532" />
-      </label>
-      <label class="field">
-        <div class="label">Longitude</div>
-        <input class="input" [(ngModel)]="lng" name="lng" placeholder="e.g. -79.3832" />
-      </label>
-    </div>
-
-    <div class="geoRow">
-      <button class="btn" type="button" [disabled]="geoStatus === 'loading'" (click)="useMyLocation()">
-        {{ geoStatus === 'loading' ? 'Getting location…' : 'Use my location' }}
-      </button>
-      @if (geoStatus && geoStatus !== 'loading') {
-        <span class="geoError">{{ geoStatus }}</span>
-      }
-    </div>
 
     <div class="actions">
       <button class="btn primary" type="button" (click)="save()">Save</button>

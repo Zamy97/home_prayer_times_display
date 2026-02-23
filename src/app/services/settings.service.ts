@@ -11,6 +11,8 @@ export type PrayerSettings = {
   timezone: string; // IANA tz (e.g. America/Toronto)
   /** true = clock/date panel on left, false = on right */
   panelLeft: boolean;
+  /** id from cities list, or empty string when using "Other" / manual coords */
+  cityId?: string;
 };
 
 const DEFAULT_SETTINGS: PrayerSettings = {
@@ -53,6 +55,7 @@ export class SettingsService {
         asr: (parsed.asr as AsrMethod) ?? DEFAULT_SETTINGS.asr,
         timezone: parsed.timezone ?? DEFAULT_SETTINGS.timezone,
         panelLeft: parsed.panelLeft ?? DEFAULT_SETTINGS.panelLeft,
+        cityId: typeof parsed.cityId === 'string' ? parsed.cityId : undefined,
       };
     } catch {
       return DEFAULT_SETTINGS;

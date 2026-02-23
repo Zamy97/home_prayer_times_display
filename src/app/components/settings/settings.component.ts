@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { PrayTimeMethod } from '../../lib/praytime';
+import { CITIES, OTHER_CITY_ID } from '../../data/cities';
 import { GeoError, GeolocationService } from '../../services/geolocation.service';
 import { AsrMethod, PrayerSettings, SettingsService } from '../../services/settings.service';
 
@@ -35,9 +36,15 @@ export class SettingsComponent implements OnInit {
     { value: 'Standard', label: 'Standard' },
   ];
 
+  readonly cities = CITIES;
+  readonly otherCityId = OTHER_CITY_ID;
+  readonly deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  /** Selected city id, or OTHER_CITY_ID for manual coordinates */
+  selectedCityId: string = OTHER_CITY_ID;
   method: PrayTimeMethod = 'ISNA';
   asr: AsrMethod = 'Hanafi';
-  timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  timezone = this.deviceTimezone;
   lat = '';
   lng = '';
   /** true = clock/date panel on left */
@@ -51,14 +58,39 @@ export class SettingsComponent implements OnInit {
     this.lat = s.coords?.lat?.toString() ?? '';
     this.lng = s.coords?.lng?.toString() ?? '';
     this.panelLeft = s.panelLeft ?? true;
+    const savedCityId = s.cityId ?? OTHER_CITY_ID;
+    const city = savedCityId !== OTHER_CITY_ID ? CITIES.find((c) => c.id === savedCityId) : null;
+    if (city) {
+      this.selectedCityId = city.id;
+      this.lat = String(city.lat);
+      this.lng = String(city.lng);
+      this.timezone = city.timezone;
+    } else {
+      this.selectedCityId = OTHER_CITY_ID;
+    }
+  }
+
+  onCityChange(): void {
+    if (this.selectedCityId === OTHER_CITY_ID) {
+      this.timezone = this.deviceTimezone;
+      return;
+    }
+    const city = CITIES.find((c) => c.id === this.selectedCityId);
+    if (city) {
+      this.lat = String(city.lat);
+      this.lng = String(city.lng);
+      this.timezone = city.timezone;
+    }
   }
 
   useMyLocation(): void {
     this.geoStatus = 'loading';
     this.geolocation.getCurrentPosition().subscribe({
       next: (pos) => {
+        this.selectedCityId = OTHER_CITY_ID;
         this.lat = String(Math.round(pos.lat * 10000) / 10000);
         this.lng = String(Math.round(pos.lng * 10000) / 10000);
+        this.timezone = this.deviceTimezone;
         this.geoStatus = null;
       },
       error: (err: GeoError) => {
@@ -75,13 +107,30 @@ export class SettingsComponent implements OnInit {
   }
 
   save(): void {
-    const coords = this.parseCoords();
+    let coords: PrayerSettings['coords'];
+    let timezone = this.timezone;
+    let cityId: string | undefined;
+    if (this.selectedCityId !== OTHER_CITY_ID) {
+      const city = CITIES.find((c) => c.id === this.selectedCityId);
+      if (city) {
+        coords = { lat: city.lat, lng: city.lng };
+        timezone = city.timezone;
+        cityId = city.id;
+      } else {
+        coords = this.parseCoords();
+        cityId = undefined;
+      }
+    } else {
+      coords = this.parseCoords();
+      cityId = undefined;
+    }
     const next: PrayerSettings = {
       coords,
       method: this.method,
       asr: this.asr,
-      timezone: this.timezone,
+      timezone,
       panelLeft: this.panelLeft,
+      cityId,
     };
     this.settingsService.saveSettings(next);
     this.router.navigate(['/']);
