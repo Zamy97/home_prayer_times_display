@@ -213,7 +213,22 @@
           >
         </div>
         <div class="sunRow sunTempCol" aria-label="Current temperature">
-          <span class="sunTempLabel">TEMP</span>
+          <svg
+            class="sunTempIcon"
+            viewBox="0 0 24 40"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 6v22"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            />
+            <circle cx="12" cy="32" r="6" stroke="currentColor" stroke-width="2.5" fill="none" />
+            <circle cx="12" cy="32" r="3" fill="currentColor" opacity="0.85" />
+          </svg>
           <span class="sunTempValue">
             @if (currentTempF !== null) {
               {{ currentTempF | number:'1.0-0' }}°F
