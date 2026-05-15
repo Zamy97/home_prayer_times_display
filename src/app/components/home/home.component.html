@@ -15,15 +15,6 @@
     (keyup.space)="onHotCornerUp($event)"
   ></div>
 
-  <!-- Top-right: current temperature -->
-  <div class="tempCorner" aria-label="Current temperature">
-    @if (currentTempF !== null) {
-      {{ currentTempF | number:'1.0-0' }}°F
-    } @else {
-      <span aria-hidden="true">--</span>
-    }
-  </div>
-
   @if (showGeoPrompt) {
   <div class="geoPromptBackdrop" role="dialog" aria-modal="true" aria-label="Use current location">
     <div class="geoPromptCard">
@@ -58,10 +49,23 @@
   <section class="content" [class.panel-left]="panelLeft">
     <div class="grid" aria-label="Prayer times grid">
       <!-- Row 1 (FAJR) -->
-      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'fajr'">FAJR</div>
+      <div
+        class="cell dark prayer"
+        [class.is-next]="nextPrayerKey === 'fajr'"
+        [class.prayer-pair-row]="nextPrayerKey === 'fajr'"
+      >
+        @if (nextPrayerKey === 'fajr') {
+          <div class="prayerPairBand" aria-hidden="true"></div>
+          <span class="prayerPairAfter">FAJR</span>
+        } @else {
+          FAJR
+        }
+      </div>
       <div class="cell dark" [class.is-next]="nextPrayerKey === 'fajr'">
         <div class="timeStack">
-          <div class="colLabel">STARTS</div>
+          <div class="startsBand">
+            <div class="colLabel">STARTS</div>
+          </div>
           <div class="time">
             {{ times?.fajr?.time ?? '-----' }}<span class="ampm">{{ times?.fajr?.ampm }}</span>
           </div>
@@ -167,7 +171,7 @@
         }
       </div>
 
-      <div class="sunBar" aria-label="Sunrise and sunset">
+      <div class="sunBar" aria-label="Sunrise, current temperature, and sunset">
         <div class="sunRow">
           <svg
             class="icon"
@@ -207,6 +211,16 @@
           <span class="sunTime"
             >{{ sunrise?.time ?? '-----' }}<span class="ampm">{{ sunrise?.ampm }}</span></span
           >
+        </div>
+        <div class="sunRow sunTempCol" aria-label="Current temperature">
+          <span class="sunTempLabel">TEMP</span>
+          <span class="sunTempValue">
+            @if (currentTempF !== null) {
+              {{ currentTempF | number:'1.0-0' }}°F
+            } @else {
+              <span aria-hidden="true">--</span>
+            }
+          </span>
         </div>
         <div class="sunRow">
           <svg

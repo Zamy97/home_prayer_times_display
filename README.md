@@ -107,7 +107,7 @@ src/
     lib/
       praytime.ts            # PrayTime class: methods (ISNA, MWL, …), asr (Hanafi/Standard), location, timezone, times(date)
     services/
-      settings.service.ts    # BehaviorSubject<PrayerSettings>; load/save localStorage; key prayerSettings.v1
+      settings.service.ts    # BehaviorSubject<PrayerSettings>; load/save localStorage; key prayerSettings
       prayer-times.service.ts # getCachedTodayTimes, computeAndCacheTodayTimes; cache key prayerTimes.v3
   home-screen.css             # All home-screen styles (scoped to app-home); two-column grid; hot corner; no mobile breakpoints
   styles.css                  # Global styles; @import home-screen.css
@@ -123,7 +123,7 @@ src/
 
 - **Default settings** (see `settings.service.ts`):  
   `coords` = fixed default (ZIP 48015), `method` = ISNA, `asr` = Hanafi, `timezone` = device, `panelLeft` = true.
-- **Storage keys:** `prayerSettings.v1`, `prayerTimes.v3`. Bumping the suffix invalidates old caches.
+- **Storage keys:** `prayerSettings`, `prayerTimes.v3`. Each device keeps its own localStorage.
 
 ---
 

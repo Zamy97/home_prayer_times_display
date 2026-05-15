@@ -19,6 +19,8 @@ app-home {
 
   --font-ui: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   --font-num: var(--font-ui);
+  --cell-pad-x: 18px;
+  --pair-band-padding-y: 10px;
 }
 
 app-home * {
@@ -47,24 +49,6 @@ app-home .hotCorner {
   outline: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-}
-
-/* Top-right: current temperature (large and bold for visibility from a distance) */
-app-home .tempCorner {
-  position: fixed;
-  top: env(safe-area-inset-top, 0);
-  right: env(safe-area-inset-right, 0);
-  z-index: 9999;
-  padding: clamp(10px, 2vw, 18px) clamp(14px, 2.5vw, 24px);
-  font-family: var(--font-ui);
-  font-size: clamp(26px, 4.5vw, 48px);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.1;
-  color: var(--navy);
-  background: var(--panel);
-  border-bottom-left-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Landing prompt to use browser geolocation */
@@ -190,7 +174,7 @@ app-home .cell {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 18px;
+  padding: 0 var(--cell-pad-x);
   border-right: 2px solid var(--line);
   border-bottom: 2px solid var(--line);
 }
@@ -231,6 +215,58 @@ app-home .timeStack {
   gap: 10px;
 }
 
+/* Full-width navy band behind STARTS when Fajr row is highlighted (avoids full white-out on that strip) */
+app-home .startsBand {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+app-home .cell.is-next .startsBand {
+  /* Bleed past cell horizontal padding so the bar runs edge-to-edge in the time column */
+  width: calc(100% + 2 * var(--cell-pad-x));
+  margin-left: calc(-1 * var(--cell-pad-x));
+  margin-right: calc(-1 * var(--cell-pad-x));
+  padding: var(--pair-band-padding-y) var(--cell-pad-x);
+  box-sizing: border-box;
+  background: var(--navy);
+  color: #fff;
+  min-height: calc(2 * var(--pair-band-padding-y) + 1.35em);
+  font-size: 22px;
+  line-height: 1.35;
+}
+
+/* FAJR label cell: navy top band matches STARTS band when Fajr is next */
+app-home .cell.dark.prayer.prayer-pair-row {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+}
+
+app-home .prayerPairBand {
+  width: calc(100% + 2 * var(--cell-pad-x));
+  margin-left: calc(-1 * var(--cell-pad-x));
+  margin-right: calc(-1 * var(--cell-pad-x));
+  padding: var(--pair-band-padding-y) var(--cell-pad-x);
+  box-sizing: border-box;
+  background: var(--navy);
+  flex-shrink: 0;
+  /* Match visual height of .startsBand (padding + one line of colLabel) */
+  min-height: calc(2 * var(--pair-band-padding-y) + 1.35em);
+  font-size: 22px;
+  line-height: 1.35;
+}
+
+app-home .prayerPairAfter {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
 app-home .colLabel {
   font-family: var(--font-ui);
   letter-spacing: 0.22em;
@@ -239,11 +275,17 @@ app-home .colLabel {
   opacity: 0.95;
 }
 
-app-home .cell.is-next .colLabel {
-  background: rgba(7, 35, 60, 0.4);
-  color: var(--navy);
-  padding: 6px 12px;
-  border-radius: 6px;
+app-home .cell.is-next .startsBand .colLabel {
+  color: #fff;
+  opacity: 1;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* When Fajr is not next, STARTS sits on dark cell — no extra band needed */
+app-home .cell.dark:not(.is-next) .startsBand {
+  background: transparent;
 }
 
 app-home .time {
@@ -475,12 +517,14 @@ app-home .sunBar {
   margin-top: 26px;
   background: var(--navy);
   color: #fff;
-  height: 92px;
+  min-height: 92px;
   display: flex;
   flex-direction: row;
   justify-content: center;
+  align-items: center;
   padding: 10px 26px;
-  gap: 28px;
+  gap: clamp(12px, 2vw, 28px);
+  flex-wrap: wrap;
 }
 
 app-home .sunRow {
@@ -493,6 +537,29 @@ app-home .sunRow {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-size: 22px;
+}
+
+app-home .sunTempCol {
+  flex-direction: column;
+  gap: 4px;
+  flex: 0.9;
+  min-width: 0;
+}
+
+app-home .sunTempLabel {
+  font-size: 0.82em;
+  letter-spacing: 0.12em;
+  opacity: 0.92;
+}
+
+app-home .sunTempValue {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  text-transform: none;
 }
 
 app-home .sunTime {

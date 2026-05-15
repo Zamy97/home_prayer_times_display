@@ -26,7 +26,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
-  private readonly storageKey = 'prayerSettings.v1';
+  private readonly storageKey = 'prayerSettings';
 
   private readonly subject = new BehaviorSubject<PrayerSettings>(this.load());
   readonly settings$ = this.subject.asObservable();
