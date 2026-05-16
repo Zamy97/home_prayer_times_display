@@ -119,25 +119,65 @@
           <span class="greg">{{ gregDateLabel || '-----' }}</span>
         </div>
       </header>
+      <div class="panelTempStrip" aria-label="Current temperature">
+        <div class="panelTempStripInner">
+          <svg
+            class="panelTempIcon"
+            viewBox="0 0 28 52"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M14 6v30"
+              stroke="currentColor"
+              stroke-width="3.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <circle
+              cx="14"
+              cy="42"
+              r="11"
+              stroke="currentColor"
+              stroke-width="3.5"
+              fill="currentColor"
+              fill-opacity="0.16"
+            />
+            <circle cx="14" cy="41" r="5" fill="currentColor" fill-opacity="0.42" />
+          </svg>
+          <span class="panelTempValue">
+            @if (currentTempF !== null) {
+              {{ currentTempF | number:'1.0-0' }}°F
+            } @else {
+              <span aria-hidden="true">--</span>
+            }
+          </span>
+        </div>
+      </div>
       <div class="rule" aria-hidden="true"></div>
 
       <div class="panelMid">
-        <div class="clockBlock" [class.clock-two-digits]="isTwoDigitHour">
-          <div class="now" aria-label="Current time">
-            <span class="nowMain">{{ nowTime }}</span>
-            <span class="nowSide" aria-label="Seconds and meridiem">
-              <span class="seconds">:{{ nowSeconds }}</span>
-              <span class="ampm">{{ nowAmPm }}</span>
-            </span>
+        <div class="clockBlock">
+          <div class="clockTimeSlot">
+            <div class="now" aria-label="Current time">
+              <span class="nowMain">{{ nowTime }}</span>
+              <span class="nowSide" aria-label="Seconds and meridiem">
+                <span class="seconds">:{{ nowSeconds }}</span>
+                <span class="ampm">{{ nowAmPm }}</span>
+              </span>
+            </div>
           </div>
-          <div class="countdown">
-            NEXT <span class="countdownPrayer">{{ nextPrayerLabel }}</span> IN
-            <span class="countdownTime">{{ nextPrayerCountdown || '--:--:--' }}</span>
+          <div class="countdownRow">
+            <div class="countdown">
+              NEXT <span class="countdownPrayer">{{ nextPrayerLabel }}</span> IN
+              <span class="countdownTime">{{ nextPrayerCountdown || '--:--:--' }}</span>
+            </div>
           </div>
         </div>
 
         <div class="jumuBlock">
-          <div class="rule" aria-hidden="true" style="margin: 14px 0 16px 0"></div>
+          <div class="rule jumuRuleTop" aria-hidden="true"></div>
 
           <div class="jum">
             <p class="jumTitle">JUMU'AH</p>
@@ -171,7 +211,7 @@
         }
       </div>
 
-      <div class="sunBar" aria-label="Sunrise, current temperature, and sunset">
+      <div class="sunBar" aria-label="Sunrise and sunset">
         <div class="sunRow">
           <svg
             class="icon"
@@ -211,31 +251,6 @@
           <span class="sunTime"
             >{{ sunrise?.time ?? '-----' }}<span class="ampm">{{ sunrise?.ampm }}</span></span
           >
-        </div>
-        <div class="sunRow sunTempCol" aria-label="Current temperature">
-          <svg
-            class="sunTempIcon"
-            viewBox="0 0 24 40"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <path
-              d="M12 6v22"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-            />
-            <circle cx="12" cy="32" r="6" stroke="currentColor" stroke-width="2.5" fill="none" />
-            <circle cx="12" cy="32" r="3" fill="currentColor" opacity="0.85" />
-          </svg>
-          <span class="sunTempValue">
-            @if (currentTempF !== null) {
-              {{ currentTempF | number:'1.0-0' }}°F
-            } @else {
-              <span aria-hidden="true">--</span>
-            }
-          </span>
         </div>
         <div class="sunRow">
           <svg

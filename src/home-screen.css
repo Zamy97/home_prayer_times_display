@@ -30,11 +30,15 @@ app-home * {
 app-home .board {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
   background: var(--white);
   border: 0;
   box-shadow: none;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
 }
 
 /* Hidden "hot corner" (top-left): press & hold to open settings */
@@ -138,6 +142,12 @@ app-home .content {
   grid-template-columns: 1fr 1.28fr;
   gap: 0;
   flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+app-home .content > .grid,
+app-home .content > .panel {
   min-height: 0;
 }
 
@@ -314,36 +324,122 @@ app-home .ampm {
 
 app-home .panel {
   background: var(--panel);
-  padding: 34px 36px 0 36px;
+  padding: 34px 36px max(10px, env(safe-area-inset-bottom, 0px)) 36px;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden;
 }
 
 app-home .panelTop {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   background: var(--navy);
   color: #fff;
-  padding: 18px 22px;
+  padding: clamp(12px, 2vmin, 22px) clamp(14px, 3.8vw, 40px);
   border-bottom: 2px solid rgba(255, 255, 255, 0.65);
+  overflow-x: clip;
+  max-width: 100%;
 }
 
+app-home .panelTop .dateRow {
+  min-width: 0;
+}
+
+/* Stacked Hijri then Gregorian — full labels stay inside navy bar without ellipsis */
 app-home .dateRow {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  align-items: baseline;
-  gap: 42px;
+  gap: clamp(4px, 1.2vmin, 10px);
+  width: 100%;
+  max-width: 100%;
 }
 
 app-home .hijri {
-  font-size: 40px;
+  font-size: clamp(15px, min(7vmin, 5.2vw), 52px);
+  line-height: 1.2;
+  font-weight: 600;
+  color: inherit;
+  white-space: normal;
+  text-align: center;
+  overflow: visible;
+  width: 100%;
+  max-width: 100%;
 }
 
 app-home .greg {
-  font-size: 40px;
+  font-size: clamp(14px, min(6.5vmin, 4.85vw), 48px);
+  line-height: 1.25;
+  font-weight: 500;
+  color: inherit;
+  white-space: normal;
+  text-align: center;
+  overflow: visible;
+  width: 100%;
+  max-width: 100%;
+  opacity: 0.95;
+}
+
+/* Tied to navy bar width — grows on wide panels, capped so two lines fit comfortably */
+@supports (font-size: 1cqw) {
+  app-home .panelTop {
+    container-type: inline-size;
+    container-name: date-bar;
+  }
+
+  app-home .dateRow {
+    gap: clamp(4px, 1.5cqw, 12px);
+  }
+
+  app-home .hijri {
+    font-size: clamp(15px, min(11cqw, 7vmin), 54px);
+  }
+
+  app-home .greg {
+    font-size: clamp(14px, min(10.25cqw, 6.8vmin), 50px);
+  }
+}
+/* Temperature strip: minimal space before the clock */
+app-home .panelTempStrip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 2px 12px 0;
+  margin: 0;
+  background: var(--panel);
+  color: var(--navy);
+}
+
+app-home .panelTempStripInner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 1vw, 12px);
+}
+
+app-home .panelTempIcon {
+  flex-shrink: 0;
+  height: clamp(32px, 4.25vw, 50px);
+  width: auto;
+  opacity: 0.95;
+}
+
+app-home .panelTempValue {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(26px, 3.15vw, 44px);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 app-home .rule {
@@ -352,53 +448,104 @@ app-home .rule {
   margin: 10px 0 12px;
 }
 
-app-home .panelTop + .rule {
+/* Hide the horizontal rule directly under the date/temp strip (keeps divider inside Jumu′ block only) */
+app-home .panel > .rule {
   display: none;
 }
 
 app-home .panelMid {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 8px 0 0 0;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 app-home .clockBlock {
-  text-align: left;
-  padding-top: 52px;
-  padding-left: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: center;
+  flex: 1 1 auto;
+  padding: 0 clamp(6px, 1.8vw, 32px);
+  padding-bottom: 0;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 0;
+  overflow-x: hidden;
 }
-/* When hour is 10, 11, or 12 the clock is wider; nudge left so seconds stay clear of the panel */
-app-home .clockBlock.clock-two-digits {
-  transform: translateX(-25px);
+
+/* Fills space between temperature strip and countdown; centers the clock in that band */
+app-home .clockTimeSlot {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
 }
 
 app-home .jumuBlock {
+  flex: 0 0 auto;
+  min-height: 0;
   text-align: center;
+}
+
+/* Countdown sits directly on the divider above Jumu′ */
+app-home .jumuBlock > .rule.jumuRuleTop {
+  margin: 6px 0 16px;
 }
 
 app-home .now {
   font-family: var(--font-num);
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  font-size: clamp(290px, 20vw, 520px);
+  justify-content: center;
+  gap: clamp(4px, 0.85vw, 14px);
+  font-size: clamp(64px, min(28vw, 34vmin), 580px);
   line-height: 1;
   letter-spacing: 0;
-  margin: 0 0 6px 0;
+  margin: 0;
   color: #000;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
   white-space: nowrap;
+  width: 100%;
+  max-width: 100%;
+}
+
+app-home .now .seconds {
+  font-size: clamp(20px, min(8vmin, 6vw), 138px);
+  letter-spacing: 0.02em;
+  opacity: 0.95;
+}
+
+app-home .now .ampm {
+  font-size: clamp(18px, min(7vmin, 5.4vw), 112px);
+  letter-spacing: 0.06em;
+  margin-top: 10px;
+}
+
+app-home .countdownRow {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 4px 0 2px;
+  margin: 0;
+  text-align: center;
 }
 
 app-home .countdown {
-  margin-top: 6px;
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 26px;
   color: rgba(0, 0, 0, 0.72);
+  max-width: 100%;
 }
 
 app-home .countdownPrayer {
@@ -421,17 +568,6 @@ app-home .now .nowSide {
   margin-top: 0.18em;
 }
 
-app-home .now .seconds {
-  font-size: clamp(68px, 5.2vh, 128px);
-  letter-spacing: 0.02em;
-  opacity: 0.95;
-}
-
-app-home .now .ampm {
-  font-size: clamp(54px, 4.6vh, 104px);
-  letter-spacing: 0.06em;
-  margin-top: 10px;
-}
 
 app-home .jum {
   text-align: center;
@@ -522,71 +658,57 @@ app-home .locationNeeded a {
 }
 
 app-home .sunBar {
-  margin-top: 26px;
+  flex: 0 0 auto;
+  margin-top: clamp(6px, 1.6vw, 20px);
   background: var(--navy);
   color: #fff;
-  min-height: 92px;
+  min-height: 0;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  padding: 10px 26px;
-  gap: clamp(12px, 2vw, 28px);
-  flex-wrap: wrap;
+  align-content: center;
+  row-gap: clamp(6px, 1.5vh, 14px);
+  column-gap: clamp(12px, 2.5vw, 24px);
+  padding: clamp(8px, 1.4vh, 14px) clamp(8px, 2.4vw, 20px);
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 app-home .sunRow {
-  flex: 1;
+  flex: 1 1 200px;
+  min-width: 0;
+  max-width: 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 8px clamp(8px, 1.6vw, 12px);
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 22px;
-}
-
-app-home .sunTempCol {
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(8px, 1.2vw, 14px);
-  flex: 0.9;
-  min-width: 0;
-}
-
-app-home .sunTempIcon {
-  width: clamp(20px, 2.5vw, 28px);
-  height: clamp(34px, 4.2vw, 44px);
-  flex-shrink: 0;
-  color: #fff;
-}
-
-app-home .sunTempValue {
-  font-family: var(--font-num);
-  font-weight: 700;
-  font-size: clamp(28px, 3.2vw, 44px);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-  line-height: 1.05;
-  text-transform: none;
+  font-size: clamp(14px, min(2.2vw, 2.8vh), 22px);
 }
 
 app-home .sunTime {
   font-family: var(--font-num);
-  font-size: 28px;
+  font-size: clamp(16px, min(2.6vw, 3.2vh), 28px);
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 app-home .sunTime .ampm {
-  font-size: 16px;
-  vertical-align: 8px;
+  font-size: 0.55em;
+  vertical-align: 0.35em;
 }
 
 app-home .icon {
-  width: 34px;
-  height: 20px;
+  width: clamp(22px, 3.2vmin, 34px);
+  height: clamp(14px, 2vmin, 20px);
+  flex-shrink: 0;
 }
 
 /* Large screens: slightly bigger typography */
@@ -606,41 +728,51 @@ app-home .icon {
     font-size: 104px;
   }
   app-home .hijri {
-    font-size: 66px;
+    letter-spacing: 0.045em;
   }
   app-home .greg {
-    font-size: 62px;
+    letter-spacing: 0.045em;
   }
   app-home .sunRow {
-    font-size: 50px;
+    font-size: clamp(22px, min(3.2vmin, 4vh), 50px);
   }
   app-home .sunTime {
-    font-size: 60px;
+    font-size: clamp(26px, min(3.8vmin, 4.6vh), 60px);
   }
   app-home .sunTime .ampm {
-    font-size: 30px;
+    font-size: 0.55em;
+    vertical-align: 0.35em;
   }
   app-home .jumuBlock {
     margin-top: -26px;
   }
   app-home .panel {
-    padding: 22px 28px 0;
+    padding: 22px 28px max(8px, env(safe-area-inset-bottom, 0px)) 28px;
   }
   app-home .panelTop {
-    padding: 12px 16px;
+    padding: clamp(10px, 1.8vmin, 18px) clamp(12px, 3vw, 32px);
     border-bottom-width: 3px;
   }
-  app-home .clockBlock {
-    padding-top: 73px;
-    padding-left: 54px; /* 8px left of default so two-digit clock seconds don’t sit too close to panel */
+  app-home .panelTempStrip {
+    padding: 2px 14px 0;
   }
-  app-home .clockBlock.clock-two-digits {
-    transform: translateX(-25px);
+  app-home .panelTempIcon {
+    height: clamp(46px, 5.6vw, 64px);
+  }
+  app-home .panelTempValue {
+    font-size: clamp(42px, 4.5vw, 58px);
+  }
+  app-home .clockBlock {
+    padding: 0 clamp(10px, 2vw, 40px);
+  }
+  app-home .jumuBlock > .rule.jumuRuleTop {
+    margin-top: 4px;
+    margin-bottom: 14px;
   }
   app-home .rule {
     margin: 4px 0 6px;
   }
-  app-home .panelTop + .rule {
+  app-home .panel > .rule {
     display: none;
   }
   app-home .countdown {
