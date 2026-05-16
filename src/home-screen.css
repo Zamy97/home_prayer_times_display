@@ -547,8 +547,9 @@ app-home .now {
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* 12h hours 1–9: row is narrower than 10–12; scale up to match visual weight of double-digit hours */
+/* 12h hours 1–9: scale up + center the HH:MM + :ss row in the beige panel */
 app-home .now.now--single-hour {
+  justify-content: center;
   font-size: clamp(108px, min(24vw, 58vmin), 780px);
 }
 
@@ -620,6 +621,7 @@ app-home .now .ampm {
     }
 
     app-home .now.now--single-hour {
+      justify-content: center;
       font-size: clamp(
         112px,
         min(
@@ -683,6 +685,7 @@ app-home .now .ampm {
       }
 
       app-home .now.now--single-hour {
+        justify-content: center;
         font-size: clamp(
           104px,
           min(calc((100cqi - clamp(64px, 7cqi, 105px)) / 2.34), 78vmin),
