@@ -149,6 +149,7 @@ app-home .content {
 app-home .content > .grid,
 app-home .content > .panel {
   min-height: 0;
+  min-width: 0;
 }
 
 /* Default: prayer grid left, clock panel right */
@@ -328,7 +329,11 @@ app-home .panel {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  min-width: 0;
+  max-width: 100%;
   overflow: hidden;
+  container-name: clock-panel;
+  container-type: inline-size;
 }
 
 app-home .panelTop {
@@ -470,12 +475,14 @@ app-home .clockBlock {
   align-items: stretch;
   text-align: center;
   flex: 1 1 auto;
-  padding: 0 clamp(6px, 1.8vw, 32px);
+  padding: 0 clamp(6px, 1.4vw, 18px);
   padding-bottom: 0;
   box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 0;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Fills space between temperature strip and countdown; centers the clock in that band */
@@ -486,6 +493,10 @@ app-home .clockTimeSlot {
   justify-content: center;
   align-items: center;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 app-home .jumuBlock {
@@ -494,38 +505,75 @@ app-home .jumuBlock {
   text-align: center;
 }
 
-/* Countdown sits directly on the divider above Jumu′ */
+/* Countdown vs divider */
 app-home .jumuBlock > .rule.jumuRuleTop {
-  margin: 6px 0 16px;
+  margin: clamp(10px, 2vmin, 20px) 0 16px;
 }
 
 app-home .now {
   font-family: var(--font-num);
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
+  align-content: center;
   justify-content: center;
   gap: clamp(4px, 0.85vw, 14px);
-  font-size: clamp(64px, min(28vw, 34vmin), 580px);
+  column-gap: clamp(4px, 1vw, 16px);
+  row-gap: 0.04em;
+  /* Fallback — slightly conservative so split layouts don’t spill into prayer column */
+  font-size: clamp(68px, min(19vw, 34vmin), 480px);
   line-height: 1;
-  letter-spacing: 0;
-  margin: 0;
+  letter-spacing: -0.015em;
+  margin: 0 auto;
   color: #000;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
   white-space: nowrap;
   width: 100%;
   max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 app-home .now .seconds {
-  font-size: clamp(20px, min(8vmin, 6vw), 138px);
+  font-size: clamp(20px, min(7vmin, 5vw), 118px);
   letter-spacing: 0.02em;
   opacity: 0.95;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 app-home .now .ampm {
-  font-size: clamp(18px, min(7vmin, 5.4vw), 112px);
-  letter-spacing: 0.06em;
+  font-size: clamp(18px, min(6.5vmin, 4.6vw), 104px);
+  letter-spacing: 0.055em;
   margin-top: 10px;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/*
+ * Big type but tied to beige panel width; multipliers capped so one row fits;
+ * flex-wrap fallback centers a second row only if needed.
+ */
+@supports (container-type: inline-size) {
+  @container clock-panel (min-width: 0px) {
+    app-home .clockBlock {
+      padding-left: clamp(6px, 2.25cqi, 26px);
+      padding-right: clamp(6px, 2.25cqi, 26px);
+    }
+
+    app-home .now {
+      column-gap: clamp(4px, min(2cqi, 1.4vmin), 20px);
+      font-size: clamp(72px, min(29cqi, 43vmin), 560px);
+      letter-spacing: -0.018em;
+    }
+
+    app-home .now .seconds {
+      font-size: clamp(20px, min(9cqi, 9.75vmin), 158px);
+    }
+
+    app-home .now .ampm {
+      font-size: clamp(17px, min(7.9cqi, 8.35vmin), 132px);
+    }
+  }
 }
 
 app-home .countdownRow {
@@ -534,9 +582,10 @@ app-home .countdownRow {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 4px 0 2px;
+  padding: clamp(4px, 1vmin, 10px) 0 clamp(12px, 2.5vmin, 28px);
   margin: 0;
   text-align: center;
+  box-sizing: border-box;
 }
 
 app-home .countdown {
@@ -744,7 +793,7 @@ app-home .icon {
     vertical-align: 0.35em;
   }
   app-home .jumuBlock {
-    margin-top: -26px;
+    margin-top: -10px;
   }
   app-home .panel {
     padding: 22px 28px max(8px, env(safe-area-inset-bottom, 0px)) 28px;
@@ -761,13 +810,6 @@ app-home .icon {
   }
   app-home .panelTempValue {
     font-size: clamp(42px, 4.5vw, 58px);
-  }
-  app-home .clockBlock {
-    padding: 0 clamp(10px, 2vw, 40px);
-  }
-  app-home .jumuBlock > .rule.jumuRuleTop {
-    margin-top: 4px;
-    margin-bottom: 14px;
   }
   app-home .rule {
     margin: 4px 0 6px;
