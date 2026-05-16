@@ -37,7 +37,9 @@ app-home .board {
   box-shadow: none;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  /* Allow clock row to spill a few px past beige/panel gutters */
+  overflow-x: visible;
+  overflow-y: clip;
   min-height: 0;
 }
 
@@ -139,11 +141,12 @@ app-home .geoPromptSmall a {
 
 app-home .content {
   display: grid;
-  grid-template-columns: 1fr 1.28fr;
+  grid-template-columns: 1fr 1.38fr;
   gap: 0;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-x: visible;
+  overflow-y: clip;
 }
 
 app-home .content > .grid,
@@ -162,7 +165,7 @@ app-home .content .panel {
 
 /* Toggle: clock panel left, prayer grid right */
 app-home .content.panel-left {
-  grid-template-columns: 1.28fr 1fr;
+  grid-template-columns: 1.38fr 1fr;
 }
 app-home .content.panel-left .panel {
   order: 0;
@@ -331,7 +334,9 @@ app-home .panel {
   min-height: 0;
   min-width: 0;
   max-width: 100%;
-  overflow: hidden;
+  /* Seconds sit beside oversized HH:MM — allow spill past inner box; clip vertically only */
+  overflow-x: visible;
+  overflow-y: clip;
   container-name: clock-panel;
   container-type: inline-size;
 }
@@ -466,7 +471,8 @@ app-home .panelMid {
   align-items: stretch;
   padding: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow-x: visible;
+  overflow-y: clip;
 }
 
 app-home .clockBlock {
@@ -475,28 +481,33 @@ app-home .clockBlock {
   align-items: stretch;
   text-align: center;
   flex: 1 1 auto;
-  padding: 0 clamp(6px, 1.4vw, 18px);
+  padding: 0 clamp(8px, 1.55vw, 22px);
   padding-bottom: 0;
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  min-height: 0;
-  overflow-x: clip;
+  /* Let height follow full clock stack — prevents giant digits painting over countdown */
+  min-height: min-content;
+  overflow-x: visible;
+  overflow-y: visible;
 }
 
-/* Fills space between temperature strip and countdown; centers the clock in that band */
+/* Fills space above countdown; grows with clock content instead of collapsing */
+/* Extra vertical inset so enlarged digits don’t feel glued to neighboring rows */
 app-home .clockTimeSlot {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 0;
   min-width: 0;
+  min-height: min-content;
   width: 100%;
   max-width: 100%;
-  overflow-x: clip;
+  overflow-x: visible;
+  overflow-y: visible;
+  padding-block: clamp(6px, 1.05vmin, 16px);
 }
 
 app-home .jumuBlock {
@@ -505,25 +516,22 @@ app-home .jumuBlock {
   text-align: center;
 }
 
-/* Countdown vs divider */
+/* ~5px between “NEXT … IN …” and the Jumu′ divider */
 app-home .jumuBlock > .rule.jumuRuleTop {
-  margin: clamp(10px, 2vmin, 20px) 0 16px;
+  margin: 5px 0 16px;
 }
 
 app-home .now {
   font-family: var(--font-num);
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: flex-start;
-  align-content: center;
   justify-content: center;
-  gap: clamp(4px, 0.85vw, 14px);
-  column-gap: clamp(4px, 1vw, 16px);
-  row-gap: 0.04em;
-  /* Fallback — slightly conservative so split layouts don’t spill into prayer column */
-  font-size: clamp(68px, min(19vw, 34vmin), 480px);
+  gap: clamp(2px, 0.5vw, 8px);
+  /* HH:MM only — stays large; seconds/AM‑PM scaled separately smaller */
+  font-size: clamp(80px, min(23vw, 37vmin), 568px);
   line-height: 1;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.028em;
   margin: 0 auto;
   color: #000;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
@@ -535,43 +543,47 @@ app-home .now {
   font-variant-numeric: tabular-nums lining-nums;
 }
 
+app-home .nowMain {
+  font-size: inherit;
+  line-height: 1;
+}
+
 app-home .now .seconds {
-  font-size: clamp(20px, min(7vmin, 5vw), 118px);
+  font-size: clamp(15px, min(4.25vmin, 3.6vw), 74px);
   letter-spacing: 0.02em;
   opacity: 0.95;
   font-variant-numeric: tabular-nums lining-nums;
 }
 
 app-home .now .ampm {
-  font-size: clamp(18px, min(6.5vmin, 4.6vw), 104px);
+  font-size: clamp(13px, min(3.85vmin, 3.15vw), 64px);
   letter-spacing: 0.055em;
-  margin-top: 10px;
+  margin-top: 8px;
   font-variant-numeric: tabular-nums lining-nums;
 }
 
 /*
- * Big type but tied to beige panel width; multipliers capped so one row fits;
- * flex-wrap fallback centers a second row only if needed.
+ * Scales to beige panel column; toned down slightly so one row + full height fit reliably.
  */
 @supports (container-type: inline-size) {
   @container clock-panel (min-width: 0px) {
     app-home .clockBlock {
-      padding-left: clamp(6px, 2.25cqi, 26px);
-      padding-right: clamp(6px, 2.25cqi, 26px);
+      padding-left: clamp(6px, 1.9cqi, 22px);
+      padding-right: clamp(6px, 1.9cqi, 22px);
     }
 
     app-home .now {
-      column-gap: clamp(4px, min(2cqi, 1.4vmin), 20px);
-      font-size: clamp(72px, min(29cqi, 43vmin), 560px);
-      letter-spacing: -0.018em;
+      gap: clamp(2px, min(0.85cqi, 0.9vmin), 10px);
+      font-size: clamp(84px, min(33cqi, 45.5vmin), 628px);
+      letter-spacing: -0.03em;
     }
 
     app-home .now .seconds {
-      font-size: clamp(20px, min(9cqi, 9.75vmin), 158px);
+      font-size: clamp(15px, min(5.85cqi, 6.45vmin), 92px);
     }
 
     app-home .now .ampm {
-      font-size: clamp(17px, min(7.9cqi, 8.35vmin), 132px);
+      font-size: clamp(13px, min(4.65cqi, 5.35vmin), 78px);
     }
   }
 }
@@ -582,7 +594,7 @@ app-home .countdownRow {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: clamp(4px, 1vmin, 10px) 0 clamp(12px, 2.5vmin, 28px);
+  padding: 2px 0 0;
   margin: 0;
   text-align: center;
   box-sizing: border-box;
@@ -614,7 +626,7 @@ app-home .now .nowSide {
   flex-direction: column;
   align-items: flex-start;
   line-height: 1;
-  margin-top: 0.18em;
+  margin-top: 0.22em;
 }
 
 
@@ -793,7 +805,7 @@ app-home .icon {
     vertical-align: 0.35em;
   }
   app-home .jumuBlock {
-    margin-top: -10px;
+    margin-top: 0;
   }
   app-home .panel {
     padding: 22px 28px max(8px, env(safe-area-inset-bottom, 0px)) 28px;
