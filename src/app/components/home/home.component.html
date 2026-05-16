@@ -160,7 +160,11 @@
       <div class="panelMid">
         <div class="clockBlock">
           <div class="clockTimeSlot">
-            <div class="now" aria-label="Current time">
+            <div
+              class="now"
+              [class.now--single-hour]="nowSingleDigitHour"
+              aria-label="Current time"
+            >
               <span class="nowMain">{{ nowTime }}</span>
               <span class="nowSide" aria-label="Seconds and meridiem">
                 <span class="seconds">:{{ nowSeconds }}</span>
@@ -183,11 +187,11 @@
             <p class="jumTitle">JUMU'AH</p>
             <div class="jumGrid">
               <div>
-                <p class="jumTime">1:00<span class="ampm">PM</span></p>
+                <p class="jumTime">1:30<span class="ampm">PM</span></p>
                 <p class="jumLabel">STARTS</p>
               </div>
               <div>
-                <p class="jumTime">1:30<span class="ampm">PM</span></p>
+                <p class="jumTime">2:00<span class="ampm">PM</span></p>
                 <p class="jumLabel">JUMU'AH</p>
               </div>
             </div>

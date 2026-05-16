@@ -24,6 +24,8 @@ export class HomeComponent implements OnInit {
   nowTime = '';
   nowSeconds = '';
   nowAmPm = '';
+  /** True when 12h hour is 1–9 (narrower row — clock scales up so it doesn’t look small). */
+  nowSingleDigitHour = false;
 
   sunrise: { time: string; ampm: string } | null = null;
   sunset: { time: string; ampm: string } | null = null;
@@ -353,6 +355,8 @@ export class HomeComponent implements OnInit {
     this.nowTime = `${hour}:${minute}`;
     this.nowSeconds = second;
     this.nowAmPm = dayPeriod;
+    const hourNum = parseInt(hour, 10);
+    this.nowSingleDigitHour = hourNum >= 1 && hourNum <= 9;
 
     // Ensure date/prayer-times switch over immediately at midnight.
     const currentKey = this.prayerTimes.getLocalDateKey(date);
