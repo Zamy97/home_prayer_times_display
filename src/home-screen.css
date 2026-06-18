@@ -171,7 +171,7 @@ app-home .content.panel-left .panel {
 app-home .content.panel-left .grid {
   order: 1;
   border-right: none;
-  border-left: 6px solid #fff;
+  border-left: 6px solid var(--navy);
 }
 
 app-home .grid {
@@ -179,7 +179,8 @@ app-home .grid {
   grid-template-columns: 0.82fr 2.32fr;
   grid-template-rows: repeat(5, 1fr);
   border-left: none;
-  border-right: 6px solid #fff;
+  /* Navy seam on prayer side — separates grid from beige clock panel */
+  border-right: 6px solid var(--navy);
 }
 
 app-home .cell {
