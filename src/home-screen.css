@@ -191,8 +191,8 @@ app-home .cell {
   border-bottom: 2px solid var(--line);
 }
 
-/* Fajr time cell when next: pin timeStack to top so STARTS band lines up with FAJR column band */
-app-home .cell.dark.is-next:has(.timeStack) {
+/* Fajr time cell: fill row height so time can center below STARTS */
+app-home .cell.dark:has(.timeStack) {
   align-items: stretch;
   justify-content: flex-start;
 }
@@ -230,9 +230,20 @@ app-home .timeStack {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 0;
+}
+
+/* Center prayer digits in the space below STARTS (between band bottom and cell border) */
+app-home .timeStack > .time {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  width: 100%;
+  line-height: 1;
 }
 
 /* Full-width navy band behind STARTS when Fajr row is highlighted (avoids full white-out on that strip) */
@@ -306,6 +317,14 @@ app-home .cell.is-next .startsBand .colLabel {
 /* When Fajr is not next, STARTS sits on dark cell — no extra band needed */
 app-home .cell.dark:not(.is-next) .startsBand {
   background: transparent;
+}
+
+/* Dhuhr–Isha time cells: vertically center digits in the row */
+app-home .grid > .cell:nth-child(2n) > .time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 app-home .time {
