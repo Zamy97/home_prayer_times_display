@@ -123,7 +123,7 @@
         <div class="panelTempStripInner">
           <div class="panelTempText">
             <span class="panelTempItem">
-              <span class="panelTempLabel">Current temp</span>
+              <span class="panelTempLabel">Current:</span>
               <span class="panelTempValue">
                 @if (currentTempF !== null) {
                   {{ currentTempF | number:'1.0-0' }}°F
@@ -133,10 +133,10 @@
               </span>
             </span>
             @if (feelsLikeTempF !== null) {
-              <span class="panelTempSep" aria-hidden="true">·</span>
+              <span class="panelTempSep" aria-hidden="true"></span>
               <span class="panelTempItem">
-                <span class="panelTempLabel">Feels like</span>
-                <span class="panelTempValue">{{ feelsLikeTempF | number:'1.0-0' }}°</span>
+                <span class="panelTempLabel">Feels like:</span>
+                <span class="panelTempValue">{{ feelsLikeTempF | number:'1.0-0' }}°F</span>
               </span>
             }
           </div>

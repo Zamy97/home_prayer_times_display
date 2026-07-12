@@ -443,7 +443,7 @@ app-home .panelTempStrip {
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 2px 12px 0;
+  padding: 6px 16px 2px;
   margin: 0;
   background: var(--panel);
   color: var(--navy);
@@ -453,32 +453,34 @@ app-home .panelTempStripInner {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  max-width: 100%;
 }
 
 app-home .panelTempText {
   display: inline-flex;
   flex-direction: row;
-  align-items: baseline;
+  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 0.18em 0.4em;
+  column-gap: clamp(28px, 3.5vw, 56px);
+  row-gap: 0.35em;
   line-height: 1;
 }
 
 app-home .panelTempItem {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.28em;
+  gap: clamp(10px, 1.1vw, 18px);
   white-space: nowrap;
 }
 
 app-home .panelTempLabel {
-  font-family: var(--font-ui, var(--font-num));
+  font-family: var(--font-ui);
   font-weight: 400;
   font-size: clamp(26px, 3.15vw, 44px);
   line-height: 1.05;
-  letter-spacing: 0.02em;
-  opacity: 0.78;
+  letter-spacing: 0.06em;
+  opacity: 0.62;
 }
 
 app-home .panelTempValue {
@@ -491,12 +493,15 @@ app-home .panelTempValue {
   text-transform: none;
 }
 
+/* Soft divider between current and feels-like */
 app-home .panelTempSep {
-  font-family: var(--font-num);
-  font-weight: 400;
-  font-size: clamp(26px, 3.15vw, 44px);
-  line-height: 1.05;
-  opacity: 0.45;
+  flex-shrink: 0;
+  align-self: stretch;
+  width: 2px;
+  min-height: 0.85em;
+  margin: 0;
+  background: rgba(7, 35, 60, 0.22);
+  border-radius: 1px;
 }
 
 app-home .rule {
@@ -912,6 +917,8 @@ app-home .sunRow {
 
 app-home .sunTime {
   font-family: var(--font-num);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   font-size: clamp(16px, min(2.6vw, 3.2vh), 28px);
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -919,7 +926,9 @@ app-home .sunTime {
 
 app-home .sunTime .ampm {
   font-size: 0.55em;
+  font-weight: 600;
   vertical-align: 0.35em;
+  opacity: 0.9;
 }
 
 app-home .icon {
@@ -971,12 +980,17 @@ app-home .icon {
     border-bottom-width: 3px;
   }
   app-home .panelTempStrip {
-    padding: 2px 14px 0;
+    padding: 8px 18px 4px;
+  }
+  app-home .panelTempText {
+    column-gap: clamp(36px, 4vw, 72px);
   }
   app-home .panelTempLabel,
-  app-home .panelTempValue,
-  app-home .panelTempSep {
+  app-home .panelTempValue {
     font-size: clamp(42px, 4.5vw, 58px);
+  }
+  app-home .panelTempSep {
+    width: 2px;
   }
   app-home .rule {
     margin: 4px 0 6px;
