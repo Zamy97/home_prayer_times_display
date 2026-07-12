@@ -453,14 +453,32 @@ app-home .panelTempStripInner {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(6px, 1vw, 12px);
 }
 
-app-home .panelTempIcon {
-  flex-shrink: 0;
-  height: clamp(32px, 4.25vw, 50px);
-  width: auto;
-  opacity: 0.95;
+app-home .panelTempText {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.18em 0.4em;
+  line-height: 1;
+}
+
+app-home .panelTempItem {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.28em;
+  white-space: nowrap;
+}
+
+app-home .panelTempLabel {
+  font-family: var(--font-ui, var(--font-num));
+  font-weight: 400;
+  font-size: clamp(26px, 3.15vw, 44px);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  opacity: 0.78;
 }
 
 app-home .panelTempValue {
@@ -471,6 +489,14 @@ app-home .panelTempValue {
   line-height: 1.05;
   letter-spacing: 0.02em;
   text-transform: none;
+}
+
+app-home .panelTempSep {
+  font-family: var(--font-num);
+  font-weight: 400;
+  font-size: clamp(26px, 3.15vw, 44px);
+  line-height: 1.05;
+  opacity: 0.45;
 }
 
 app-home .rule {
@@ -947,10 +973,9 @@ app-home .icon {
   app-home .panelTempStrip {
     padding: 2px 14px 0;
   }
-  app-home .panelTempIcon {
-    height: clamp(46px, 5.6vw, 64px);
-  }
-  app-home .panelTempValue {
+  app-home .panelTempLabel,
+  app-home .panelTempValue,
+  app-home .panelTempSep {
     font-size: clamp(42px, 4.5vw, 58px);
   }
   app-home .rule {

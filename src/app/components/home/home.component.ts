@@ -29,8 +29,10 @@ export class HomeComponent implements OnInit {
 
   sunrise: { time: string; ampm: string } | null = null;
   sunset: { time: string; ampm: string } | null = null;
-  /** Current temperature in °F (from Open-Meteo); null if unavailable */
+  /** Current temperature in °F; null only if never fetched successfully */
   currentTempF: number | null = null;
+  /** Feels-like / apparent temperature in °F */
+  feelsLikeTempF: number | null = null;
 
   /** 'loading' while requesting location, null when idle, message when error */
   geoStatus: 'loading' | null | string = null;
@@ -63,6 +65,12 @@ export class HomeComponent implements OnInit {
 
   private hotCornerTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly hotCornerHoldMs = 1800;
+  private readonly tempCacheKey = 'weatherTemp.v2';
+  /** How long a cached temp is still useful after failed refreshes (keep showing something). */
+  private readonly tempCacheMaxAgeMs = 6 * 60 * 60 * 1000;
+  /** How often we poll for a fresh reading (Open-Meteo is free — 10 min stays current). */
+  private readonly tempRefreshMs = 10 * 60 * 1000;
+  private lastTempFetchAtMs = 0;
 
   /** From settings: true = clock/date panel on left */
   get panelLeft(): boolean {
@@ -106,12 +114,12 @@ export class HomeComponent implements OnInit {
         if (s.coords) this.showGeoPrompt = false;
         this.loadFromCache();
         this.loadPrayerTimes();
-        this.fetchTemperature();
+        this.fetchTemperature(true);
       });
 
-    this.fetchTemperature();
-    // Refresh temperature periodically (e.g. every 15 min)
-    interval(15 * 60 * 1000)
+    this.fetchTemperature(true);
+    // Rotate weather every 10 min so the reading stays fresh (free Open-Meteo path).
+    interval(this.tempRefreshMs)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.fetchTemperature());
 
@@ -122,9 +130,15 @@ export class HomeComponent implements OnInit {
 
     // 4) Also refresh when tab becomes visible or focused (covers sleep/DST/throttling)
     const onVisibility = () => {
-      if (document.visibilityState === 'visible') this.refreshIfDateChanged(true);
+      if (document.visibilityState === 'visible') {
+        this.refreshIfDateChanged(true);
+        this.fetchTemperatureIfStale();
+      }
     };
-    const onFocus = () => this.refreshIfDateChanged(true);
+    const onFocus = () => {
+      this.refreshIfDateChanged(true);
+      this.fetchTemperatureIfStale();
+    };
     document.addEventListener('visibilitychange', onVisibility);
     window.addEventListener('focus', onFocus);
     this.destroyRef.onDestroy(() => {
@@ -184,15 +198,105 @@ export class HomeComponent implements OnInit {
     this.geoStatus = null;
   }
 
-  private fetchTemperature(): void {
+  private fetchTemperature(force = false): void {
     const coords = this.settings.coords;
     if (!coords) {
       this.currentTempF = null;
+      this.feelsLikeTempF = null;
       return;
     }
-    this.weatherService
-      .getCurrentTempF(coords.lat, coords.lng)
-      .subscribe((temp) => (this.currentTempF = temp));
+
+    // Show last known temp immediately so the strip never blanks on a blip.
+    if (this.currentTempF === null) {
+      const cached = this.readCachedTemp(coords);
+      if (cached) {
+        this.currentTempF = cached.temp;
+        this.feelsLikeTempF = cached.feelsLike;
+      }
+    }
+
+    // Skip if we just fetched (e.g. focus storms), unless forced.
+    if (!force && this.lastTempFetchAtMs && Date.now() - this.lastTempFetchAtMs < this.tempRefreshMs / 2) {
+      return;
+    }
+    this.lastTempFetchAtMs = Date.now();
+
+    this.weatherService.getCurrentWeather(coords.lat, coords.lng).subscribe({
+      next: (reading) => {
+        this.currentTempF = reading.tempF;
+        this.feelsLikeTempF = reading.feelsLikeF;
+        this.writeCachedTemp(coords, reading.tempF, reading.feelsLikeF);
+      },
+      error: () => {
+        // Keep showing last known value (in-memory or localStorage). Never clear to "--".
+        if (this.currentTempF === null) {
+          const cached = this.readCachedTemp(coords);
+          if (cached) {
+            this.currentTempF = cached.temp;
+            this.feelsLikeTempF = cached.feelsLike;
+          }
+        }
+      },
+    });
+  }
+
+  /** After sleep / tab hide, pull a fresh reading if the last one is getting old. */
+  private fetchTemperatureIfStale(): void {
+    if (!this.lastTempFetchAtMs || Date.now() - this.lastTempFetchAtMs >= this.tempRefreshMs) {
+      this.fetchTemperature(true);
+    }
+  }
+
+  private readCachedTemp(
+    coords: { lat: number; lng: number }
+  ): { temp: number; feelsLike: number | null } | null {
+    try {
+      const raw = localStorage.getItem(this.tempCacheKey);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as {
+        temp?: number;
+        feelsLike?: number | null;
+        lat?: number;
+        lng?: number;
+        fetchedAt?: number;
+      };
+      if (typeof parsed.temp !== 'number' || Number.isNaN(parsed.temp)) return null;
+      if (typeof parsed.lat !== 'number' || typeof parsed.lng !== 'number') return null;
+      if (typeof parsed.fetchedAt !== 'number') return null;
+      // Same location (within ~0.01°) and not too stale
+      if (Math.abs(parsed.lat - coords.lat) > 0.01 || Math.abs(parsed.lng - coords.lng) > 0.01) {
+        return null;
+      }
+      if (Date.now() - parsed.fetchedAt > this.tempCacheMaxAgeMs) return null;
+      const feelsLike =
+        typeof parsed.feelsLike === 'number' && !Number.isNaN(parsed.feelsLike)
+          ? parsed.feelsLike
+          : null;
+      return { temp: parsed.temp, feelsLike };
+    } catch {
+      return null;
+    }
+  }
+
+  private writeCachedTemp(
+    coords: { lat: number; lng: number },
+    temp: number,
+    feelsLike: number | null
+  ): void {
+    try {
+      localStorage.setItem(
+        this.tempCacheKey,
+        JSON.stringify({
+          temp,
+          feelsLike,
+          lat: coords.lat,
+          lng: coords.lng,
+          fetchedAt: Date.now(),
+        })
+      );
+    } catch {
+      // ignore storage failures
+    }
   }
 
   private refreshIfDateChanged(force = false): void {
