@@ -13,19 +13,17 @@
 app-home.night {
   color: var(--amber);
 
-  /* Night palette: pure-black canvas + dim warm amber (readable in the dark
-     without hurting the eyes or disrupting sleep). These override the light
-     palette variables only while `.night` is active. */
-  --amber: #d68f47;
-  --amber-dim: #986734;
-  --amber-bright: #f2a95a;
-  --amber-faint: rgba(214, 143, 71, 0.55);
+  /* Night palette follows the user's chosen night clock color. */
+  --amber: var(--clock-color, #d68f47);
+  --amber-dim: color-mix(in srgb, var(--amber) 72%, #000);
+  --amber-bright: color-mix(in srgb, var(--amber) 82%, #fff);
+  --amber-faint: color-mix(in srgb, var(--amber) 55%, transparent);
 
   --navy: #120c05;          /* dim warm band behind labels / bars */
   --panel: #000000;         /* right panel background (was beige) */
-  --line: rgba(214, 143, 71, 0.14);
-  --line-dark: rgba(214, 143, 71, 0.12);
-  --seam: rgba(214, 143, 71, 0.32);
+  --line: color-mix(in srgb, var(--amber) 14%, transparent);
+  --line-dark: color-mix(in srgb, var(--amber) 12%, transparent);
+  --seam: color-mix(in srgb, var(--amber) 32%, transparent);
   --white: #000000;         /* board background (was pure white) */
   --text: var(--amber);
 }
@@ -214,11 +212,12 @@ app-home.night .now.now--single-hour {
   justify-content: center;
 }
 
-/* Nudge the clock up toward the temp strip; the slack collects below,
-   where the enlarged sun bar grows up to fill it. */
+/* Sit the clock in the middle of the gap between the temp strip (above)
+   and the “NEXT … IN …” countdown (below). */
 app-home.night .clockTimeSlot {
-  justify-content: flex-start;
-  padding-block-start: clamp(2px, 1.6vh, 22px);
+  justify-content: center;
+  align-items: center;
+  padding-block: 0;
 }
 
 @container clock-slot (min-width: 0px) {

@@ -3,7 +3,14 @@ import { Router } from '@angular/router';
 import { PrayTimeMethod } from '../../lib/praytime';
 import { CITIES, OTHER_CITY_ID } from '../../data/cities';
 import { GeoError, GeolocationService } from '../../services/geolocation.service';
-import { AsrMethod, NightMode, PrayerSettings, SettingsService } from '../../services/settings.service';
+import {
+  AsrMethod,
+  DayClockColor,
+  NightClockColor,
+  NightMode,
+  PrayerSettings,
+  SettingsService,
+} from '../../services/settings.service';
 
 @Component({
   selector: 'app-settings',
@@ -42,6 +49,27 @@ export class SettingsComponent implements OnInit {
     { value: 'off', label: 'Off (normal / light)' },
   ];
 
+  readonly dayClockColorOptions: Array<{ value: DayClockColor; label: string }> = [
+    { value: 'black', label: 'Black' },
+    { value: 'navy', label: 'Navy' },
+    { value: 'charcoal', label: 'Charcoal' },
+    { value: 'brown', label: 'Brown' },
+    { value: 'green', label: 'Forest green' },
+    { value: 'maroon', label: 'Maroon' },
+    { value: 'blue', label: 'Royal blue' },
+  ];
+
+  readonly nightClockColorOptions: Array<{ value: NightClockColor; label: string }> = [
+    { value: 'amber', label: 'Amber (default)' },
+    { value: 'red', label: 'Red (easiest on eyes at night)' },
+    { value: 'orange', label: 'Orange' },
+    { value: 'warm-white', label: 'Warm white' },
+    { value: 'green', label: 'Green' },
+    { value: 'teal', label: 'Teal' },
+    { value: 'rose', label: 'Rose' },
+    { value: 'dim-white', label: 'Dim white' },
+  ];
+
   readonly cities = CITIES;
   readonly otherCityId = OTHER_CITY_ID;
   readonly deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -56,6 +84,8 @@ export class SettingsComponent implements OnInit {
   /** true = clock/date panel on left */
   panelLeft = true;
   nightMode: NightMode = 'off';
+  dayClockColor: DayClockColor = 'black';
+  nightClockColor: NightClockColor = 'amber';
 
   ngOnInit(): void {
     const s = this.settingsService.getSettings();
@@ -66,6 +96,8 @@ export class SettingsComponent implements OnInit {
     this.lng = s.coords?.lng?.toString() ?? '';
     this.panelLeft = s.panelLeft ?? true;
     this.nightMode = s.nightMode ?? 'off';
+    this.dayClockColor = s.dayClockColor ?? 'black';
+    this.nightClockColor = s.nightClockColor ?? 'amber';
     const savedCityId = s.cityId ?? OTHER_CITY_ID;
     const city = savedCityId !== OTHER_CITY_ID ? CITIES.find((c) => c.id === savedCityId) : null;
     if (city) {
@@ -139,6 +171,8 @@ export class SettingsComponent implements OnInit {
       timezone,
       panelLeft: this.panelLeft,
       nightMode: this.nightMode,
+      dayClockColor: this.dayClockColor,
+      nightClockColor: this.nightClockColor,
       cityId,
     };
     this.settingsService.saveSettings(next);

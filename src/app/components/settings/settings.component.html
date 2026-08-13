@@ -83,6 +83,22 @@
       </div>
     </label>
 
+    <label class="field">
+      <div class="label">Day clock color</div>
+      <select class="input" [(ngModel)]="dayClockColor" name="dayClockColor">
+        <option *ngFor="let c of dayClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+      </select>
+      <div class="hint">Color of the large clock in the normal (light) layout.</div>
+    </label>
+
+    <label class="field">
+      <div class="label">Night clock color</div>
+      <select class="input" [(ngModel)]="nightClockColor" name="nightClockColor">
+        <option *ngFor="let c of nightClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+      </select>
+      <div class="hint">Color of the clock and times in the dark night layout.</div>
+    </label>
+
     <div class="actions">
       <button class="btn primary" type="button" (click)="save()">Save</button>
     </div>

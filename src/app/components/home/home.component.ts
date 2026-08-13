@@ -31,6 +31,11 @@ export class HomeComponent implements OnInit {
   sunset: { time: string; ampm: string } | null = null;
   /** True while the dark night layout is active (always, or auto between sunset and sunrise). */
   @HostBinding('class.night') nightActive = false;
+  /** Chosen clock color for the current day/night layout. */
+  @HostBinding('style.--clock-color')
+  get clockColor(): string {
+    return this.settingsService.clockColorHex(this.nightActive);
+  }
   /** Current temperature in °F; null only if never fetched successfully */
   currentTempF: number | null = null;
   /** Feels-like / apparent temperature in °F */
