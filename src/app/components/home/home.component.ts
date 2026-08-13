@@ -36,6 +36,18 @@ export class HomeComponent implements OnInit {
   get clockColor(): string {
     return this.settingsService.clockColorHex(this.nightActive);
   }
+
+  /**
+   * Time color on dark navy cells. Night uses the same accent; day uses a
+   * light mix so dark colors stay readable (white when the day color is black).
+   */
+  @HostBinding('style.--clock-on-dark')
+  get clockOnDark(): string {
+    if (this.nightActive) return this.settingsService.clockColorHex(true);
+    const key = this.settings.dayClockColor ?? 'black';
+    if (key === 'black') return '#ffffff';
+    return `color-mix(in srgb, ${this.settingsService.clockColorHex(false)} 42%, #fff)`;
+  }
   /** Current temperature in °F; null only if never fetched successfully */
   currentTempF: number | null = null;
   /** Feels-like / apparent temperature in °F */

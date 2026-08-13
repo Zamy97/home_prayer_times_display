@@ -95,6 +95,19 @@ app-home.night .now {
   text-shadow: none;
 }
 
+app-home.night .time,
+app-home.night .jumTime,
+app-home.night .sunTime,
+app-home.night .countdownPrayer,
+app-home.night .countdownTime {
+  color: var(--amber);
+}
+
+app-home.night .dark:not(.is-next) .time,
+app-home.night .sunBar .sunTime {
+  color: var(--amber);
+}
+
 /* Countdown row */
 app-home.night .countdown {
   color: var(--amber-dim);

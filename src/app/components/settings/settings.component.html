@@ -88,7 +88,7 @@
       <select class="input" [(ngModel)]="dayClockColor" name="dayClockColor">
         <option *ngFor="let c of dayClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
       </select>
-      <div class="hint">Color of the large clock in the normal (light) layout.</div>
+      <div class="hint">Color of all times in the normal (light) layout: clock, prayers, jumu’ah, sunrise/sunset.</div>
     </label>
 
     <label class="field">
@@ -96,7 +96,7 @@
       <select class="input" [(ngModel)]="nightClockColor" name="nightClockColor">
         <option *ngFor="let c of nightClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
       </select>
-      <div class="hint">Color of the clock and times in the dark night layout.</div>
+      <div class="hint">Color of all times in the dark night layout: clock, prayers, countdown, sunrise/sunset.</div>
     </label>
 
     <div class="actions">

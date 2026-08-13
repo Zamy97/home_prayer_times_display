@@ -336,6 +336,19 @@ app-home .time {
   font-variant-numeric: tabular-nums lining-nums;
 }
 
+/* Chosen color applies to every time numeral, not just the big clock. */
+app-home .jumTime,
+app-home .countdownTime,
+app-home .countdownPrayer,
+app-home .cell.is-next .time {
+  color: var(--clock-color, #111);
+}
+
+app-home .dark:not(.is-next) .time,
+app-home .sunBar .sunTime {
+  color: var(--clock-on-dark, #fff);
+}
+
 app-home .ampm {
   font-family: inherit;
   font-size: 30px;
