@@ -1,0 +1,364 @@
+/* =====================================================================
+   NIGHT MODE
+   Dark, dim, warm layout for using the display as a bedroom clock in the
+   dark. Everything is scoped under `app-home.night`, so the normal (light)
+   layout is completely untouched when night mode is off. The `.night` class
+   is toggled by HomeComponent based on the user's Night mode setting
+   (off / always on / automatic sunset-to-sunrise).
+
+   In night mode we also drop the Jumu'ah block and let the clock and the
+   sunrise/sunset grow large enough to read from across a dark room.
+   ===================================================================== */
+
+app-home.night {
+  color: var(--amber);
+
+  /* Night palette: pure-black canvas + dim warm amber (readable in the dark
+     without hurting the eyes or disrupting sleep). These override the light
+     palette variables only while `.night` is active. */
+  --amber: #d68f47;
+  --amber-dim: #986734;
+  --amber-bright: #f2a95a;
+  --amber-faint: rgba(214, 143, 71, 0.55);
+
+  --navy: #120c05;          /* dim warm band behind labels / bars */
+  --panel: #000000;         /* right panel background (was beige) */
+  --line: rgba(214, 143, 71, 0.14);
+  --line-dark: rgba(214, 143, 71, 0.12);
+  --seam: rgba(214, 143, 71, 0.32);
+  --white: #000000;         /* board background (was pure white) */
+  --text: var(--amber);
+}
+
+/* Hide the Jumu'ah block in night mode; the sun bar takes over its space. */
+app-home.night .jumuBlock {
+  display: none;
+}
+
+/* Warm, low-glow seam instead of the bright navy divider */
+app-home.night .grid {
+  border-right-color: var(--seam);
+}
+app-home.night .content.panel-left .grid {
+  border-left-color: var(--seam);
+}
+
+/* Prayer name + time cells: amber text on black */
+app-home.night .dark {
+  background: #000;
+  color: var(--amber);
+}
+
+/* Next prayer: gently lifted warm panel + brighter amber (never a white flash) */
+app-home.night .cell.is-next {
+  background: #1c1206;
+  color: var(--amber-bright);
+  border-right-color: var(--line);
+  border-bottom-color: var(--line);
+}
+
+/* Label bands behind FAJR / STARTS */
+app-home.night .cell.is-next .startsBand,
+app-home.night .prayerPairBand {
+  background: #1c1206;
+  color: var(--amber-bright);
+}
+app-home.night .cell.is-next .startsBand .colLabel {
+  color: var(--amber-bright);
+}
+app-home.night .colLabel {
+  color: var(--amber-dim);
+}
+
+/* Right panel background stays black */
+app-home.night .panel,
+app-home.night .panelTempStrip {
+  background: #000;
+}
+
+/* Date bar: dim warm band, amber text */
+app-home.night .panelTop {
+  background: var(--navy);
+  color: var(--amber);
+  border-bottom-color: var(--line);
+}
+
+/* Temperature strip */
+app-home.night .panelTempStrip {
+  color: var(--amber);
+}
+app-home.night .panelTempSep {
+  background: var(--amber-faint);
+}
+
+/* Main clock: dim amber, no bright white glow */
+app-home.night .now {
+  color: var(--amber);
+  text-shadow: none;
+}
+
+/* Countdown row */
+app-home.night .countdown {
+  color: var(--amber-dim);
+}
+app-home.night .countdownPrayer,
+app-home.night .countdownTime {
+  color: var(--amber);
+}
+
+/* Divider rules */
+app-home.night .rule {
+  background: var(--line);
+}
+
+/* ---------------------------------------------------------------------
+   SUNRISE / SUNSET — the hero of the lower panel (replaces Jumu'ah).
+   Grows to fill the freed space with big, glanceable amber numerals.
+   --------------------------------------------------------------------- */
+app-home.night .sunBar {
+  flex: 0 0 auto;                 /* pinned to the bottom, grows upward */
+  margin-top: clamp(6px, 1vw, 14px);
+  background: var(--navy);
+  color: var(--amber);
+  border-radius: 10px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  /* Taller bar fills the empty space above it */
+  padding: clamp(24px, 4.2vh, 62px) clamp(8px, 1.6vw, 18px);
+  min-height: 0;
+}
+
+/* Two columns split by a soft warm divider: icon + label on top,
+   big time on its own line below so it stays large and uncramped. */
+app-home.night .sunRow {
+  flex: 1 1 0;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 0.8vw, 10px) clamp(6px, 1vw, 12px);
+  padding: 0 clamp(6px, 1.2vw, 14px);
+}
+app-home.night .sunBar .sunTime {
+  flex-basis: 100%;
+  text-align: center;
+}
+app-home.night .sunRow + .sunRow {
+  border-left: 2px solid var(--line);
+}
+
+app-home.night .sunBar .icon {
+  width: clamp(46px, 6.2vmin, 86px);
+  height: clamp(28px, 3.9vmin, 52px);
+  opacity: 0.9;
+}
+
+/* SUNRISE / SUNSET label */
+app-home.night .sunLabel {
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: var(--amber-dim);
+  font-size: clamp(28px, min(4vw, 5vh), 64px);
+  line-height: 1;
+}
+
+/* The time itself — large enough to read from across the room */
+app-home.night .sunBar .sunTime {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--amber);
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  font-size: clamp(52px, min(8vw, 9.8vh), 140px);
+}
+app-home.night .sunBar .sunTime .ampm {
+  font-size: 0.46em;
+  font-weight: 600;
+  vertical-align: 0.4em;
+  margin-left: 0.12em;
+  opacity: 0.85;
+  color: var(--amber-dim);
+}
+
+/* ---------------------------------------------------------------------
+   CLOCK — centered and as large as possible so it reads from ~10 ft away.
+   Give the clock column more width and trim the padding/side reserve so the
+   digits grow into the empty space above/below.
+   --------------------------------------------------------------------- */
+
+/* Give the clock/date panel a little extra width, but keep the prayer
+   column wide enough that times like "10:04 PM" never clip. */
+app-home.night .content.panel-left {
+  grid-template-columns: 1.5fr 0.98fr;
+}
+app-home.night .content:not(.panel-left) {
+  grid-template-columns: 0.98fr 1.5fr;
+}
+
+/* Trim the horizontal breathing room around the clock so the digits fill
+   the panel width (this is what caps the size). */
+app-home.night .panel {
+  --clock-pad-end: clamp(8px, 1.4vw, 20px);
+  --date-bar-pad-x: clamp(8px, 1.4vw, 20px);
+}
+
+app-home.night .now,
+app-home.night .now.now--single-hour {
+  justify-content: center;
+}
+
+/* Nudge the clock up toward the temp strip; the slack collects below,
+   where the enlarged sun bar grows up to fill it. */
+app-home.night .clockTimeSlot {
+  justify-content: flex-start;
+  padding-block-start: clamp(2px, 1.6vh, 22px);
+}
+
+@container clock-slot (min-width: 0px) {
+  app-home.night .now {
+    justify-content: center;
+    padding-inline: clamp(6px, 1.2vw, 16px);
+    /* Reserve enough width for the seconds/AM-PM side stack so it never
+       gets clipped, and use a gentler divisor so the row fits on screen. */
+    font-size: clamp(
+      140px,
+      min(
+        calc(
+          (
+            100cqw - clamp(16px, 2.4cqw, 34px) - clamp(34px, 5cqw, 96px)
+          ) / 2.86
+        ),
+        calc((100cqb - clamp(4px, 1.1cqb, 26px)) / 0.66)
+      ),
+      1500px
+    );
+  }
+
+  app-home.night .now.now--single-hour {
+    justify-content: center;
+    padding-inline: clamp(6px, 1.2vw, 16px);
+    font-size: clamp(
+      156px,
+      min(
+        calc(
+          (
+            100cqw - clamp(16px, 2.4cqw, 34px) - clamp(34px, 5cqw, 96px)
+          ) / 2.46
+        ),
+        calc((100cqb - clamp(4px, 1.1cqb, 26px)) / 0.6)
+      ),
+      1500px
+    );
+  }
+
+  /* Slightly larger seconds / AM-PM so they read clearly beside the digits */
+  app-home.night .now .seconds {
+    font-size: clamp(14px, 0.2em, 132px);
+  }
+  app-home.night .now .ampm {
+    font-size: clamp(12px, 0.155em, 104px);
+  }
+}
+
+/* Fallback for browsers without two-axis container queries: bind to the
+   panel column width only, still centered and large. */
+@supports (container-type: inline-size) {
+  @supports not (container-type: size) {
+    @container clock-panel (min-width: 0px) {
+      app-home.night .now {
+        justify-content: center;
+        padding-inline: clamp(6px, 1.2vw, 16px);
+        font-size: clamp(
+          150px,
+          min(calc((100cqi - clamp(28px, 5cqi, 60px)) / 2.42), 82vmin),
+          1600px
+        );
+      }
+      app-home.night .now.now--single-hour {
+        justify-content: center;
+        font-size: clamp(
+          170px,
+          min(calc((100cqi - clamp(28px, 5cqi, 60px)) / 2.02), 88vmin),
+          1600px
+        );
+      }
+    }
+  }
+}
+
+/* Geolocation prompt / cards: dark themed so it doesn't flash white */
+app-home.night .geoPromptCard {
+  background: #0c0a06;
+  color: var(--amber);
+  box-shadow: 0 14px 50px rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--line);
+}
+app-home.night .geoPromptBtn {
+  background: #14100a;
+  border-color: var(--line);
+  color: var(--amber);
+}
+app-home.night .geoPromptBtn.primary {
+  background: var(--amber-dim);
+  border-color: var(--amber-dim);
+  color: #000;
+}
+app-home.night .geoPromptSmall a,
+app-home.night .geoPromptSmall a:visited {
+  color: var(--amber);
+}
+
+/* Location-needed helper (shown before coords are set) */
+app-home.night .locationBtn {
+  background: #14100a;
+  border-color: var(--amber-dim);
+  color: var(--amber);
+}
+app-home.night .locationBtn:hover {
+  background: var(--amber-dim);
+  color: #000;
+}
+app-home.night .locationNeeded a {
+  color: var(--amber);
+}
+
+/* Keep the document dark while night mode is on so Settings doesn't flash white. */
+html.night,
+html.night body {
+  background: #000;
+  color: #d68f47;
+}
+
+html.night app-settings .wrap {
+  color: #d68f47;
+}
+
+html.night app-settings .muted,
+html.night app-settings .hint {
+  color: #986734;
+}
+
+html.night app-settings .input {
+  background: #14100a;
+  border-color: rgba(214, 143, 71, 0.28);
+  color: #d68f47;
+}
+
+html.night app-settings .btn {
+  background: #14100a;
+  border-color: rgba(214, 143, 71, 0.35);
+  color: #d68f47;
+}
+
+html.night app-settings .btn.primary {
+  background: #986734;
+  border-color: #986734;
+  color: #000;
+}

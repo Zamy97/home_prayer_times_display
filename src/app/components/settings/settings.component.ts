@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { PrayTimeMethod } from '../../lib/praytime';
 import { CITIES, OTHER_CITY_ID } from '../../data/cities';
 import { GeoError, GeolocationService } from '../../services/geolocation.service';
-import { AsrMethod, PrayerSettings, SettingsService } from '../../services/settings.service';
+import { AsrMethod, NightMode, PrayerSettings, SettingsService } from '../../services/settings.service';
 
 @Component({
   selector: 'app-settings',
@@ -36,6 +36,12 @@ export class SettingsComponent implements OnInit {
     { value: 'Standard', label: 'Standard' },
   ];
 
+  readonly nightModeOptions: Array<{ value: NightMode; label: string }> = [
+    { value: 'auto', label: 'Automatic (dark from sunset to sunrise)' },
+    { value: 'on', label: 'Always on (dark)' },
+    { value: 'off', label: 'Off (normal / light)' },
+  ];
+
   readonly cities = CITIES;
   readonly otherCityId = OTHER_CITY_ID;
   readonly deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -49,6 +55,7 @@ export class SettingsComponent implements OnInit {
   lng = '';
   /** true = clock/date panel on left */
   panelLeft = true;
+  nightMode: NightMode = 'off';
 
   ngOnInit(): void {
     const s = this.settingsService.getSettings();
@@ -58,6 +65,7 @@ export class SettingsComponent implements OnInit {
     this.lat = s.coords?.lat?.toString() ?? '';
     this.lng = s.coords?.lng?.toString() ?? '';
     this.panelLeft = s.panelLeft ?? true;
+    this.nightMode = s.nightMode ?? 'off';
     const savedCityId = s.cityId ?? OTHER_CITY_ID;
     const city = savedCityId !== OTHER_CITY_ID ? CITIES.find((c) => c.id === savedCityId) : null;
     if (city) {
@@ -130,6 +138,7 @@ export class SettingsComponent implements OnInit {
       asr: this.asr,
       timezone,
       panelLeft: this.panelLeft,
+      nightMode: this.nightMode,
       cityId,
     };
     this.settingsService.saveSettings(next);

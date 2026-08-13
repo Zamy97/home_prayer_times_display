@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, HostBinding, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { interval, startWith } from 'rxjs';
@@ -29,6 +29,8 @@ export class HomeComponent implements OnInit {
 
   sunrise: { time: string; ampm: string } | null = null;
   sunset: { time: string; ampm: string } | null = null;
+  /** True while the dark night layout is active (always, or auto between sunset and sunrise). */
+  @HostBinding('class.night') nightActive = false;
   /** Current temperature in °F; null only if never fetched successfully */
   currentTempF: number | null = null;
   /** Feels-like / apparent temperature in °F */
@@ -59,6 +61,8 @@ export class HomeComponent implements OnInit {
   private settings = this.settingsService.getSettings();
   private lastDateKey = this.prayerTimes.getLocalDateKey();
   private prayerInstants: Partial<Record<'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha', number>> = {};
+  private sunriseAtMs: number | null = null;
+  private sunsetAtMs: number | null = null;
   private nextPrayerAtMs: number | null = null;
   private tomorrowFajrAtMs: number | null = null;
   private tomorrowFajrForDateKey: string | null = null;
@@ -115,6 +119,7 @@ export class HomeComponent implements OnInit {
         this.loadFromCache();
         this.loadPrayerTimes();
         this.fetchTemperature(true);
+        this.updateNightMode(new Date());
       });
 
     this.fetchTemperature(true);
@@ -146,6 +151,7 @@ export class HomeComponent implements OnInit {
       window.removeEventListener('focus', onFocus);
       this.clearHotCornerTimer();
     });
+    this.updateNightMode(new Date());
   }
 
   onHotCornerDown(evt?: Event): void {
@@ -323,14 +329,22 @@ export class HomeComponent implements OnInit {
       return;
     }
     // No geolocation fallback: this app must run without permission prompts (e.g. Raspberry Pi kiosk).
+    this.sunriseAtMs = null;
+    this.sunsetAtMs = null;
+    this.settingsService.setSunTimes(null, null);
+    this.updateNightMode(new Date());
   }
 
   private applyTimes(raw: PrayTimeTimes<string>): void {
     const sunrise = this.splitTime(raw.sunrise);
     const sunset = this.splitTime(raw.sunset);
+    const today = new Date();
 
     this.sunrise = sunrise;
     this.sunset = sunset;
+    this.sunriseAtMs = this.parseTimeToEpoch(raw.sunrise, today);
+    this.sunsetAtMs = this.parseTimeToEpoch(raw.sunset, today);
+    this.settingsService.setSunTimes(this.sunriseAtMs, this.sunsetAtMs);
 
     this.times = {
       fajr: this.splitTime(raw.fajr),
@@ -342,7 +356,6 @@ export class HomeComponent implements OnInit {
     };
 
     // Pre-compute today's prayer instants for fast "next prayer" lookup.
-    const today = new Date();
     this.prayerInstants = {
       fajr: this.parseTimeToEpoch(raw.fajr, today) ?? undefined,
       dhuhr: this.parseTimeToEpoch(raw.dhuhr, today) ?? undefined,
@@ -352,7 +365,8 @@ export class HomeComponent implements OnInit {
     };
     this.tomorrowFajrAtMs = null;
     this.tomorrowFajrForDateKey = null;
-    this.updateNextPrayer(new Date());
+    this.updateNextPrayer(today);
+    this.updateNightMode(today);
   }
 
   private splitTime(value: string): { time: string; ampm: string } {
@@ -474,6 +488,19 @@ export class HomeComponent implements OnInit {
     // Update next-prayer highlight as time passes.
     if (this.times?.raw) this.updateNextPrayer(date);
     this.updateCountdown(date);
+    this.updateNightMode(date);
+  }
+
+  /**
+   * Apply the saved Night mode setting:
+   * - off  → always the normal light layout
+   * - on   → always the dark night layout
+   * - auto → dark from sunset until sunrise (falls back to 8pm–6am if times aren't ready)
+   */
+  private updateNightMode(now: Date): void {
+    const active = this.settingsService.isNightActive(now);
+    this.nightActive = active;
+    document.documentElement.classList.toggle('night', active);
   }
 }
 
