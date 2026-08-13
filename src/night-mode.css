@@ -108,6 +108,15 @@ app-home.night .sunBar .sunTime {
   color: var(--amber);
 }
 
+/* Alarm-clock LED red: bright digits + a tight glow for distance reading. */
+app-home.night.clock-led .now,
+app-home.night.clock-led .time,
+app-home.night.clock-led .jumTime,
+app-home.night.clock-led .sunTime,
+app-home.night.clock-led .countdownTime {
+  text-shadow: 0 0 10px color-mix(in srgb, var(--clock-color) 70%, transparent);
+}
+
 /* Countdown row */
 app-home.night .countdown {
   color: var(--amber-dim);

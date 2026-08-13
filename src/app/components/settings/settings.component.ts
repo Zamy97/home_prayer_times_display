@@ -61,7 +61,8 @@ export class SettingsComponent implements OnInit {
 
   readonly nightClockColorOptions: Array<{ value: NightClockColor; label: string }> = [
     { value: 'amber', label: 'Amber (default)' },
-    { value: 'red', label: 'Red (easiest on eyes at night)' },
+    { value: 'led-red', label: 'LED red (alarm clock, easy from a distance)' },
+    { value: 'red', label: 'Red (softer, easier on eyes at night)' },
     { value: 'orange', label: 'Orange' },
     { value: 'warm-white', label: 'Warm white' },
     { value: 'green', label: 'Green' },

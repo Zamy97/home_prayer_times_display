@@ -26,6 +26,7 @@ export type DayClockColor =
 export type NightClockColor =
   | 'amber'
   | 'red'
+  | 'led-red'
   | 'orange'
   | 'warm-white'
   | 'green'
@@ -46,6 +47,7 @@ export const DAY_CLOCK_COLOR_HEX: Record<DayClockColor, string> = {
 export const NIGHT_CLOCK_COLOR_HEX: Record<NightClockColor, string> = {
   amber: '#d68f47',
   red: '#b54a3c',
+  'led-red': '#ff2a2a',
   orange: '#c46a2b',
   'warm-white': '#d4c4a8',
   green: '#4a8f5c',

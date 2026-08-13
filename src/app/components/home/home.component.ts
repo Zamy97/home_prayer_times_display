@@ -31,6 +31,11 @@ export class HomeComponent implements OnInit {
   sunset: { time: string; ampm: string } | null = null;
   /** True while the dark night layout is active (always, or auto between sunset and sunrise). */
   @HostBinding('class.night') nightActive = false;
+  /** Bright alarm-clock LED red: extra glow so it reads from across the room. */
+  @HostBinding('class.clock-led')
+  get clockLed(): boolean {
+    return this.nightActive && this.settings.nightClockColor === 'led-red';
+  }
   /** Chosen clock color for the current day/night layout. */
   @HostBinding('style.--clock-color')
   get clockColor(): string {
