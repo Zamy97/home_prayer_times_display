@@ -81,12 +81,16 @@ app-home.night .panelTop {
   border-bottom-color: var(--line);
 }
 
+app-home.night .greg {
+  border-left-color: var(--line);
+}
+
 /* Temperature strip */
 app-home.night .panelTempStrip {
   color: var(--amber);
 }
-app-home.night .panelTempSep {
-  background: var(--amber-faint);
+app-home.night .panelTempCol + .panelTempCol {
+  border-left-color: var(--line);
 }
 
 /* Main clock: dim amber, no bright white glow */
@@ -136,18 +140,17 @@ app-home.night .rule {
    Grows to fill the freed space with big, glanceable amber numerals.
    --------------------------------------------------------------------- */
 app-home.night .sunBar {
-  flex: 0 0 auto;                 /* pinned to the bottom, grows upward */
+  flex: 0 0 auto;
   margin-top: clamp(6px, 1vw, 14px);
   background: var(--navy);
   color: var(--amber);
   border-radius: 10px;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   justify-content: center;
   gap: 0;
-  /* Taller bar fills the empty space above it */
-  padding: clamp(24px, 4.2vh, 62px) clamp(8px, 1.6vw, 18px);
+  padding: clamp(24px, 4.2vh, 62px) 0;
   min-height: 0;
 }
 
@@ -348,6 +351,25 @@ app-home.night .locationBtn:hover {
 }
 app-home.night .locationNeeded a {
   color: var(--amber);
+}
+
+app-home.night .cell.is-now {
+  background: color-mix(in srgb, var(--amber) 28%, #000);
+  color: var(--amber-bright);
+}
+
+app-home.night .countdownNow {
+  color: var(--amber-bright);
+}
+
+app-home.night .prayerAnnounce {
+  background: color-mix(in srgb, #000 72%, var(--amber));
+  color: var(--amber);
+}
+
+html.theme-ready.night,
+html.theme-ready.night body {
+  background: #000;
 }
 
 /* Keep the document dark while night mode is on so Settings doesn't flash white. */

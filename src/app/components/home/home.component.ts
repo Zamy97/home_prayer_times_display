@@ -18,6 +18,11 @@ export class HomeComponent implements OnInit {
   nextPrayerLabel = 'PRAYER';
   nextPrayerCountdown = '';
 
+  /** Prayer that just entered (adhan time) — shown for ~30s. */
+  announcingPrayer: 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha' | null = null;
+  announcingLabel = '';
+  announceLeaving = false;
+
   hijriDateLabel = '';
   gregDateLabel = '';
 
@@ -31,6 +36,8 @@ export class HomeComponent implements OnInit {
   sunset: { time: string; ampm: string } | null = null;
   /** True while the dark night layout is active (always, or auto between sunset and sunrise). */
   @HostBinding('class.night') nightActive = false;
+  /** Enables slow color fades after the first paint so load isn't animated. */
+  @HostBinding('class.theme-ready') themeReady = false;
   /** Bright alarm-clock LED red: extra glow so it reads from across the room. */
   @HostBinding('class.clock-led')
   get clockLed(): boolean {
@@ -88,6 +95,13 @@ export class HomeComponent implements OnInit {
   private nextPrayerAtMs: number | null = null;
   private tomorrowFajrAtMs: number | null = null;
   private tomorrowFajrForDateKey: string | null = null;
+  /** Skip the 30s “it’s time” banner on first compute / settings reload. */
+  private skipNextAnnounce = true;
+  private announceHoldUntilMs = 0;
+  private announceClearAtMs = 0;
+  private readonly announceHoldMs = 30_000;
+  private readonly announceFadeMs = 800;
+  private themeReadyTimer: ReturnType<typeof setTimeout> | null = null;
 
   private hotCornerTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly hotCornerHoldMs = 1800;
@@ -127,6 +141,11 @@ export class HomeComponent implements OnInit {
 
     // On first landing: prompt to use current location if coords aren't set yet.
     if (!this.settings.coords) this.showGeoPrompt = true;
+
+    this.themeReadyTimer = setTimeout(() => {
+      this.themeReady = true;
+      document.documentElement.classList.add('theme-ready');
+    }, 500);
 
     interval(1000)
       .pipe(startWith(0), takeUntilDestroyed(this.destroyRef))
@@ -172,6 +191,8 @@ export class HomeComponent implements OnInit {
       document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('focus', onFocus);
       this.clearHotCornerTimer();
+      if (this.themeReadyTimer) clearTimeout(this.themeReadyTimer);
+      document.documentElement.classList.remove('theme-ready');
     });
     this.updateNightMode(new Date());
   }
@@ -387,6 +408,7 @@ export class HomeComponent implements OnInit {
     };
     this.tomorrowFajrAtMs = null;
     this.tomorrowFajrForDateKey = null;
+    this.skipNextAnnounce = true;
     this.updateNextPrayer(today);
     this.updateNightMode(today);
   }
@@ -424,35 +446,73 @@ export class HomeComponent implements OnInit {
       'isha',
     ];
 
+    const prevKey = this.nextPrayerKey;
     const nowMs = now.getTime();
+    let nextKey: 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha' = 'fajr';
+    let nextAt: number | null = null;
+
     for (const key of order) {
       const t = this.prayerInstants[key];
       if (typeof t === 'number' && nowMs < t) {
-        this.nextPrayerKey = key;
-        this.nextPrayerAtMs = t;
-        this.nextPrayerLabel = key.toUpperCase();
-        return;
+        nextKey = key;
+        nextAt = t;
+        break;
       }
     }
 
-    // If we're after Isha, the next prayer is Fajr (tomorrow).
-    this.nextPrayerKey = 'fajr';
-    this.nextPrayerLabel = 'FAJR';
+    if (nextAt == null) {
+      // After Isha, next is Fajr tomorrow.
+      nextKey = 'fajr';
+      if (!this.settings.coords) {
+        nextAt = null;
+      } else {
+        const todayKey = this.prayerTimes.getLocalDateKey(now);
+        if (this.tomorrowFajrForDateKey !== todayKey) {
+          const tomorrow = new Date(now);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const tomorrowTimes = this.prayerTimes.computeTimes(this.settings, tomorrow);
+          this.tomorrowFajrAtMs = this.parseTimeToEpoch(tomorrowTimes.fajr, tomorrow);
+          this.tomorrowFajrForDateKey = todayKey;
+        }
+        nextAt = this.tomorrowFajrAtMs;
+      }
+    }
 
-    if (!this.settings.coords) {
-      this.nextPrayerAtMs = null;
+    this.nextPrayerKey = nextKey;
+    this.nextPrayerAtMs = nextAt;
+    this.nextPrayerLabel = nextKey.toUpperCase();
+
+    if (this.skipNextAnnounce) {
+      this.skipNextAnnounce = false;
       return;
     }
-
-    const todayKey = this.prayerTimes.getLocalDateKey(now);
-    if (this.tomorrowFajrForDateKey !== todayKey) {
-      const tomorrow = new Date(now);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const tomorrowTimes = this.prayerTimes.computeTimes(this.settings, tomorrow);
-      this.tomorrowFajrAtMs = this.parseTimeToEpoch(tomorrowTimes.fajr, tomorrow);
-      this.tomorrowFajrForDateKey = todayKey;
+    if (prevKey && prevKey !== nextKey) {
+      this.startPrayerAnnounce(prevKey, nowMs);
     }
-    this.nextPrayerAtMs = this.tomorrowFajrAtMs;
+  }
+
+  private startPrayerAnnounce(
+    prayer: 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha',
+    nowMs: number
+  ): void {
+    this.announcingPrayer = prayer;
+    this.announcingLabel = prayer.toUpperCase();
+    this.announceLeaving = false;
+    this.announceHoldUntilMs = nowMs + this.announceHoldMs;
+    this.announceClearAtMs = this.announceHoldUntilMs + this.announceFadeMs;
+  }
+
+  private tickPrayerAnnounce(nowMs: number): void {
+    if (!this.announcingPrayer) return;
+    if (nowMs >= this.announceClearAtMs) {
+      this.announcingPrayer = null;
+      this.announcingLabel = '';
+      this.announceLeaving = false;
+      return;
+    }
+    if (nowMs >= this.announceHoldUntilMs) {
+      this.announceLeaving = true;
+    }
   }
 
   private updateCountdown(now: Date): void {
@@ -510,6 +570,7 @@ export class HomeComponent implements OnInit {
     // Update next-prayer highlight as time passes.
     if (this.times?.raw) this.updateNextPrayer(date);
     this.updateCountdown(date);
+    this.tickPrayerAnnounce(date.getTime());
     this.updateNightMode(date);
   }
 

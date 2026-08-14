@@ -46,12 +46,29 @@
   </div>
   }
 
+  @if (announcingPrayer) {
+  <div
+    class="prayerAnnounce"
+    [class.is-leaving]="announceLeaving"
+    role="status"
+    [attr.aria-label]="announcingLabel + ' is now. Next ' + nextPrayerLabel + ' in ' + nextPrayerCountdown"
+  >
+    <div class="prayerAnnounceNow">{{ announcingLabel }}</div>
+    <div class="prayerAnnounceSub">IT'S TIME</div>
+    <div class="prayerAnnounceNext">
+      NEXT <span class="prayerAnnounceNextName">{{ nextPrayerLabel }}</span>
+      IN <span class="prayerAnnounceNextTime">{{ nextPrayerCountdown || '--:--:--' }}</span>
+    </div>
+  </div>
+  }
+
   <section class="content" [class.panel-left]="panelLeft">
     <div class="grid" aria-label="Prayer times grid">
       <!-- Row 1 (FAJR) -->
       <div
         class="cell dark prayer"
         [class.is-next]="nextPrayerKey === 'fajr'"
+        [class.is-now]="announcingPrayer === 'fajr'"
         [class.prayer-pair-row]="nextPrayerKey === 'fajr'"
       >
         @if (nextPrayerKey === 'fajr') {
@@ -61,7 +78,7 @@
           FAJR
         }
       </div>
-      <div class="cell dark" [class.is-next]="nextPrayerKey === 'fajr'">
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'fajr'" [class.is-now]="announcingPrayer === 'fajr'">
         <div class="timeStack">
           <div class="startsBand">
             <div class="colLabel">STARTS</div>
@@ -73,24 +90,24 @@
       </div>
 
       <!-- Row 2 (DHUHR) -->
-      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'dhuhr'">DHUHR</div>
-      <div class="cell dark" [class.is-next]="nextPrayerKey === 'dhuhr'">
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'dhuhr'" [class.is-now]="announcingPrayer === 'dhuhr'">DHUHR</div>
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'dhuhr'" [class.is-now]="announcingPrayer === 'dhuhr'">
         <div class="time">
           {{ times?.dhuhr?.time ?? '-----' }}<span class="ampm">{{ times?.dhuhr?.ampm }}</span>
         </div>
       </div>
 
       <!-- Row 3 (ASR) -->
-      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'asr'">ASR</div>
-      <div class="cell dark" [class.is-next]="nextPrayerKey === 'asr'">
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'asr'" [class.is-now]="announcingPrayer === 'asr'">ASR</div>
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'asr'" [class.is-now]="announcingPrayer === 'asr'">
         <div class="time">
           {{ times?.asr?.time ?? '-----' }}<span class="ampm">{{ times?.asr?.ampm }}</span>
         </div>
       </div>
 
       <!-- Row 4 (MAGHRIB) -->
-      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'maghrib'">MAGHRIB</div>
-      <div class="cell dark" [class.is-next]="nextPrayerKey === 'maghrib'">
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'maghrib'" [class.is-now]="announcingPrayer === 'maghrib'">MAGHRIB</div>
+      <div class="cell dark" [class.is-next]="nextPrayerKey === 'maghrib'" [class.is-now]="announcingPrayer === 'maghrib'">
         <div class="time">
           {{ times?.maghrib?.time ?? '-----' }}
           <span class="ampm">{{ times?.maghrib?.ampm }}</span>
@@ -101,10 +118,11 @@
       <div
         class="cell dark prayer row-last"
         [class.is-next]="nextPrayerKey === 'isha'"
+        [class.is-now]="announcingPrayer === 'isha'"
       >
         ISHA
       </div>
-      <div class="cell dark row-last" [class.is-next]="nextPrayerKey === 'isha'">
+      <div class="cell dark row-last" [class.is-next]="nextPrayerKey === 'isha'" [class.is-now]="announcingPrayer === 'isha'">
         <div class="time">
           {{ times?.isha?.time ?? '-----' }}<span class="ampm">{{ times?.isha?.ampm }}</span>
         </div>
@@ -120,26 +138,21 @@
         </div>
       </header>
       <div class="panelTempStrip" aria-label="Current temperature">
-        <div class="panelTempStripInner">
-          <div class="panelTempText">
-            <span class="panelTempItem">
-              <span class="panelTempLabel">Current:</span>
-              <span class="panelTempValue">
-                @if (currentTempF !== null) {
-                  {{ currentTempF | number:'1.0-0' }}°F
-                } @else {
-                  <span aria-hidden="true">--</span>
-                }
-              </span>
-            </span>
-            @if (feelsLikeTempF !== null) {
-              <span class="panelTempSep" aria-hidden="true"></span>
-              <span class="panelTempItem">
-                <span class="panelTempLabel">Feels like:</span>
-                <span class="panelTempValue">{{ feelsLikeTempF | number:'1.0-0' }}°F</span>
-              </span>
+        <div class="panelTempCol">
+          <span class="panelTempLabel">Current:</span>
+          <span class="panelTempValue">
+            @if (currentTempF !== null) {
+              {{ currentTempF | number:'1.0-0' }}°F
+            } @else {
+              <span aria-hidden="true">--</span>
             }
-          </div>
+          </span>
+        </div>
+        <div class="panelTempCol">
+          @if (feelsLikeTempF !== null) {
+            <span class="panelTempLabel">Feels like:</span>
+            <span class="panelTempValue">{{ feelsLikeTempF | number:'1.0-0' }}°F</span>
+          }
         </div>
       </div>
       <div class="rule" aria-hidden="true"></div>
@@ -161,6 +174,10 @@
           </div>
           <div class="countdownRow">
             <div class="countdown">
+              @if (announcingPrayer) {
+                <span class="countdownNow">{{ announcingLabel }} NOW</span>
+                <span class="countdownDot" aria-hidden="true">·</span>
+              }
               NEXT <span class="countdownPrayer">{{ nextPrayerLabel }}</span> IN
               <span class="countdownTime">{{ nextPrayerCountdown || '--:--:--' }}</span>
             </div>

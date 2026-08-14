@@ -1,6 +1,67 @@
 /* Home screen (Prayer Times) styles.
    Scoped to app-home to avoid affecting /settings. */
 
+@property --clock-color {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #111111;
+}
+@property --clock-on-dark {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ffffff;
+}
+@property --navy {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #07233c;
+}
+@property --panel {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #e4e1df;
+}
+@property --white {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ffffff;
+}
+@property --text {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #111111;
+}
+@property --amber {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #d68f47;
+}
+@property --amber-dim {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #986734;
+}
+@property --amber-bright {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #f2a95a;
+}
+@property --line {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ffffff52;
+}
+@property --line-dark {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #00000059;
+}
+@property --seam {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #d68f4752;
+}
+
 app-home {
   display: block;
   position: fixed;
@@ -385,106 +446,78 @@ app-home .panelTop {
   letter-spacing: 0.06em;
   background: var(--navy);
   color: #fff;
-  padding: clamp(12px, 2vmin, 22px) var(--date-bar-pad-x);
+  padding: clamp(16px, 2.4vmin, 28px) 0;
   border-bottom: 2px solid rgba(255, 255, 255, 0.65);
   overflow-x: hidden;
   max-width: 100%;
+  width: 100%;
 }
 
-app-home .panelTop .dateRow {
+/* Hijri left, Gregorian right — 50/50 so the split lines up with temp + sun */
+app-home .dateRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
 }
 
-/* Stacked Hijri then Gregorian — full labels stay inside navy bar without ellipsis */
-app-home .dateRow {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(4px, 1.2vmin, 10px);
-  width: 100%;
-  max-width: 100%;
-}
-
-app-home .hijri {
-  font-size: clamp(15px, min(7vmin, 5.2vw), 52px);
-  line-height: 1.2;
+app-home .hijri,
+app-home .greg {
+  min-width: 0;
+  font-size: clamp(18px, min(4.8vmin, 3.8vw), 50px);
+  line-height: 1.15;
   font-weight: 600;
   color: inherit;
   white-space: normal;
   text-align: center;
   overflow: visible;
-  width: 100%;
-  max-width: 100%;
+  padding: 0 clamp(8px, 1.4vw, 18px);
 }
 
 app-home .greg {
-  font-size: clamp(14px, min(6.5vmin, 4.85vw), 48px);
-  line-height: 1.25;
   font-weight: 500;
-  color: inherit;
-  white-space: normal;
-  text-align: center;
-  overflow: visible;
-  width: 100%;
-  max-width: 100%;
   opacity: 0.95;
+  border-left: 2px solid rgba(255, 255, 255, 0.28);
 }
 
-/* Tied to navy bar width — grows on wide panels, capped so two lines fit comfortably */
 @supports (font-size: 1cqw) {
   app-home .panelTop {
     container-type: inline-size;
     container-name: date-bar;
   }
 
-  app-home .dateRow {
-    gap: clamp(4px, 1.5cqw, 12px);
-  }
-
-  app-home .hijri {
-    font-size: clamp(15px, min(11cqw, 7vmin), 54px);
-  }
-
+  app-home .hijri,
   app-home .greg {
-    font-size: clamp(14px, min(10.25cqw, 6.8vmin), 50px);
+    font-size: clamp(18px, min(7cqw, 4.6vmin), 52px);
   }
 }
-/* Temperature strip: minimal space before the clock */
+
+/* Temperature: same 50/50 split as the date bar and sunrise/sunset */
 app-home .panelTempStrip {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   width: 100%;
-  padding: 6px 16px 2px;
+  padding: clamp(8px, 1.2vmin, 14px) 0;
   margin: 0;
   background: var(--panel);
   color: var(--navy);
 }
 
-app-home .panelTempStripInner {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 100%;
-}
-
-app-home .panelTempText {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  column-gap: clamp(28px, 3.5vw, 56px);
-  row-gap: 0.35em;
-  line-height: 1;
-}
-
-app-home .panelTempItem {
-  display: inline-flex;
+app-home .panelTempCol {
+  display: flex;
   align-items: baseline;
+  justify-content: center;
   gap: clamp(10px, 1.1vw, 18px);
+  min-width: 0;
+  padding: 0 clamp(8px, 1.4vw, 18px);
   white-space: nowrap;
+}
+
+app-home .panelTempCol + .panelTempCol {
+  border-left: 2px solid rgba(7, 35, 60, 0.22);
 }
 
 app-home .panelTempLabel {
@@ -506,16 +539,7 @@ app-home .panelTempValue {
   text-transform: none;
 }
 
-/* Soft divider between current and feels-like */
-app-home .panelTempSep {
-  flex-shrink: 0;
-  align-self: stretch;
-  width: 2px;
-  min-height: 0.85em;
-  margin: 0;
-  background: rgba(7, 35, 60, 0.22);
-  border-radius: 1px;
-}
+/* Soft divider between current and feels-like — now on .panelTempCol + .panelTempCol */
 
 app-home .rule {
   height: 2px;
@@ -583,9 +607,9 @@ app-home .jumuBlock {
   text-align: center;
 }
 
-/* ~5px between “NEXT … IN …” and the Jumu′ divider */
+/* Tight gap — jumu'ah is a compact weekday strip, not a hero block */
 app-home .jumuBlock > .rule.jumuRuleTop {
-  margin: 5px 0 16px;
+  margin: 4px 0 6px;
 }
 
 app-home .now {
@@ -601,7 +625,7 @@ app-home .now {
   min-width: 0;
   padding-inline: var(--date-bar-pad-x) var(--clock-pad-end);
   box-sizing: border-box;
-  font-size: clamp(100px, min(22vw, 52vmin), 720px);
+  font-size: clamp(108px, min(23.5vw, 55vmin), 760px);
   line-height: 1;
   letter-spacing: 0.022em;
   margin-inline: 0;
@@ -614,7 +638,7 @@ app-home .now {
 /* 12h hours 1–9: scale up + center the HH:MM + :ss row in the beige panel */
 app-home .now.now--single-hour {
   justify-content: center;
-  font-size: clamp(108px, min(24vw, 58vmin), 780px);
+  font-size: clamp(116px, min(25.5vw, 61vmin), 820px);
 }
 
 app-home .nowMain {
@@ -805,44 +829,60 @@ app-home .now .nowSide {
 
 
 app-home .jum {
-  text-align: center;
-  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 18px;
+  margin-top: 2px;
   width: 100%;
+  text-align: center;
 }
 
 app-home .jumTitle {
   font-family: var(--font-ui);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 28px;
-  margin: 0 0 10px 0;
+  letter-spacing: 0.1em;
+  font-size: clamp(12px, 1.5vw, 16px);
+  font-weight: 700;
+  margin: 0;
+  opacity: 0.8;
 }
 
 app-home .jumGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 22px;
+  align-items: baseline;
+  justify-content: center;
+}
+
+app-home .jumGrid > div {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
 }
 
 app-home .jumTime {
   font-family: var(--font-num);
-  font-size: 48px;
+  font-size: clamp(18px, 2.2vw, 26px);
   margin: 0;
+  line-height: 1.1;
 }
 
 app-home .jumTime .ampm {
-  font-size: 18px;
-  vertical-align: 12px;
-  margin-left: 6px;
+  font-size: 0.5em;
+  vertical-align: 0.35em;
+  margin-left: 4px;
 }
 
 app-home .jumLabel {
   font-family: var(--font-ui);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: clamp(12px, 1.6vw, 18px);
-  margin: 6px 0 0 0;
+  letter-spacing: 0.08em;
+  font-size: clamp(10px, 1.1vw, 13px);
+  margin: 0;
+  opacity: 0.7;
 }
 
 app-home .locationNeeded {
@@ -894,19 +934,16 @@ app-home .locationNeeded a {
 
 app-home .sunBar {
   flex: 0 0 auto;
-  margin-top: clamp(6px, 1.6vw, 20px);
+  margin-top: clamp(6px, 1vw, 14px);
   background: var(--navy);
   color: #fff;
+  border-radius: 10px;
   min-height: 0;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  align-content: center;
-  row-gap: clamp(6px, 1.5vh, 14px);
-  column-gap: clamp(12px, 2.5vw, 24px);
-  padding: clamp(8px, 1.4vh, 14px) clamp(8px, 2.4vw, 20px);
+  gap: 0;
+  padding: clamp(16px, 3vh, 44px) 0;
   min-width: 0;
   width: 100%;
   max-width: 100%;
@@ -914,39 +951,58 @@ app-home .sunBar {
 }
 
 app-home .sunRow {
-  flex: 1 1 200px;
+  flex: 1 1 0;
   min-width: 0;
   max-width: 100%;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 8px clamp(8px, 1.6vw, 12px);
+  gap: clamp(4px, 0.8vw, 10px) clamp(6px, 1vw, 12px);
+  padding: 0 clamp(6px, 1.2vw, 14px);
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: clamp(14px, min(2.2vw, 2.8vh), 22px);
 }
 
-app-home .sunTime {
+app-home .sunRow + .sunRow {
+  border-left: 2px solid rgba(255, 255, 255, 0.28);
+}
+
+app-home .sunLabel {
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  font-size: clamp(18px, min(3vw, 3.6vh), 42px);
+  line-height: 1;
+  opacity: 0.9;
+}
+
+app-home .sunBar .sunTime {
+  flex-basis: 100%;
+  text-align: center;
   font-family: var(--font-num);
   font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  font-size: clamp(16px, min(2.6vw, 3.2vh), 28px);
-  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: 0.01em;
+  line-height: 1;
   white-space: nowrap;
+  font-size: clamp(40px, min(6.5vw, 8vh), 122px);
 }
 
 app-home .sunTime .ampm {
-  font-size: 0.55em;
+  font-size: 0.46em;
   font-weight: 600;
-  vertical-align: 0.35em;
+  vertical-align: 0.4em;
+  margin-left: 0.12em;
   opacity: 0.9;
 }
 
 app-home .icon {
-  width: clamp(22px, 3.2vmin, 34px);
-  height: clamp(14px, 2vmin, 20px);
+  width: clamp(34px, 4.8vmin, 64px);
+  height: clamp(20px, 3vmin, 40px);
   flex-shrink: 0;
 }
 
@@ -973,14 +1029,14 @@ app-home .icon {
     letter-spacing: 0.045em;
   }
   app-home .sunRow {
-    font-size: clamp(22px, min(3.2vmin, 4vh), 50px);
+    font-size: inherit;
   }
   app-home .sunTime {
-    font-size: clamp(26px, min(3.8vmin, 4.6vh), 60px);
+    font-size: clamp(48px, min(7vw, 8.5vh), 130px);
   }
   app-home .sunTime .ampm {
-    font-size: 0.55em;
-    vertical-align: 0.35em;
+    font-size: 0.46em;
+    vertical-align: 0.4em;
   }
   app-home .jumuBlock {
     margin-top: 0;
@@ -989,21 +1045,15 @@ app-home .icon {
     padding: 22px 28px max(8px, env(safe-area-inset-bottom, 0px)) 28px;
   }
   app-home .panelTop {
-    padding: clamp(10px, 1.8vmin, 18px) clamp(12px, 3vw, 32px);
+    padding: clamp(16px, 2.4vmin, 28px) 0;
     border-bottom-width: 3px;
   }
   app-home .panelTempStrip {
-    padding: 8px 18px 4px;
-  }
-  app-home .panelTempText {
-    column-gap: clamp(36px, 4vw, 72px);
+    padding: clamp(8px, 1.4vmin, 16px) 0;
   }
   app-home .panelTempLabel,
   app-home .panelTempValue {
     font-size: clamp(42px, 4.5vw, 58px);
-  }
-  app-home .panelTempSep {
-    width: 2px;
   }
   app-home .rule {
     margin: 4px 0 6px;
@@ -1016,6 +1066,146 @@ app-home .icon {
   }
   app-home .countdownTime {
     font-size: 1.15em;
+  }
+}
+
+/* Slow sunrise / sunset fade once the first frame has painted. */
+app-home.theme-ready {
+  transition:
+    --clock-color 8s ease-in-out,
+    --clock-on-dark 8s ease-in-out,
+    --navy 8s ease-in-out,
+    --panel 8s ease-in-out,
+    --white 8s ease-in-out,
+    --text 8s ease-in-out,
+    --amber 8s ease-in-out,
+    --amber-dim 8s ease-in-out,
+    --amber-bright 8s ease-in-out,
+    --line 8s ease-in-out,
+    --line-dark 8s ease-in-out,
+    --seam 8s ease-in-out,
+    background-color 8s ease-in-out,
+    color 8s ease-in-out;
+}
+
+app-home.theme-ready .board,
+app-home.theme-ready .cell,
+app-home.theme-ready .panel,
+app-home.theme-ready .panelTop,
+app-home.theme-ready .panelTempStrip,
+app-home.theme-ready .now,
+app-home.theme-ready .time,
+app-home.theme-ready .sunBar,
+app-home.theme-ready .sunTime,
+app-home.theme-ready .countdown,
+app-home.theme-ready .countdownPrayer,
+app-home.theme-ready .countdownTime,
+app-home.theme-ready .jumTime,
+app-home.theme-ready .grid {
+  transition:
+    background-color 8s ease-in-out,
+    color 8s ease-in-out,
+    border-color 8s ease-in-out,
+    text-shadow 8s ease-in-out;
+}
+
+html.theme-ready,
+html.theme-ready body {
+  transition: background-color 8s ease-in-out, color 8s ease-in-out;
+}
+
+/* Prayer that just started (adhan) — hold the highlight for 30s. */
+app-home .cell.is-now {
+  background: color-mix(in srgb, var(--navy) 82%, #fff);
+  color: var(--clock-color, var(--text));
+  animation: prayerNowPulse 1.8s ease-in-out infinite;
+}
+
+app-home .countdownNow {
+  font-weight: 800;
+  color: var(--navy);
+}
+
+app-home .countdownDot {
+  margin: 0 0.35em;
+  opacity: 0.55;
+}
+
+/* Full-screen “ASR / IT'S TIME / NEXT …” cue */
+app-home .prayerAnnounce {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.6vh, 18px);
+  padding: 24px;
+  background: color-mix(in srgb, var(--navy) 78%, transparent);
+  color: #fff;
+  text-align: center;
+  font-family: var(--font-ui);
+  animation: announceIn 0.7s ease-out;
+}
+
+app-home .prayerAnnounce.is-leaving {
+  animation: announceOut 0.8s ease-in forwards;
+}
+
+app-home .prayerAnnounceNow {
+  font-size: clamp(64px, 14vw, 220px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+app-home .prayerAnnounceSub {
+  font-size: clamp(22px, 4.2vw, 56px);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  opacity: 0.92;
+}
+
+app-home .prayerAnnounceNext {
+  margin-top: clamp(8px, 1.8vh, 22px);
+  font-size: clamp(18px, 3.2vw, 42px);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.95;
+}
+
+app-home .prayerAnnounceNextName,
+app-home .prayerAnnounceNextTime {
+  font-weight: 800;
+}
+
+@keyframes announceIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes announceOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes prayerNowPulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.18);
   }
 }
 
