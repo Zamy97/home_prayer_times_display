@@ -146,6 +146,46 @@ Deploy with Vercel; the SPA will serve correctly.
 
 ---
 
+## Raspberry Pi offline kiosk
+
+The app can run continuously on a Raspberry Pi without WiFi. Prayer times,
+clock, dates, countdowns, night mode, and saved settings all run locally.
+Weather shows the last cached reading or `--` while offline.
+
+### One-time setup
+
+1. Install **Raspberry Pi OS with Desktop** and enable desktop auto-login.
+2. Copy or clone this project onto the Pi while it has internet access.
+3. In a Pi terminal, run:
+
+```bash
+cd Home_Prayer_Times_Display
+chmod +x scripts/pi-kiosk/*.sh scripts/pi-kiosk/serve.py
+./scripts/pi-kiosk/install.sh
+```
+
+The installer installs any missing Pi packages, creates the production build,
+and adds a desktop autostart entry. It then launches Chromium in kiosk mode
+against a local server at `http://127.0.0.1:4173/`.
+
+The dedicated Chromium profile is stored at
+`~/.config/prayer-times-kiosk/chromium`, so the city, coordinates, layout,
+night mode, and color choices persist across reboots and power loss.
+
+Before taking the Pi to an offline location:
+
+1. Hold the top-left corner for about 1.8 seconds to open Settings.
+2. Select the destination city (or enter its coordinates) and save.
+3. Reboot once and confirm the kiosk starts with WiFi turned off.
+
+To remove autostart later:
+
+```bash
+./scripts/pi-kiosk/uninstall.sh
+```
+
+---
+
 ## Summary
 
 | Item | Detail |
