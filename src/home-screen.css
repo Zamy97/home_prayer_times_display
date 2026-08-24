@@ -648,6 +648,30 @@ app-home .nowMain {
   letter-spacing: 0.028em;
 }
 
+/* Soft digital-clock blink on the HH:MM colon (once per second). */
+app-home .nowColon {
+  display: inline-block;
+  animation: clockColonBlink 1s steps(1, end) infinite;
+}
+
+@keyframes clockColonBlink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  app-home .nowColon {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 app-home .now .seconds {
   font-size: clamp(15px, min(4.25vmin, 3.6vw), 74px);
   letter-spacing: 0.04em;
