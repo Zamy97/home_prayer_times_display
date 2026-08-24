@@ -46,15 +46,28 @@
   </div>
   }
 
+  @if (skyTransition) {
+  <div
+    class="skyTransition"
+    [class.sky-sunrise]="skyTransition === 'sunrise'"
+    [class.sky-sunset]="skyTransition === 'sunset'"
+    aria-hidden="true"
+  >
+    <div class="skyTransitionGlow"></div>
+    <div class="skyTransitionHorizon"></div>
+    <div class="skyTransitionSun"></div>
+  </div>
+  }
+
   @if (announcingPrayer) {
   <div
     class="prayerAnnounce"
     [class.is-leaving]="announceLeaving"
     role="status"
-    [attr.aria-label]="announcingLabel + ' is now. Next ' + nextPrayerLabel + ' in ' + nextPrayerCountdown"
+    [attr.aria-label]="'It is time for ' + announcingLabel + '. Next ' + nextPrayerLabel + ' in ' + nextPrayerCountdown"
   >
+    <div class="prayerAnnounceSub">IT'S TIME FOR</div>
     <div class="prayerAnnounceNow">{{ announcingLabel }}</div>
-    <div class="prayerAnnounceSub">IT'S TIME</div>
     <div class="prayerAnnounceNext">
       NEXT <span class="prayerAnnounceNextName">{{ nextPrayerLabel }}</span>
       IN <span class="prayerAnnounceNextTime">{{ nextPrayerCountdown || '--:--:--' }}</span>

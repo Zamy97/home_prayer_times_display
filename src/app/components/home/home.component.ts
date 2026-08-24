@@ -38,6 +38,8 @@ export class HomeComponent implements OnInit {
   @HostBinding('class.night') nightActive = false;
   /** Enables slow color fades after the first paint so load isn't animated. */
   @HostBinding('class.theme-ready') themeReady = false;
+  /** Atmospheric sunrise / sunset overlay while day ↔ night fades (clock stays visible). */
+  skyTransition: 'sunrise' | 'sunset' | null = null;
   /** Bright alarm-clock LED red: extra glow so it reads from across the room. */
   @HostBinding('class.clock-led')
   get clockLed(): boolean {
@@ -102,6 +104,10 @@ export class HomeComponent implements OnInit {
   private readonly announceHoldMs = 30_000;
   private readonly announceFadeMs = 800;
   private themeReadyTimer: ReturnType<typeof setTimeout> | null = null;
+  private skyTransitionTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly skyTransitionMs = 30_000;
+  /** Skip sky animation on the first night-mode apply (initial load / settings hydrate). */
+  private nightModeInitialized = false;
 
   private hotCornerTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly hotCornerHoldMs = 1800;
@@ -192,6 +198,7 @@ export class HomeComponent implements OnInit {
       window.removeEventListener('focus', onFocus);
       this.clearHotCornerTimer();
       if (this.themeReadyTimer) clearTimeout(this.themeReadyTimer);
+      if (this.skyTransitionTimer) clearTimeout(this.skyTransitionTimer);
       document.documentElement.classList.remove('theme-ready');
     });
     this.updateNightMode(new Date());
@@ -579,11 +586,27 @@ export class HomeComponent implements OnInit {
    * - off  → always the normal light layout
    * - on   → always the dark night layout
    * - auto → dark from sunset until sunrise (falls back to 8pm–6am if times aren't ready)
+   *
+   * When auto flips at sunrise/sunset (or the user toggles), run a 30s sky overlay
+   * so the fade feels like sunrise or sunset while the clock stays readable.
    */
   private updateNightMode(now: Date): void {
     const active = this.settingsService.isNightActive(now);
+    if (this.nightModeInitialized && active !== this.nightActive) {
+      this.startSkyTransition(active ? 'sunset' : 'sunrise');
+    }
+    this.nightModeInitialized = true;
     this.nightActive = active;
     document.documentElement.classList.toggle('night', active);
+  }
+
+  private startSkyTransition(kind: 'sunrise' | 'sunset'): void {
+    if (this.skyTransitionTimer) clearTimeout(this.skyTransitionTimer);
+    this.skyTransition = kind;
+    this.skyTransitionTimer = setTimeout(() => {
+      this.skyTransition = null;
+      this.skyTransitionTimer = null;
+    }, this.skyTransitionMs);
   }
 }
 

@@ -1072,20 +1072,20 @@ app-home .icon {
 /* Slow sunrise / sunset fade once the first frame has painted. */
 app-home.theme-ready {
   transition:
-    --clock-color 8s ease-in-out,
-    --clock-on-dark 8s ease-in-out,
-    --navy 8s ease-in-out,
-    --panel 8s ease-in-out,
-    --white 8s ease-in-out,
-    --text 8s ease-in-out,
-    --amber 8s ease-in-out,
-    --amber-dim 8s ease-in-out,
-    --amber-bright 8s ease-in-out,
-    --line 8s ease-in-out,
-    --line-dark 8s ease-in-out,
-    --seam 8s ease-in-out,
-    background-color 8s ease-in-out,
-    color 8s ease-in-out;
+    --clock-color 30s ease-in-out,
+    --clock-on-dark 30s ease-in-out,
+    --navy 30s ease-in-out,
+    --panel 30s ease-in-out,
+    --white 30s ease-in-out,
+    --text 30s ease-in-out,
+    --amber 30s ease-in-out,
+    --amber-dim 30s ease-in-out,
+    --amber-bright 30s ease-in-out,
+    --line 30s ease-in-out,
+    --line-dark 30s ease-in-out,
+    --seam 30s ease-in-out,
+    background-color 30s ease-in-out,
+    color 30s ease-in-out;
 }
 
 app-home.theme-ready .board,
@@ -1103,15 +1103,177 @@ app-home.theme-ready .countdownTime,
 app-home.theme-ready .jumTime,
 app-home.theme-ready .grid {
   transition:
-    background-color 8s ease-in-out,
-    color 8s ease-in-out,
-    border-color 8s ease-in-out,
-    text-shadow 8s ease-in-out;
+    background-color 30s ease-in-out,
+    color 30s ease-in-out,
+    border-color 30s ease-in-out,
+    text-shadow 30s ease-in-out;
 }
 
 html.theme-ready,
 html.theme-ready body {
-  transition: background-color 8s ease-in-out, color 8s ease-in-out;
+  transition: background-color 30s ease-in-out, color 30s ease-in-out;
+}
+
+/* Atmospheric sunrise / sunset wash — sits above the board, under announcements.
+   pointer-events none so the clock stays fully readable and interactive. */
+app-home .skyTransition {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  overflow: hidden;
+  animation: skyOverlayInOut 30s ease-in-out forwards;
+}
+
+app-home .skyTransitionGlow,
+app-home .skyTransitionHorizon,
+app-home .skyTransitionSun {
+  position: absolute;
+  inset: 0;
+}
+
+/* Soft wash across the whole screen */
+app-home .sky-sunrise .skyTransitionGlow {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 108%, rgba(255, 196, 90, 0.55) 0%, transparent 58%),
+    radial-gradient(ellipse 70% 45% at 18% 85%, rgba(255, 140, 80, 0.28) 0%, transparent 55%),
+    linear-gradient(
+      180deg,
+      rgba(90, 140, 210, 0.22) 0%,
+      rgba(255, 170, 120, 0.18) 42%,
+      rgba(255, 210, 140, 0.32) 72%,
+      rgba(255, 230, 180, 0.2) 100%
+    );
+}
+
+app-home .sky-sunset .skyTransitionGlow {
+  background:
+    radial-gradient(ellipse 95% 60% at 50% -8%, rgba(255, 110, 50, 0.45) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 82% 20%, rgba(180, 60, 120, 0.28) 0%, transparent 55%),
+    linear-gradient(
+      180deg,
+      rgba(40, 20, 70, 0.38) 0%,
+      rgba(160, 50, 70, 0.28) 35%,
+      rgba(255, 120, 50, 0.3) 68%,
+      rgba(20, 10, 30, 0.35) 100%
+    );
+}
+
+/* Horizon band that brightens / dims */
+app-home .skyTransitionHorizon {
+  background: linear-gradient(
+    180deg,
+    transparent 48%,
+    rgba(255, 200, 120, 0.22) 58%,
+    rgba(255, 150, 70, 0.18) 66%,
+    transparent 78%
+  );
+  opacity: 0.85;
+  animation: skyHorizonPulse 30s ease-in-out forwards;
+}
+
+app-home .sky-sunset .skyTransitionHorizon {
+  background: linear-gradient(
+    180deg,
+    transparent 42%,
+    rgba(255, 90, 40, 0.28) 55%,
+    rgba(120, 30, 80, 0.22) 64%,
+    transparent 78%
+  );
+}
+
+/* Soft sun disc rises at sunrise / settles at sunset */
+app-home .skyTransitionSun {
+  width: min(42vw, 320px);
+  height: min(42vw, 320px);
+  left: 50%;
+  top: auto;
+  bottom: -12%;
+  right: auto;
+  inset: auto;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 245, 200, 0.95) 0%,
+    rgba(255, 190, 80, 0.55) 38%,
+    rgba(255, 120, 40, 0.18) 62%,
+    transparent 72%
+  );
+  filter: blur(2px);
+  opacity: 0.85;
+}
+
+app-home .sky-sunrise .skyTransitionSun {
+  animation: skySunRise 30s ease-in-out forwards;
+}
+
+app-home .sky-sunset .skyTransitionSun {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 220, 160, 0.9) 0%,
+    rgba(255, 120, 50, 0.55) 36%,
+    rgba(160, 40, 80, 0.2) 60%,
+    transparent 72%
+  );
+  animation: skySunSet 30s ease-in-out forwards;
+}
+
+@keyframes skyOverlayInOut {
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes skyHorizonPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scaleY(0.85);
+  }
+  45% {
+    opacity: 1;
+    transform: scaleY(1.05);
+  }
+}
+
+@keyframes skySunRise {
+  0% {
+    transform: translateX(-50%) translateY(28vh) scale(0.7);
+    opacity: 0.35;
+  }
+  55% {
+    transform: translateX(-50%) translateY(-8vh) scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(-50%) translateY(-22vh) scale(1.08);
+    opacity: 0;
+  }
+}
+
+@keyframes skySunSet {
+  0% {
+    transform: translateX(-50%) translateY(-26vh) scale(1.05);
+    opacity: 0.55;
+  }
+  55% {
+    transform: translateX(-50%) translateY(6vh) scale(1);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateX(-50%) translateY(32vh) scale(0.75);
+    opacity: 0;
+  }
 }
 
 /* Prayer that just started (adhan) — hold the highlight for 30s. */
@@ -1131,7 +1293,7 @@ app-home .countdownDot {
   opacity: 0.55;
 }
 
-/* Full-screen “ASR / IT'S TIME / NEXT …” cue */
+/* Full-screen “IT'S TIME FOR / ISHA / NEXT …” cue */
 app-home .prayerAnnounce {
   position: fixed;
   inset: 0;
@@ -1162,9 +1324,9 @@ app-home .prayerAnnounceNow {
 }
 
 app-home .prayerAnnounceSub {
-  font-size: clamp(22px, 4.2vw, 56px);
+  font-size: clamp(20px, 3.6vw, 48px);
   font-weight: 700;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.18em;
   opacity: 0.92;
 }
 
