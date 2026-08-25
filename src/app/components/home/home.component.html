@@ -176,11 +176,9 @@
             <div
               class="now"
               [class.now--single-hour]="nowSingleDigitHour"
-              [attr.aria-label]="'Current time ' + nowTimeLabel"
+              aria-label="Current time"
             >
-              <span class="nowMain">
-                <span class="nowHour">{{ nowHour }}</span><span class="nowColon" aria-hidden="true">:</span><span class="nowMinute">{{ nowMinute }}</span>
-              </span>
+              <span class="nowMain">{{ nowTime }}</span>
               <span class="nowSide" aria-label="Seconds and meridiem">
                 <span class="seconds">:{{ nowSeconds }}</span>
                 <span class="ampm">{{ nowAmPm }}</span>

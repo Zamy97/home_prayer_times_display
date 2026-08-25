@@ -26,18 +26,11 @@ export class HomeComponent implements OnInit {
   hijriDateLabel = '';
   gregDateLabel = '';
 
-  nowHour = '';
-  nowMinute = '';
+  nowTime = '';
   nowSeconds = '';
   nowAmPm = '';
   /** True when 12h hour is 1–9 (narrower row — clock scales up so it doesn’t look small). */
   nowSingleDigitHour = false;
-
-  /** Combined label for accessibility (hour:minute). */
-  get nowTimeLabel(): string {
-    if (!this.nowHour || !this.nowMinute) return '';
-    return `${this.nowHour}:${this.nowMinute}`;
-  }
 
   sunrise: { time: string; ampm: string } | null = null;
   sunset: { time: string; ampm: string } | null = null;
@@ -566,8 +559,7 @@ export class HomeComponent implements OnInit {
     const second = parts.find((p) => p.type === 'second')?.value ?? '';
     const dayPeriod = parts.find((p) => p.type === 'dayPeriod')?.value ?? '';
 
-    this.nowHour = hour;
-    this.nowMinute = minute;
+    this.nowTime = `${hour}:${minute}`;
     this.nowSeconds = second;
     this.nowAmPm = dayPeriod;
     const hourNum = parseInt(hour, 10);
