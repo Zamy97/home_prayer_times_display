@@ -46,6 +46,11 @@ export class HomeComponent implements OnInit {
   get layoutPortrait(): boolean {
     return this.portraitLayout;
   }
+  /** Full-screen prayer announce is active — suppress duplicate highlights under the overlay. */
+  @HostBinding('class.is-announcing')
+  get isAnnouncing(): boolean {
+    return this.announcingPrayer !== null;
+  }
   /** Bright alarm-clock LED red: extra glow so it reads from across the room. */
   @HostBinding('class.clock-led')
   get clockLed(): boolean {

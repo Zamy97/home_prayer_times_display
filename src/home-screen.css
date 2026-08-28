@@ -1290,6 +1290,16 @@ app-home .cell.is-now {
   animation: prayerNowPulse 1.8s ease-in-out infinite;
 }
 
+/* Full-screen announce covers the board — skip the pulsing cell behind it. */
+app-home.is-announcing .cell.is-now {
+  animation: none;
+}
+
+app-home.is-announcing .countdownNow,
+app-home.is-announcing .countdownDot {
+  display: none;
+}
+
 app-home .countdownNow {
   font-weight: 800;
   color: var(--navy);
@@ -1300,7 +1310,7 @@ app-home .countdownDot {
   opacity: 0.55;
 }
 
-/* Full-screen “IT'S TIME FOR / ISHA / NEXT …” cue */
+/* Full-screen “IT'S TIME FOR / ISHA / NEXT …” cue — solid warm overlay (day & night). */
 app-home .prayerAnnounce {
   position: fixed;
   inset: 0;
@@ -1311,8 +1321,8 @@ app-home .prayerAnnounce {
   justify-content: center;
   gap: clamp(8px, 1.6vh, 18px);
   padding: 24px;
-  background: color-mix(in srgb, var(--navy) 78%, transparent);
-  color: #fff;
+  background: color-mix(in srgb, #000 90%, var(--amber));
+  color: var(--amber);
   text-align: center;
   font-family: var(--font-ui);
   animation: announceIn 0.7s ease-out;
@@ -1328,13 +1338,16 @@ app-home .prayerAnnounceNow {
   letter-spacing: 0.08em;
   line-height: 0.95;
   text-transform: uppercase;
+  color: var(--amber-bright);
+  text-shadow: 0 0 80px color-mix(in srgb, var(--amber) 45%, transparent);
 }
 
 app-home .prayerAnnounceSub {
   font-size: clamp(20px, 3.6vw, 48px);
   font-weight: 700;
   letter-spacing: 0.18em;
-  opacity: 0.92;
+  color: var(--amber-dim);
+  opacity: 0.95;
 }
 
 app-home .prayerAnnounceNext {
@@ -1342,12 +1355,14 @@ app-home .prayerAnnounceNext {
   font-size: clamp(18px, 3.2vw, 42px);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.95;
+  color: var(--amber);
+  opacity: 0.92;
 }
 
 app-home .prayerAnnounceNextName,
 app-home .prayerAnnounceNextTime {
   font-weight: 800;
+  color: var(--amber-bright);
 }
 
 @keyframes announceIn {

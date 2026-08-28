@@ -1,117 +1,156 @@
-<div class="wrap">
-  <h1>Settings</h1>
-  <p class="muted">
-    Choose your location and calculation settings. These are saved on this device.
-    Visit <code>/settings</code> anytime to update them.
-  </p>
+<div class="page">
+  <header class="head">
+    <div class="headInner">
+      <h1>Settings</h1>
+      <p class="muted">Saved on this device · visit <code>/settings</code> anytime</p>
+    </div>
+  </header>
 
-  <div class="grid">
-    <label class="field">
-      <div class="label">City</div>
-      <select
-        class="input"
-        [ngModel]="selectedCityId"
-        (ngModelChange)="selectedCityId = $event; onCityChange()"
-        name="city"
-      >
-        <option [ngValue]="otherCityId">Other (enter coordinates below)</option>
-        @for (city of cities; track city.id) {
-          <option [ngValue]="city.id">{{ city.name }}</option>
+  <main class="main">
+    <section class="panel panel--location">
+      <h2 class="sectionTitle">
+        <span class="sectionDot"></span>
+        Location
+      </h2>
+      <div class="fields">
+        <label class="field">
+          <span class="label">City</span>
+          <select
+            class="input"
+            [ngModel]="selectedCityId"
+            (ngModelChange)="selectedCityId = $event; onCityChange()"
+            name="city"
+            title="Pick a city or choose Other to enter latitude and longitude"
+          >
+            <option [ngValue]="otherCityId">Other (enter coordinates below)</option>
+            @for (city of cities; track city.id) {
+              <option [ngValue]="city.id">{{ city.name }}</option>
+            }
+          </select>
+        </label>
+
+        @if (selectedCityId === otherCityId) {
+          <div class="coordRow">
+            <label class="field">
+              <span class="label">Latitude</span>
+              <input class="input" [(ngModel)]="lat" name="lat" placeholder="e.g. 43.6532" />
+            </label>
+            <label class="field">
+              <span class="label">Longitude</span>
+              <input class="input" [(ngModel)]="lng" name="lng" placeholder="e.g. -79.3832" />
+            </label>
+          </div>
+
+          <div class="geoRow">
+            <button class="btn secondary" type="button" [disabled]="geoStatus === 'loading'" (click)="useMyLocation()">
+              {{ geoStatus === 'loading' ? 'Getting location…' : 'Use my location' }}
+            </button>
+            @if (geoStatus && geoStatus !== 'loading') {
+              <span class="geoError">{{ geoStatus }}</span>
+            }
+          </div>
         }
-      </select>
-      <div class="hint">Pick a city or choose Other to enter latitude/longitude.</div>
-    </label>
 
-    @if (selectedCityId === otherCityId) {
-    <div class="row">
-      <label class="field">
-        <div class="label">Latitude</div>
-        <input class="input" [(ngModel)]="lat" name="lat" placeholder="e.g. 43.6532" />
-      </label>
-      <label class="field">
-        <div class="label">Longitude</div>
-        <input class="input" [(ngModel)]="lng" name="lng" placeholder="e.g. -79.3832" />
-      </label>
-    </div>
-
-    <div class="geoRow">
-      <button class="btn" type="button" [disabled]="geoStatus === 'loading'" (click)="useMyLocation()">
-        {{ geoStatus === 'loading' ? 'Getting location…' : 'Use my location' }}
-      </button>
-      @if (geoStatus && geoStatus !== 'loading') {
-        <span class="geoError">{{ geoStatus }}</span>
-      }
-    </div>
-    }
-
-    <label class="field">
-      <div class="label">Timezone</div>
-      <input class="input" [value]="timezone" disabled />
-      <div class="hint">{{ selectedCityId === otherCityId ? 'Uses your device timezone.' : 'From selected city.' }}</div>
-    </label>
-
-    <label class="field">
-      <div class="label">Calculation method</div>
-      <select class="input" [(ngModel)]="method" name="method">
-        <option *ngFor="let m of methodOptions" [ngValue]="m.value">{{ m.label }}</option>
-      </select>
-    </label>
-
-    <label class="field">
-      <div class="label">Asr</div>
-      <select class="input" [(ngModel)]="asr" name="asr">
-        <option *ngFor="let a of asrOptions" [ngValue]="a.value">{{ a.label }}</option>
-      </select>
-    </label>
-
-    <label class="field">
-      <div class="label">Screen layout</div>
-      <select class="input" [(ngModel)]="screenLayout" name="screenLayout">
-        <option *ngFor="let o of screenLayoutOptions" [ngValue]="o.value">{{ o.label }}</option>
-      </select>
-      <div class="hint">
-        Landscape is the wall display. Portrait stacks clock, prayers, sun times, and date for phones or vertical monitors.
+        <label class="field">
+          <span class="label">Timezone</span>
+          <input class="input input--readonly" [value]="timezone" disabled />
+        </label>
       </div>
-    </label>
+    </section>
 
-    <label class="field">
-      <div class="label">Clock panel side</div>
-      <select class="input" [(ngModel)]="panelLeft" name="panelLeft">
-        <option [ngValue]="true">Clock & date on left</option>
-        <option [ngValue]="false">Clock & date on right</option>
-      </select>
-      <div class="hint">Landscape only — which side shows the clock and prayer grid.</div>
-    </label>
+    <section class="panel panel--prayer">
+      <h2 class="sectionTitle">
+        <span class="sectionDot"></span>
+        Prayer times
+      </h2>
+      <div class="fields">
+        <label class="field">
+          <span class="label">Calculation method</span>
+          <select class="input" [(ngModel)]="method" name="method">
+            <option *ngFor="let m of methodOptions" [ngValue]="m.value">{{ m.label }}</option>
+          </select>
+        </label>
 
-    <label class="field">
-      <div class="label">Night mode</div>
-      <select class="input" [(ngModel)]="nightMode" name="nightMode">
-        <option *ngFor="let n of nightModeOptions" [ngValue]="n.value">{{ n.label }}</option>
-      </select>
-      <div class="hint">
-        Dark, dim display for a bedroom. Automatic uses your location's sunset and sunrise.
+        <label class="field">
+          <span class="label">Asr</span>
+          <select class="input" [(ngModel)]="asr" name="asr">
+            <option *ngFor="let a of asrOptions" [ngValue]="a.value">{{ a.label }}</option>
+          </select>
+        </label>
       </div>
-    </label>
+    </section>
 
-    <label class="field">
-      <div class="label">Day clock color</div>
-      <select class="input" [(ngModel)]="dayClockColor" name="dayClockColor">
-        <option *ngFor="let c of dayClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
-      </select>
-      <div class="hint">Color of all times in the normal (light) layout: clock, prayers, jumu’ah, sunrise/sunset.</div>
-    </label>
+    <section class="panel panel--display">
+      <h2 class="sectionTitle">
+        <span class="sectionDot"></span>
+        Display
+      </h2>
+      <div class="displayGrid">
+        <label class="field">
+          <span class="label">Screen layout</span>
+          <select
+            class="input"
+            [(ngModel)]="screenLayout"
+            name="screenLayout"
+            title="Landscape: wall display. Portrait: stacked clock, prayers, sun times, and date."
+          >
+            <option *ngFor="let o of screenLayoutOptions" [ngValue]="o.value">{{ o.label }}</option>
+          </select>
+        </label>
 
-    <label class="field">
-      <div class="label">Night clock color</div>
-      <select class="input" [(ngModel)]="nightClockColor" name="nightClockColor">
-        <option *ngFor="let c of nightClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
-      </select>
-      <div class="hint">Color of all times in the dark night layout: clock, prayers, countdown, sunrise/sunset.</div>
-    </label>
+        <label class="field">
+          <span class="label">Clock panel side</span>
+          <select
+            class="input"
+            [(ngModel)]="panelLeft"
+            name="panelLeft"
+            title="Landscape only — which side shows the clock and prayer grid."
+          >
+            <option [ngValue]="true">Clock & date on left</option>
+            <option [ngValue]="false">Clock & date on right</option>
+          </select>
+        </label>
 
-    <div class="actions">
-      <button class="btn primary" type="button" (click)="save()">Save</button>
-    </div>
-  </div>
+        <label class="field">
+          <span class="label">Night mode</span>
+          <select
+            class="input"
+            [(ngModel)]="nightMode"
+            name="nightMode"
+            title="Dark, dim display for a bedroom. Automatic uses your location's sunset and sunrise."
+          >
+            <option *ngFor="let n of nightModeOptions" [ngValue]="n.value">{{ n.label }}</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="label">Day clock color</span>
+          <select
+            class="input"
+            [(ngModel)]="dayClockColor"
+            name="dayClockColor"
+            title="Color of all times in the normal layout: clock, prayers, jumu'ah, sunrise/sunset."
+          >
+            <option *ngFor="let c of dayClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="label">Night clock color</span>
+          <select
+            class="input"
+            [(ngModel)]="nightClockColor"
+            name="nightClockColor"
+            title="Color of all times in the dark night layout: clock, prayers, countdown, sunrise/sunset."
+          >
+            <option *ngFor="let c of nightClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+          </select>
+        </label>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <button class="btn primary" type="button" (click)="save()">Save & return home</button>
+  </footer>
 </div>
-

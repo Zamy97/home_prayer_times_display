@@ -375,9 +375,9 @@ app-home.night .countdownNow {
   color: var(--amber-bright);
 }
 
+/* Night announce uses the user's chosen night clock color for the warm tint. */
 app-home.night .prayerAnnounce {
-  background: color-mix(in srgb, #000 72%, var(--amber));
-  color: var(--amber);
+  background: color-mix(in srgb, #000 90%, var(--amber));
 }
 
 html.theme-ready.night,
@@ -392,19 +392,86 @@ html.night body {
   color: #d68f47;
 }
 
-html.night app-settings .wrap {
+html.night app-settings {
+  --navy: #d68f47;
+  --navy-light: #b8732f;
+  --amber: #f2a95a;
+  --text: #d68f47;
+  --muted: #986734;
+  --panel: #14100a;
+}
+
+html.night app-settings .head {
+  background: linear-gradient(135deg, #1a1208 0%, #0f0c08 55%, #1a1006 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+html.night app-settings .head h1 {
+  color: #f2a95a;
+}
+
+html.night app-settings .muted {
+  color: rgba(214, 143, 71, 0.65);
+}
+
+html.night app-settings .muted code {
+  background: rgba(214, 143, 71, 0.14);
   color: #d68f47;
 }
 
-html.night app-settings .muted,
-html.night app-settings .hint {
-  color: #986734;
+html.night app-settings .panel--location {
+  background: linear-gradient(165deg, #0e1218 0%, #101820 50%, #0c1014 100%);
+  border-top-color: #4a7ab0;
+}
+
+html.night app-settings .panel--prayer {
+  background: linear-gradient(165deg, #161008 0%, #1a140c 50%, #120e08 100%);
+  border-top-color: #d68f47;
+}
+
+html.night app-settings .panel--display {
+  background: linear-gradient(165deg, #0c0a08 0%, #100c08 40%, #0a0806 100%);
+  border-top-color: #986734;
+}
+
+html.night app-settings .panel {
+  border-right-color: rgba(214, 143, 71, 0.1);
+}
+
+html.night app-settings .panel--location .sectionTitle { color: #7eb0d8; }
+html.night app-settings .panel--location .sectionDot { background: #4a7ab0; }
+
+html.night app-settings .panel--prayer .sectionTitle { color: #d68f47; }
+html.night app-settings .panel--prayer .sectionDot { background: #d68f47; }
+
+html.night app-settings .panel--display .sectionTitle { color: #f2a95a; }
+html.night app-settings .panel--display .sectionDot { background: #986734; }
+
+html.night app-settings .footer {
+  background: linear-gradient(180deg, #100c08 0%, #000 100%);
+  border-top-color: rgba(214, 143, 71, 0.2);
 }
 
 html.night app-settings .input {
-  background: #14100a;
+  background: rgba(20, 16, 10, 0.85);
   border-color: rgba(214, 143, 71, 0.28);
   color: #d68f47;
+}
+
+html.night app-settings .input:hover:not(:disabled) {
+  background: #14100a;
+  border-color: rgba(214, 143, 71, 0.4);
+}
+
+html.night app-settings .input:focus {
+  border-color: #d68f47;
+  box-shadow: 0 0 0 3px rgba(214, 143, 71, 0.15);
+  background: #14100a;
+}
+
+html.night app-settings .input--readonly:disabled {
+  color: #986734;
+  background: rgba(20, 16, 10, 0.5);
 }
 
 html.night app-settings .btn {
@@ -413,8 +480,26 @@ html.night app-settings .btn {
   color: #d68f47;
 }
 
+html.night app-settings .btn.secondary {
+  border-color: #4a7ab0;
+  color: #7eb0d8;
+}
+
+html.night app-settings .btn:hover:not(:disabled) {
+  background: rgba(214, 143, 71, 0.1);
+}
+
 html.night app-settings .btn.primary {
-  background: #986734;
+  background: linear-gradient(135deg, #986734 0%, #b8732f 100%);
   border-color: #986734;
   color: #000;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+html.night app-settings .btn.primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #b07a3d 0%, #c48840 100%);
+}
+
+html.night app-settings .geoError {
+  color: #f87171;
 }
