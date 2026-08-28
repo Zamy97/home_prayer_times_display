@@ -40,6 +40,12 @@ export class HomeComponent implements OnInit {
   @HostBinding('class.theme-ready') themeReady = false;
   /** Atmospheric sunrise / sunset overlay while day ↔ night fades (clock stays visible). */
   skyTransition: 'sunrise' | 'sunset' | null = null;
+  /** Stacked portrait layout (setting or auto orientation). */
+  portraitLayout = false;
+  @HostBinding('class.layout-portrait')
+  get layoutPortrait(): boolean {
+    return this.portraitLayout;
+  }
   /** Bright alarm-clock LED red: extra glow so it reads from across the room. */
   @HostBinding('class.clock-led')
   get clockLed(): boolean {
@@ -142,6 +148,9 @@ export class HomeComponent implements OnInit {
     day: 'numeric',
   });
 
+  private readonly portraitMediaQuery = window.matchMedia('(orientation: portrait)');
+  private readonly onPortraitMediaChange = (): void => this.updateScreenLayout();
+
   ngOnInit(): void {
     this.updateDateLabels(new Date());
 
@@ -167,7 +176,11 @@ export class HomeComponent implements OnInit {
         this.loadPrayerTimes();
         this.fetchTemperature(true);
         this.updateNightMode(new Date());
+        this.updateScreenLayout();
       });
+
+    this.portraitMediaQuery.addEventListener('change', this.onPortraitMediaChange);
+    this.updateScreenLayout();
 
     this.fetchTemperature(true);
     // Rotate weather every 10 min so the reading stays fresh (free Open-Meteo path).
@@ -196,6 +209,7 @@ export class HomeComponent implements OnInit {
     this.destroyRef.onDestroy(() => {
       document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('focus', onFocus);
+      this.portraitMediaQuery.removeEventListener('change', this.onPortraitMediaChange);
       this.clearHotCornerTimer();
       if (this.themeReadyTimer) clearTimeout(this.themeReadyTimer);
       if (this.skyTransitionTimer) clearTimeout(this.skyTransitionTimer);
@@ -607,6 +621,18 @@ export class HomeComponent implements OnInit {
       this.skyTransition = null;
       this.skyTransitionTimer = null;
     }, this.skyTransitionMs);
+  }
+
+  /** Apply screen layout from settings (auto / landscape / portrait). */
+  private updateScreenLayout(): void {
+    const mode = this.settings.screenLayout ?? 'auto';
+    if (mode === 'portrait') {
+      this.portraitLayout = true;
+    } else if (mode === 'landscape') {
+      this.portraitLayout = false;
+    } else {
+      this.portraitLayout = this.portraitMediaQuery.matches;
+    }
   }
 }
 

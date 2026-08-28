@@ -12,6 +12,18 @@ export type AsrMethod = 'Standard' | 'Hanafi';
  */
 export type NightMode = 'off' | 'on' | 'auto';
 
+/**
+ * Screen layout preference:
+ * - 'auto'      : portrait stack when the device is vertical, wall layout when horizontal
+ * - 'landscape' : always wall layout (clock beside prayer grid)
+ * - 'portrait'  : always stacked layout (clock on top)
+ */
+export type ScreenLayout = 'auto' | 'landscape' | 'portrait';
+
+function isScreenLayout(value: unknown): value is ScreenLayout {
+  return value === 'auto' || value === 'landscape' || value === 'portrait';
+}
+
 /** Clock digit color on the light (day) layout */
 export type DayClockColor =
   | 'black'
@@ -76,6 +88,8 @@ export type PrayerSettings = {
   panelLeft: boolean;
   /** When to switch to the dark night layout. Default off so existing kiosks stay light until chosen. */
   nightMode: NightMode;
+  /** Wall vs stacked layout. Auto follows device orientation. */
+  screenLayout: ScreenLayout;
   /** Clock digit color used in the light (day) layout */
   dayClockColor: DayClockColor;
   /** Clock / accent color used in the dark (night) layout */
@@ -92,6 +106,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   panelLeft: true,
   nightMode: 'off',
+  screenLayout: 'auto',
   dayClockColor: 'black',
   nightClockColor: 'amber',
 };
@@ -172,6 +187,9 @@ export class SettingsService {
           parsed.nightMode === 'off' || parsed.nightMode === 'on' || parsed.nightMode === 'auto'
             ? parsed.nightMode
             : DEFAULT_SETTINGS.nightMode,
+        screenLayout: isScreenLayout(parsed.screenLayout)
+          ? parsed.screenLayout
+          : DEFAULT_SETTINGS.screenLayout,
         dayClockColor: isDayClockColor(parsed.dayClockColor)
           ? parsed.dayClockColor
           : DEFAULT_SETTINGS.dayClockColor,

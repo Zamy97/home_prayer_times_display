@@ -65,12 +65,22 @@
     </label>
 
     <label class="field">
-      <div class="label">Layout</div>
+      <div class="label">Screen layout</div>
+      <select class="input" [(ngModel)]="screenLayout" name="screenLayout">
+        <option *ngFor="let o of screenLayoutOptions" [ngValue]="o.value">{{ o.label }}</option>
+      </select>
+      <div class="hint">
+        Landscape is the wall display. Portrait stacks clock, prayers, sun times, and date for phones or vertical monitors.
+      </div>
+    </label>
+
+    <label class="field">
+      <div class="label">Clock panel side</div>
       <select class="input" [(ngModel)]="panelLeft" name="panelLeft">
         <option [ngValue]="true">Clock & date on left</option>
         <option [ngValue]="false">Clock & date on right</option>
       </select>
-      <div class="hint">Choose which side shows the clock and prayer times grid.</div>
+      <div class="hint">Landscape only — which side shows the clock and prayer grid.</div>
     </label>
 
     <label class="field">

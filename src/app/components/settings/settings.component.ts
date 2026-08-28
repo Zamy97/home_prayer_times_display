@@ -9,6 +9,7 @@ import {
   NightClockColor,
   NightMode,
   PrayerSettings,
+  ScreenLayout,
   SettingsService,
 } from '../../services/settings.service';
 
@@ -49,6 +50,12 @@ export class SettingsComponent implements OnInit {
     { value: 'off', label: 'Off (normal / light)' },
   ];
 
+  readonly screenLayoutOptions: Array<{ value: ScreenLayout; label: string }> = [
+    { value: 'auto', label: 'Automatic (follow device orientation)' },
+    { value: 'landscape', label: 'Landscape (wall — clock beside prayers)' },
+    { value: 'portrait', label: 'Portrait (stacked — clock on top)' },
+  ];
+
   readonly dayClockColorOptions: Array<{ value: DayClockColor; label: string }> = [
     { value: 'black', label: 'Black' },
     { value: 'navy', label: 'Navy' },
@@ -85,6 +92,7 @@ export class SettingsComponent implements OnInit {
   /** true = clock/date panel on left */
   panelLeft = true;
   nightMode: NightMode = 'off';
+  screenLayout: ScreenLayout = 'auto';
   dayClockColor: DayClockColor = 'black';
   nightClockColor: NightClockColor = 'amber';
 
@@ -97,6 +105,7 @@ export class SettingsComponent implements OnInit {
     this.lng = s.coords?.lng?.toString() ?? '';
     this.panelLeft = s.panelLeft ?? true;
     this.nightMode = s.nightMode ?? 'off';
+    this.screenLayout = s.screenLayout ?? 'auto';
     this.dayClockColor = s.dayClockColor ?? 'black';
     this.nightClockColor = s.nightClockColor ?? 'amber';
     const savedCityId = s.cityId ?? OTHER_CITY_ID;
@@ -172,6 +181,7 @@ export class SettingsComponent implements OnInit {
       timezone,
       panelLeft: this.panelLeft,
       nightMode: this.nightMode,
+      screenLayout: this.screenLayout,
       dayClockColor: this.dayClockColor,
       nightClockColor: this.nightClockColor,
       cityId,
