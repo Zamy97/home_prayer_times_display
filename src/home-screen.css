@@ -420,8 +420,10 @@ app-home .ampm {
 
 app-home .panel {
   --date-bar-pad-x: clamp(14px, 3.8vw, 40px);
-  /* Extra end inset so :ss / AM stay inside beige (not under prayer panel) */
-  --clock-pad-end: calc(var(--date-bar-pad-x) + clamp(10px, 1.5vw, 22px));
+  /* Symmetric inset so the clock stays centered in the beige panel */
+  --clock-pad-x: clamp(10px, 1.5vw, 22px);
+  /* Width reserved for :ss + AM/PM beside HH:MM so nothing clips when centered */
+  --clock-side-reserve: clamp(48px, 7.5cqw, 120px);
   background: var(--panel);
   padding: 34px 36px max(10px, env(safe-area-inset-bottom, 0px)) 36px;
   display: flex;
@@ -575,9 +577,9 @@ app-home .clockBlock {
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  /* Let height follow full clock stack — prevents giant digits painting over countdown */
-  min-height: min-content;
-  overflow-x: clip;
+  /* Grow to fill space between temp strip and countdown / jumu'ah */
+  min-height: 0;
+  overflow-x: visible;
   overflow-y: visible;
 }
 
@@ -588,15 +590,14 @@ app-home .clockTimeSlot {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: stretch;
+  align-items: center;
   min-width: 0;
-  min-height: min-content;
+  min-height: 0;
   width: 100%;
   max-width: 100%;
   overflow-x: visible;
   overflow-y: visible;
   padding-block: clamp(0px, 0.35vmin, 6px);
-  /* Full width + height basis for Max clock math (within panel beige only) */
   container-name: clock-slot;
   container-type: size;
 }
@@ -617,32 +618,31 @@ app-home .now {
   display: flex;
   flex-wrap: nowrap;
   align-items: flex-start;
-  justify-content: flex-start;
+  justify-content: center;
   gap: clamp(2px, 0.35vw, 8px);
-  /* Align with date bar inner left/right (same inset as .panelTop) */
-  width: 100%;
-  max-width: 100%;
+  width: auto;
+  max-width: calc(100% - 2 * var(--clock-pad-x));
   min-width: 0;
-  padding-inline: var(--date-bar-pad-x) var(--clock-pad-end);
+  margin-inline: auto;
+  padding-inline: var(--clock-pad-x);
   box-sizing: border-box;
   font-size: clamp(108px, min(23.5vw, 55vmin), 760px);
   line-height: 1;
   letter-spacing: 0.022em;
-  margin-inline: 0;
   color: var(--clock-color, #000);
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
   white-space: nowrap;
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* 12h hours 1–9: scale up + center the HH:MM + :ss row in the beige panel */
+/* 12h hours 1–9: scale up the HH:MM row */
 app-home .now.now--single-hour {
-  justify-content: center;
   font-size: clamp(116px, min(25.5vw, 61vmin), 820px);
 }
 
 app-home .nowMain {
   flex: 0 0 auto;
+  flex-shrink: 0;
   font-size: inherit;
   line-height: 1;
   letter-spacing: 0.028em;
@@ -672,21 +672,25 @@ app-home .now .ampm {
       padding-right: 0;
     }
 
+    app-home .clockTimeSlot {
+      --clock-side-reserve: clamp(48px, 7.5cqw, 120px);
+    }
+
     app-home .now {
-      justify-content: flex-start;
+      justify-content: center;
       gap: clamp(2px, min(0.28cqw, 0.4vmin), 8px);
-      width: 100%;
-      margin-inline: 0;
-      padding-inline: var(--date-bar-pad-x) var(--clock-pad-end);
+      width: auto;
+      max-width: calc(100% - 2 * var(--clock-pad-x));
+      margin-inline: auto;
+      padding-inline: var(--clock-pad-x);
       letter-spacing: 0.022em;
       font-size: clamp(
         104px,
         min(
           calc(
             (
-              100cqw - var(--date-bar-pad-x) - var(--clock-pad-end) -
-                clamp(32px, 4.5cqw, 64px)
-            ) / 2.96
+              100cqw - 2 * var(--clock-pad-x) - var(--clock-side-reserve)
+            ) / 2.95
           ),
           calc((100cqb - clamp(4px, 1.1cqb, 26px)) / 0.88)
         ),
@@ -709,15 +713,13 @@ app-home .now .ampm {
     }
 
     app-home .now.now--single-hour {
-      justify-content: center;
       font-size: clamp(
         112px,
         min(
           calc(
             (
-              100cqw - var(--date-bar-pad-x) - var(--clock-pad-end) -
-                clamp(32px, 4.5cqw, 64px)
-            ) / 2.58
+              100cqw - 2 * var(--clock-pad-x) - var(--clock-side-reserve)
+            ) / 2.55
           ),
           calc((100cqb - clamp(4px, 1.1cqb, 26px)) / 0.82)
         ),
@@ -737,20 +739,20 @@ app-home .now .ampm {
       }
 
       app-home .now {
-        justify-content: flex-start;
+        justify-content: center;
         gap: clamp(2px, min(0.28cqi, 0.4vmin), 8px);
-        width: 100%;
-        margin-inline: 0;
-        padding-inline: var(--date-bar-pad-x) var(--clock-pad-end);
+        width: auto;
+        max-width: calc(100% - 2 * var(--clock-pad-x));
+        margin-inline: auto;
+        padding-inline: var(--clock-pad-x);
         letter-spacing: 0.022em;
         font-size: clamp(
           96px,
           min(
             calc(
               (
-                100cqi - var(--date-bar-pad-x) - var(--clock-pad-end) -
-                  clamp(36px, 5.5cqi, 72px)
-              ) / 2.96
+                100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)
+              ) / 2.95
             ),
             72vmin
           ),
@@ -773,10 +775,14 @@ app-home .now .ampm {
       }
 
       app-home .now.now--single-hour {
-        justify-content: center;
         font-size: clamp(
           104px,
-          min(calc((100cqi - clamp(64px, 7cqi, 105px)) / 2.34), 78vmin),
+          min(
+            calc(
+              (100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)) / 2.55
+            ),
+            78vmin
+          ),
           1200px
         );
       }
@@ -819,6 +825,7 @@ app-home .countdownTime {
 
 app-home .now .nowSide {
   flex: 0 0 auto;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-end;

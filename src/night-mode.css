@@ -228,7 +228,7 @@ app-home.night .content:not(.panel-left) {
 /* Trim the horizontal breathing room around the clock so the digits fill
    the panel width (this is what caps the size). */
 app-home.night .panel {
-  --clock-pad-end: clamp(8px, 1.4vw, 20px);
+  --clock-pad-x: clamp(8px, 1.4vw, 20px);
   --date-bar-pad-x: clamp(8px, 1.4vw, 20px);
 }
 
@@ -246,18 +246,21 @@ app-home.night .clockTimeSlot {
 }
 
 @container clock-slot (min-width: 0px) {
+  app-home.night .clockTimeSlot {
+    --clock-side-reserve: clamp(48px, 7.5cqw, 120px);
+  }
+
   app-home.night .now {
     justify-content: center;
-    padding-inline: clamp(6px, 1.2vw, 16px);
-    /* Reserve enough width for the seconds/AM-PM side stack so it never
-       gets clipped, and use a gentler divisor so the row fits on screen. */
+    padding-inline: var(--clock-pad-x);
+    /* Reserve width for :ss + AM/PM so centered digits never clip the side stack */
     font-size: clamp(
       140px,
       min(
         calc(
           (
-            100cqw - clamp(16px, 2.4cqw, 34px) - clamp(34px, 5cqw, 96px)
-          ) / 2.86
+            100cqw - 2 * var(--clock-pad-x) - var(--clock-side-reserve)
+          ) / 2.95
         ),
         calc((100cqb - clamp(4px, 1.1cqb, 26px)) / 0.66)
       ),
@@ -267,14 +270,14 @@ app-home.night .clockTimeSlot {
 
   app-home.night .now.now--single-hour {
     justify-content: center;
-    padding-inline: clamp(6px, 1.2vw, 16px);
+    padding-inline: var(--clock-pad-x);
     font-size: clamp(
       156px,
       min(
         calc(
           (
-            100cqw - clamp(16px, 2.4cqw, 34px) - clamp(34px, 5cqw, 96px)
-          ) / 2.46
+            100cqw - 2 * var(--clock-pad-x) - var(--clock-side-reserve)
+          ) / 2.55
         ),
         calc((100cqb - clamp(4px, 1.1cqb, 26px)) / 0.6)
       ),
@@ -298,10 +301,15 @@ app-home.night .clockTimeSlot {
     @container clock-panel (min-width: 0px) {
       app-home.night .now {
         justify-content: center;
-        padding-inline: clamp(6px, 1.2vw, 16px);
+        padding-inline: var(--clock-pad-x);
         font-size: clamp(
           150px,
-          min(calc((100cqi - clamp(28px, 5cqi, 60px)) / 2.42), 82vmin),
+          min(
+            calc(
+              (100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)) / 2.55
+            ),
+            82vmin
+          ),
           1600px
         );
       }
@@ -309,7 +317,12 @@ app-home.night .clockTimeSlot {
         justify-content: center;
         font-size: clamp(
           170px,
-          min(calc((100cqi - clamp(28px, 5cqi, 60px)) / 2.02), 88vmin),
+          min(
+            calc(
+              (100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)) / 2.15
+            ),
+            88vmin
+          ),
           1600px
         );
       }

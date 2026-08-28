@@ -1,0 +1,201 @@
+/* =====================================================================
+   PORTRAIT / VERTICAL LAYOUT
+   Phones and vertical monitors: stack clock → prayers → sun → date.
+   Uses display:contents on .panel so sections reorder without HTML changes.
+   ===================================================================== */
+
+@media (orientation: portrait) {
+  app-home .content {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Flatten panel so its children participate in the vertical stack */
+  app-home .panel {
+    display: contents;
+  }
+
+  app-home .panelMid {
+    display: contents;
+  }
+
+  app-home .content.panel-left .grid {
+    border-left: none;
+  }
+
+  /* 1 — Clock + countdown (beige hero band) */
+  app-home .clockBlock {
+    order: 10;
+    flex: 0 0 auto;
+    width: 100%;
+    background: var(--panel);
+    padding: clamp(10px, 2.2vh, 22px) clamp(12px, 4vw, 28px) clamp(6px, 1.2vh, 14px);
+    border-bottom: 3px solid var(--navy);
+  }
+
+  app-home .clockTimeSlot {
+    container-type: normal;
+    flex: 0 0 auto;
+    min-height: 0;
+    padding-block: clamp(4px, 1vh, 12px);
+  }
+
+  app-home .now {
+    font-size: clamp(68px, min(26vw, 20vmin), 220px);
+    max-width: calc(100% - 2 * var(--clock-pad-x));
+  }
+
+  app-home .now.now--single-hour {
+    font-size: clamp(76px, min(28vw, 22vmin), 240px);
+  }
+
+  app-home .now .seconds {
+    font-size: clamp(14px, 0.17em, 56px);
+  }
+
+  app-home .now .ampm {
+    font-size: clamp(12px, 0.14em, 48px);
+  }
+
+  app-home .countdownRow {
+    padding-top: clamp(4px, 1vh, 10px);
+  }
+
+  app-home .countdown {
+    font-size: clamp(14px, 3.8vw, 22px);
+  }
+
+  /* 2 — Temperature (compact strip under clock) */
+  app-home .panelTempStrip {
+    order: 20;
+    flex: 0 0 auto;
+    width: 100%;
+    padding: clamp(6px, 1.2vh, 12px) 0;
+    border-bottom: 2px solid rgba(7, 35, 60, 0.14);
+  }
+
+  app-home .panelTempLabel,
+  app-home .panelTempValue {
+    font-size: clamp(16px, 4.2vw, 28px);
+  }
+
+  app-home .locationNeeded {
+    order: 25;
+    flex: 0 0 auto;
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--panel);
+  }
+
+  /* 3 — Five daily prayers (full width) */
+  app-home .content > .grid {
+    order: 30;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: clamp(200px, 34vh, 420px);
+    border-right: none;
+    border-left: none;
+    border-top: none;
+    border-bottom: 4px solid var(--navy);
+    grid-template-columns: 0.9fr 1.35fr;
+    grid-template-rows: repeat(5, minmax(0, 1fr));
+  }
+
+  app-home .prayer {
+    font-size: clamp(15px, 3.8vw, 24px);
+  }
+
+  app-home .time {
+    font-size: clamp(40px, 11vw, 88px);
+  }
+
+  app-home .colLabel {
+    font-size: clamp(11px, 2.8vw, 16px);
+  }
+
+  app-home .cell {
+    --cell-pad-x: clamp(10px, 2.5vw, 16px);
+  }
+
+  /* 4 — Jumu'ah (compact weekday strip) */
+  app-home .jumuBlock {
+    order: 40;
+    flex: 0 0 auto;
+    width: 100%;
+    background: var(--panel);
+    padding: 0 clamp(12px, 3vw, 24px) clamp(4px, 0.8vh, 8px);
+  }
+
+  app-home .jumTime {
+    font-size: clamp(22px, 6vw, 36px);
+  }
+
+  /* 5 — Sunrise / sunset */
+  app-home .sunBar {
+    order: 50;
+    flex: 0 0 auto;
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    padding: clamp(14px, 2.8vh, 32px) 0;
+  }
+
+  app-home .sunTime {
+    font-size: clamp(28px, 8vw, 64px);
+  }
+
+  app-home .sunRow {
+    font-size: clamp(11px, 2.8vw, 15px);
+  }
+
+  app-home .icon {
+    width: clamp(28px, 7vw, 48px);
+    height: clamp(16px, 4vw, 30px);
+  }
+
+  /* 6 — Hijri + Gregorian date (footer band) */
+  app-home .panelTop {
+    order: 60;
+    flex: 0 0 auto;
+    width: 100%;
+    padding: clamp(12px, 2vh, 20px) 0;
+    border-bottom: none;
+    border-top: 3px solid rgba(255, 255, 255, 0.35);
+  }
+
+  app-home .hijri,
+  app-home .greg {
+    font-size: clamp(14px, 4vw, 26px);
+  }
+
+  app-home .panel > .rule {
+    display: none;
+  }
+}
+
+/* Night mode portrait tweaks */
+@media (orientation: portrait) {
+  app-home.night .clockBlock {
+    border-bottom-color: var(--seam);
+  }
+
+  app-home.night .panelTempStrip {
+    border-bottom-color: var(--line);
+  }
+
+  app-home.night .content > .grid {
+    border-bottom-color: var(--seam);
+  }
+
+  app-home.night .sunBar {
+    margin-top: 0;
+    border-radius: 0;
+  }
+
+  app-home.night .panelTop {
+    border-top-color: var(--line);
+  }
+}
