@@ -117,15 +117,7 @@ app-home.layout-portrait .cell {
 }
 
 app-home.layout-portrait .jumuBlock {
-  order: 40;
-  flex: 0 0 auto;
-  width: 100%;
-  background: var(--panel);
-  padding: 0 clamp(12px, 3vw, 24px) clamp(4px, 0.8vh, 8px);
-}
-
-app-home.layout-portrait .jumTime {
-  font-size: clamp(22px, 6vw, 36px);
+  display: none;
 }
 
 app-home.layout-portrait .sunBar {
