@@ -1,0 +1,74 @@
+/* Monitor size scaling — Settings → Display → Monitor size.
+   24″ is the baseline; larger TVs get bigger dates, countdown, sun times, etc. */
+
+app-home {
+  --scale-date: 1;
+  --scale-countdown: 1;
+  --scale-sun: 1;
+  --scale-temp: 1;
+  --scale-prayer: 1;
+}
+
+app-home[data-monitor='14'] {
+  --scale-date: 0.74;
+  --scale-countdown: 0.74;
+  --scale-sun: 0.74;
+  --scale-temp: 0.78;
+  --scale-prayer: 0.82;
+}
+
+app-home[data-monitor='15'] {
+  --scale-date: 0.8;
+  --scale-countdown: 0.8;
+  --scale-sun: 0.8;
+  --scale-temp: 0.84;
+  --scale-prayer: 0.86;
+}
+
+app-home[data-monitor='16'] {
+  --scale-date: 0.84;
+  --scale-countdown: 0.84;
+  --scale-sun: 0.84;
+  --scale-temp: 0.87;
+  --scale-prayer: 0.9;
+}
+
+app-home[data-monitor='22'] {
+  --scale-date: 0.88;
+  --scale-countdown: 0.88;
+  --scale-sun: 0.88;
+  --scale-temp: 0.9;
+  --scale-prayer: 0.92;
+}
+
+app-home[data-monitor='23'] {
+  --scale-date: 0.94;
+  --scale-countdown: 0.94;
+  --scale-sun: 0.94;
+  --scale-temp: 0.95;
+  --scale-prayer: 0.96;
+}
+
+app-home[data-monitor='24'] {
+  --scale-date: 1;
+  --scale-countdown: 1;
+  --scale-sun: 1;
+  --scale-temp: 1;
+  --scale-prayer: 1;
+}
+
+app-home[data-monitor='27'] {
+  --scale-date: 1.18;
+  --scale-countdown: 1.28;
+  --scale-sun: 1.24;
+  --scale-temp: 1.15;
+  --scale-prayer: 1.08;
+}
+
+app-home[data-monitor='32'] {
+  --scale-date: 1.42;
+  --scale-countdown: 1.75;
+  --scale-sun: 1.5;
+  --scale-temp: 1.28;
+  --scale-prayer: 1.12;
+}

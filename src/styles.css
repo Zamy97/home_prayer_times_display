@@ -1,5 +1,6 @@
 /* Global styles */
 @import "./home-screen.css";
+@import "./monitor-scale.css";
 @import "./settings-screen.css";
 @import "./night-mode.css";
 @import "./portrait-layout.css";

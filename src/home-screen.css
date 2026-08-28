@@ -282,7 +282,7 @@ app-home .cell.is-next {
 app-home .prayer {
   font-family: var(--font-ui);
   letter-spacing: 0.02em;
-  font-size: 44px;
+  font-size: calc(44px * var(--scale-prayer, 1));
   text-transform: uppercase;
 }
 
@@ -391,7 +391,7 @@ app-home .grid > .cell:nth-child(2n) > .time {
 
 app-home .time {
   font-family: var(--font-num);
-  font-size: 128px;
+  font-size: calc(128px * var(--scale-prayer, 1));
   line-height: 0.95;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums lining-nums;
@@ -468,7 +468,7 @@ app-home .dateRow {
 app-home .hijri,
 app-home .greg {
   min-width: 0;
-  font-size: clamp(18px, min(4.8vmin, 3.8vw), 50px);
+  font-size: calc(clamp(18px, min(4.8vmin, 3.8vw), 50px) * var(--scale-date, 1));
   line-height: 1.15;
   font-weight: 600;
   color: inherit;
@@ -492,7 +492,7 @@ app-home .greg {
 
   app-home .hijri,
   app-home .greg {
-    font-size: clamp(18px, min(7cqw, 4.6vmin), 52px);
+    font-size: calc(clamp(18px, min(7cqw, 4.6vmin), 52px) * var(--scale-date, 1));
   }
 }
 
@@ -525,7 +525,7 @@ app-home .panelTempCol + .panelTempCol {
 app-home .panelTempLabel {
   font-family: var(--font-ui);
   font-weight: 400;
-  font-size: clamp(26px, 3.15vw, 44px);
+  font-size: calc(clamp(26px, 3.15vw, 44px) * var(--scale-temp, 1));
   line-height: 1.05;
   letter-spacing: 0.06em;
   opacity: 0.62;
@@ -535,7 +535,7 @@ app-home .panelTempValue {
   font-family: var(--font-num);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  font-size: clamp(26px, 3.15vw, 44px);
+  font-size: calc(clamp(26px, 3.15vw, 44px) * var(--scale-temp, 1));
   line-height: 1.05;
   letter-spacing: 0.02em;
   text-transform: none;
@@ -806,7 +806,7 @@ app-home .countdown {
   font-family: var(--font-ui);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 26px;
+  font-size: calc(26px * var(--scale-countdown, 1));
   color: rgba(0, 0, 0, 0.72);
   max-width: 100%;
 }
@@ -982,7 +982,7 @@ app-home .sunLabel {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 600;
-  font-size: clamp(18px, min(3vw, 3.6vh), 42px);
+  font-size: calc(clamp(18px, min(3vw, 3.6vh), 42px) * var(--scale-sun, 1));
   line-height: 1;
   opacity: 0.9;
 }
@@ -996,7 +996,7 @@ app-home .sunBar .sunTime {
   letter-spacing: 0.01em;
   line-height: 1;
   white-space: nowrap;
-  font-size: clamp(40px, min(6.5vw, 8vh), 122px);
+  font-size: calc(clamp(40px, min(6.5vw, 8vh), 122px) * var(--scale-sun, 1));
 }
 
 app-home .sunTime .ampm {
@@ -1021,13 +1021,13 @@ app-home .icon {
     font-weight: 700;
   }
   app-home .prayer {
-    font-size: 48px;
+    font-size: calc(48px * var(--scale-prayer, 1));
   }
   app-home .colLabel {
     font-size: 28px;
   }
   app-home .time {
-    font-size: 126px;
+    font-size: calc(126px * var(--scale-prayer, 1));
   }
   app-home .hijri {
     letter-spacing: 0.045em;
@@ -1039,7 +1039,7 @@ app-home .icon {
     font-size: inherit;
   }
   app-home .sunTime {
-    font-size: clamp(48px, min(7vw, 8.5vh), 130px);
+    font-size: calc(clamp(48px, min(7vw, 8.5vh), 130px) * var(--scale-sun, 1));
   }
   app-home .sunTime .ampm {
     font-size: 0.46em;
@@ -1060,7 +1060,7 @@ app-home .icon {
   }
   app-home .panelTempLabel,
   app-home .panelTempValue {
-    font-size: clamp(42px, 4.5vw, 58px);
+    font-size: calc(clamp(42px, 4.5vw, 58px) * var(--scale-temp, 1));
   }
   app-home .rule {
     margin: 4px 0 6px;
@@ -1069,7 +1069,7 @@ app-home .icon {
     display: none;
   }
   app-home .countdown {
-    font-size: 40px;
+    font-size: calc(40px * var(--scale-countdown, 1));
   }
   app-home .countdownTime {
     font-size: 1.15em;

@@ -24,6 +24,15 @@ function isScreenLayout(value: unknown): value is ScreenLayout {
   return value === 'auto' || value === 'landscape' || value === 'portrait';
 }
 
+/** Physical monitor size — scales typography to fill the screen at a comfortable read distance. */
+export type MonitorSize = '14' | '15' | '16' | '22' | '23' | '24' | '27' | '32';
+
+const MONITOR_SIZE_VALUES: MonitorSize[] = ['14', '15', '16', '22', '23', '24', '27', '32'];
+
+function isMonitorSize(value: unknown): value is MonitorSize {
+  return typeof value === 'string' && MONITOR_SIZE_VALUES.includes(value as MonitorSize);
+}
+
 /** Clock digit color on the light (day) layout */
 export type DayClockColor =
   | 'black'
@@ -90,6 +99,8 @@ export type PrayerSettings = {
   nightMode: NightMode;
   /** Wall vs stacked layout. Auto follows device orientation. */
   screenLayout: ScreenLayout;
+  /** TV / monitor diagonal — scales dates, countdown, sun times, and prayer grid. */
+  monitorSize: MonitorSize;
   /** Clock digit color used in the light (day) layout */
   dayClockColor: DayClockColor;
   /** Clock / accent color used in the dark (night) layout */
@@ -107,6 +118,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   panelLeft: true,
   nightMode: 'off',
   screenLayout: 'auto',
+  monitorSize: '24',
   dayClockColor: 'black',
   nightClockColor: 'amber',
 };
@@ -190,6 +202,9 @@ export class SettingsService {
         screenLayout: isScreenLayout(parsed.screenLayout)
           ? parsed.screenLayout
           : DEFAULT_SETTINGS.screenLayout,
+        monitorSize: isMonitorSize(parsed.monitorSize)
+          ? parsed.monitorSize
+          : DEFAULT_SETTINGS.monitorSize,
         dayClockColor: isDayClockColor(parsed.dayClockColor)
           ? parsed.dayClockColor
           : DEFAULT_SETTINGS.dayClockColor,

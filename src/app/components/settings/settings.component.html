@@ -99,6 +99,18 @@
         </label>
 
         <label class="field">
+          <span class="label">Monitor size</span>
+          <select
+            class="input"
+            [(ngModel)]="monitorSize"
+            name="monitorSize"
+            title="Scales dates, next-prayer countdown, sunrise/sunset, and prayer times to match your TV or monitor."
+          >
+            <option *ngFor="let o of monitorSizeOptions" [ngValue]="o.value">{{ o.label }}</option>
+          </select>
+        </label>
+
+        <label class="field">
           <span class="label">Clock panel side</span>
           <select
             class="input"

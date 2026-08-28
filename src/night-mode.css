@@ -186,7 +186,7 @@ app-home.night .sunLabel {
   letter-spacing: 0.1em;
   font-weight: 600;
   color: var(--amber-dim);
-  font-size: clamp(28px, min(4vw, 5vh), 64px);
+  font-size: calc(clamp(28px, min(4vw, 5vh), 64px) * var(--scale-sun, 1));
   line-height: 1;
 }
 
@@ -199,7 +199,7 @@ app-home.night .sunBar .sunTime {
   letter-spacing: 0.01em;
   line-height: 1;
   white-space: nowrap;
-  font-size: clamp(52px, min(8vw, 9.8vh), 140px);
+  font-size: calc(clamp(52px, min(8vw, 9.8vh), 140px) * var(--scale-sun, 1));
 }
 app-home.night .sunBar .sunTime .ampm {
   font-size: 0.46em;

@@ -56,6 +56,11 @@ export class HomeComponent implements OnInit {
   get clockLed(): boolean {
     return this.nightActive && this.settings.nightClockColor === 'led-red';
   }
+  /** Scales typography for the chosen monitor / TV size. */
+  @HostBinding('attr.data-monitor')
+  get monitorSize(): string {
+    return this.settings.monitorSize ?? '24';
+  }
   /** Chosen clock color for the current day/night layout. */
   @HostBinding('style.--clock-color')
   get clockColor(): string {

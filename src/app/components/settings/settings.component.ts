@@ -6,6 +6,7 @@ import { GeoError, GeolocationService } from '../../services/geolocation.service
 import {
   AsrMethod,
   DayClockColor,
+  MonitorSize,
   NightClockColor,
   NightMode,
   PrayerSettings,
@@ -56,6 +57,17 @@ export class SettingsComponent implements OnInit {
     { value: 'portrait', label: 'Portrait (stacked — clock on top)' },
   ];
 
+  readonly monitorSizeOptions: Array<{ value: MonitorSize; label: string }> = [
+    { value: '14', label: '14″ portable monitor' },
+    { value: '15', label: '15″ portable monitor' },
+    { value: '16', label: '16″ portable monitor' },
+    { value: '22', label: '22″ monitor / TV' },
+    { value: '23', label: '23″ monitor / TV' },
+    { value: '24', label: '24″ monitor / TV (default)' },
+    { value: '27', label: '27″ monitor / TV' },
+    { value: '32', label: '32″ monitor / TV' },
+  ];
+
   readonly dayClockColorOptions: Array<{ value: DayClockColor; label: string }> = [
     { value: 'black', label: 'Black' },
     { value: 'navy', label: 'Navy' },
@@ -93,6 +105,7 @@ export class SettingsComponent implements OnInit {
   panelLeft = true;
   nightMode: NightMode = 'off';
   screenLayout: ScreenLayout = 'auto';
+  monitorSize: MonitorSize = '24';
   dayClockColor: DayClockColor = 'black';
   nightClockColor: NightClockColor = 'amber';
 
@@ -106,6 +119,7 @@ export class SettingsComponent implements OnInit {
     this.panelLeft = s.panelLeft ?? true;
     this.nightMode = s.nightMode ?? 'off';
     this.screenLayout = s.screenLayout ?? 'auto';
+    this.monitorSize = s.monitorSize ?? '24';
     this.dayClockColor = s.dayClockColor ?? 'black';
     this.nightClockColor = s.nightClockColor ?? 'amber';
     const savedCityId = s.cityId ?? OTHER_CITY_ID;
@@ -182,6 +196,7 @@ export class SettingsComponent implements OnInit {
       panelLeft: this.panelLeft,
       nightMode: this.nightMode,
       screenLayout: this.screenLayout,
+      monitorSize: this.monitorSize,
       dayClockColor: this.dayClockColor,
       nightClockColor: this.nightClockColor,
       cityId,

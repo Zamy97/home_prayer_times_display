@@ -63,7 +63,7 @@ app-home.layout-portrait .countdownRow {
 }
 
 app-home.layout-portrait .countdown {
-  font-size: clamp(14px, 3.8vw, 22px);
+  font-size: calc(clamp(14px, 3.8vw, 22px) * var(--scale-countdown, 1));
 }
 
 app-home.layout-portrait .panelTempStrip {
@@ -76,7 +76,7 @@ app-home.layout-portrait .panelTempStrip {
 
 app-home.layout-portrait .panelTempLabel,
 app-home.layout-portrait .panelTempValue {
-  font-size: clamp(16px, 4.2vw, 28px);
+  font-size: calc(clamp(16px, 4.2vw, 28px) * var(--scale-temp, 1));
 }
 
 app-home.layout-portrait .locationNeeded {
@@ -101,11 +101,11 @@ app-home.layout-portrait .content > .grid {
 }
 
 app-home.layout-portrait .prayer {
-  font-size: clamp(17px, 4.6vw, 30px);
+  font-size: calc(clamp(17px, 4.6vw, 30px) * var(--scale-prayer, 1));
 }
 
 app-home.layout-portrait .time {
-  font-size: clamp(48px, 13vw, 104px);
+  font-size: calc(clamp(48px, 13vw, 104px) * var(--scale-prayer, 1));
 }
 
 app-home.layout-portrait .colLabel {
@@ -130,7 +130,7 @@ app-home.layout-portrait .sunBar {
 }
 
 app-home.layout-portrait .sunTime {
-  font-size: clamp(28px, 8vw, 64px);
+  font-size: calc(clamp(28px, 8vw, 64px) * var(--scale-sun, 1));
 }
 
 app-home.layout-portrait .sunRow {
@@ -153,7 +153,7 @@ app-home.layout-portrait .panelTop {
 
 app-home.layout-portrait .hijri,
 app-home.layout-portrait .greg {
-  font-size: clamp(14px, 4vw, 26px);
+  font-size: calc(clamp(14px, 4vw, 26px) * var(--scale-date, 1));
 }
 
 app-home.layout-portrait .panel > .rule {
