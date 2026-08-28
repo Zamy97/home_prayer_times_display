@@ -282,7 +282,7 @@ app-home .cell.is-next {
 app-home .prayer {
   font-family: var(--font-ui);
   letter-spacing: 0.02em;
-  font-size: 32px;
+  font-size: 44px;
   text-transform: uppercase;
 }
 
@@ -326,7 +326,7 @@ app-home .cell.is-next .startsBand {
   background: var(--navy);
   color: #fff;
   min-height: calc(2 * var(--pair-band-padding-y) + 1.35em);
-  font-size: 22px;
+  font-size: 26px;
   line-height: 1.35;
 }
 
@@ -348,7 +348,7 @@ app-home .prayerPairBand {
   flex-shrink: 0;
   /* Match visual height of .startsBand (padding + one line of colLabel) */
   min-height: calc(2 * var(--pair-band-padding-y) + 1.35em);
-  font-size: 22px;
+  font-size: 26px;
   line-height: 1.35;
 }
 
@@ -363,7 +363,7 @@ app-home .prayerPairAfter {
 app-home .colLabel {
   font-family: var(--font-ui);
   letter-spacing: 0.22em;
-  font-size: 22px;
+  font-size: 26px;
   text-transform: uppercase;
   opacity: 0.95;
 }
@@ -391,7 +391,7 @@ app-home .grid > .cell:nth-child(2n) > .time {
 
 app-home .time {
   font-family: var(--font-num);
-  font-size: 112px;
+  font-size: 128px;
   line-height: 0.95;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums lining-nums;
@@ -412,7 +412,7 @@ app-home .sunBar .sunTime {
 
 app-home .ampm {
   font-family: inherit;
-  font-size: 30px;
+  font-size: 35px;
   letter-spacing: 0.06em;
   margin-left: 6px;
   vertical-align: 18px;
@@ -1021,13 +1021,13 @@ app-home .icon {
     font-weight: 700;
   }
   app-home .prayer {
-    font-size: 36px;
+    font-size: 48px;
   }
   app-home .colLabel {
-    font-size: 24px;
+    font-size: 28px;
   }
   app-home .time {
-    font-size: 104px;
+    font-size: 126px;
   }
   app-home .hijri {
     letter-spacing: 0.045em;
