@@ -53,7 +53,16 @@ export type NightClockColor =
   | 'green'
   | 'teal'
   | 'rose'
-  | 'dim-white';
+  | 'dim-white'
+  | 'sky-blue'
+  | 'navy-blue'
+  | 'pink'
+  | 'hot-pink'
+  | 'purple'
+  | 'lilac'
+  | 'mint'
+  | 'coral'
+  | 'soft-gold';
 
 export const DAY_CLOCK_COLOR_HEX: Record<DayClockColor, string> = {
   black: '#111111',
@@ -75,6 +84,15 @@ export const NIGHT_CLOCK_COLOR_HEX: Record<NightClockColor, string> = {
   teal: '#3d8a8a',
   rose: '#c47a8a',
   'dim-white': '#b8b8b8',
+  'sky-blue': '#72cce8',
+  'navy-blue': '#5a8fd4',
+  pink: '#e8a0c4',
+  'hot-pink': '#ff6eb8',
+  purple: '#9b86d8',
+  lilac: '#b8a0e8',
+  mint: '#6ecfb0',
+  coral: '#e09078',
+  'soft-gold': '#d4b870',
 };
 
 const DAY_CLOCK_COLOR_VALUES = Object.keys(DAY_CLOCK_COLOR_HEX) as DayClockColor[];

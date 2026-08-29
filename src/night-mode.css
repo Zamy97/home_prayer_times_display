@@ -19,7 +19,7 @@ app-home.night {
   --amber-bright: color-mix(in srgb, var(--amber) 82%, #fff);
   --amber-faint: color-mix(in srgb, var(--amber) 55%, transparent);
 
-  --navy: #120c05;          /* dim warm band behind labels / bars */
+  --navy: color-mix(in srgb, var(--amber) 18%, #000); /* dim band behind labels / bars */
   --panel: #000000;         /* right panel background (was beige) */
   --line: color-mix(in srgb, var(--amber) 14%, transparent);
   --line-dark: color-mix(in srgb, var(--amber) 12%, transparent);
@@ -47,9 +47,9 @@ app-home.night .dark {
   color: var(--amber);
 }
 
-/* Next prayer: gently lifted warm panel + brighter amber (never a white flash) */
+/* Next prayer: lifted panel tinted by the chosen night accent */
 app-home.night .cell.is-next {
-  background: #1c1206;
+  background: color-mix(in srgb, var(--amber) 14%, #000);
   color: var(--amber-bright);
   border-right-color: var(--line);
   border-bottom-color: var(--line);
@@ -58,7 +58,7 @@ app-home.night .cell.is-next {
 /* Label bands behind FAJR / STARTS */
 app-home.night .cell.is-next .startsBand,
 app-home.night .prayerPairBand {
-  background: #1c1206;
+  background: color-mix(in srgb, var(--amber) 14%, #000);
   color: var(--amber-bright);
 }
 app-home.night .cell.is-next .startsBand .colLabel {

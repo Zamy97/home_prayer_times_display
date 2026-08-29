@@ -80,13 +80,22 @@ export class SettingsComponent implements OnInit {
 
   readonly nightClockColorOptions: Array<{ value: NightClockColor; label: string }> = [
     { value: 'amber', label: 'Amber (default)' },
+    { value: 'soft-gold', label: 'Soft gold' },
+    { value: 'orange', label: 'Orange' },
+    { value: 'coral', label: 'Coral' },
     { value: 'led-red', label: 'LED red (alarm clock, easy from a distance)' },
     { value: 'red', label: 'Red (softer, easier on eyes at night)' },
-    { value: 'orange', label: 'Orange' },
-    { value: 'warm-white', label: 'Warm white' },
+    { value: 'rose', label: 'Rose' },
+    { value: 'pink', label: 'Pink' },
+    { value: 'hot-pink', label: 'Hot pink (bright)' },
+    { value: 'lilac', label: 'Lilac' },
+    { value: 'purple', label: 'Purple' },
+    { value: 'mint', label: 'Mint' },
     { value: 'green', label: 'Green' },
     { value: 'teal', label: 'Teal' },
-    { value: 'rose', label: 'Rose' },
+    { value: 'sky-blue', label: 'Sky blue' },
+    { value: 'navy-blue', label: 'Navy blue' },
+    { value: 'warm-white', label: 'Warm white' },
     { value: 'dim-white', label: 'Dim white' },
   ];
 
