@@ -41,7 +41,20 @@ export type DayClockColor =
   | 'brown'
   | 'green'
   | 'maroon'
-  | 'blue';
+  | 'blue'
+  | 'amber'
+  | 'soft-gold'
+  | 'orange'
+  | 'coral'
+  | 'rose'
+  | 'pink'
+  | 'hot-pink'
+  | 'lilac'
+  | 'purple'
+  | 'mint'
+  | 'teal'
+  | 'sky-blue'
+  | 'navy-blue';
 
 /** Clock / accent color on the dark (night) layout */
 export type NightClockColor =
@@ -72,6 +85,19 @@ export const DAY_CLOCK_COLOR_HEX: Record<DayClockColor, string> = {
   green: '#1f4d2e',
   maroon: '#6b1c2a',
   blue: '#1a3a6b',
+  amber: '#9a6018',
+  'soft-gold': '#8a6518',
+  orange: '#9a5018',
+  coral: '#b04a38',
+  rose: '#9a4058',
+  pink: '#b03d80',
+  'hot-pink': '#c41872',
+  lilac: '#6848a8',
+  purple: '#5a3d9a',
+  mint: '#1a7560',
+  teal: '#1a6565',
+  'sky-blue': '#1565a0',
+  'navy-blue': '#2a5298',
 };
 
 export const NIGHT_CLOCK_COLOR_HEX: Record<NightClockColor, string> = {

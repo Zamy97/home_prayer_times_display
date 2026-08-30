@@ -73,9 +73,22 @@ export class SettingsComponent implements OnInit {
     { value: 'navy', label: 'Navy' },
     { value: 'charcoal', label: 'Charcoal' },
     { value: 'brown', label: 'Brown' },
-    { value: 'green', label: 'Forest green' },
+    { value: 'amber', label: 'Amber' },
+    { value: 'soft-gold', label: 'Soft gold' },
+    { value: 'orange', label: 'Orange' },
+    { value: 'coral', label: 'Coral' },
     { value: 'maroon', label: 'Maroon' },
+    { value: 'rose', label: 'Rose' },
+    { value: 'pink', label: 'Pink' },
+    { value: 'hot-pink', label: 'Hot pink' },
+    { value: 'lilac', label: 'Lilac' },
+    { value: 'purple', label: 'Purple' },
+    { value: 'green', label: 'Forest green' },
+    { value: 'mint', label: 'Mint' },
+    { value: 'teal', label: 'Teal' },
     { value: 'blue', label: 'Royal blue' },
+    { value: 'sky-blue', label: 'Sky blue' },
+    { value: 'navy-blue', label: 'Navy blue' },
   ];
 
   readonly nightClockColorOptions: Array<{ value: NightClockColor; label: string }> = [
