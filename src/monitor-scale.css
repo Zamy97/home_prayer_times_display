@@ -59,16 +59,16 @@ app-home[data-monitor='24'] {
 }
 
 app-home[data-monitor='27'] {
-  --scale-date: 1.04;
-  --scale-countdown: 1.05;
+  --scale-date: 1.08;
+  --scale-countdown: 1.10;
   --scale-sun: 1;
   --scale-temp: 0.96;
   --scale-prayer: 1.08;
 }
 
 app-home[data-monitor='32'] {
-  --scale-date: 1.07;
-  --scale-countdown: 1.09;
+  --scale-date: 1.12;
+  --scale-countdown: 1.14;
   --scale-sun: 1;
   --scale-temp: 0.94;
   --scale-prayer: 1.12;
