@@ -66,7 +66,8 @@ export class SettingsComponent implements OnInit {
   readonly clockPanelScaleOptions: Array<{ key: keyof ClockPanelScale; label: string }> = [
     { key: 'date', label: 'Date bar' },
     { key: 'temp', label: 'Weather / temperature' },
-    { key: 'clock', label: 'Main clock' },
+    { key: 'clock', label: 'Main clock (1–9)' },
+    { key: 'clockDouble', label: 'Main clock (10–12)' },
     { key: 'countdown', label: 'Next prayer countdown' },
     { key: 'sun', label: 'Sunrise / sunset' },
   ];
@@ -266,6 +267,7 @@ export class SettingsComponent implements OnInit {
 
   openClockSizingStudio(): void {
     this.sizingStudio = 'clock';
+    this.syncPreviewFrames();
   }
 
   openPrayerSizingStudio(): void {
@@ -290,7 +292,10 @@ export class SettingsComponent implements OnInit {
   private syncPreviewFrame(iframe: HTMLIFrameElement | null): void {
     const settings = this.settingsService.getSettings();
     iframe?.contentWindow?.postMessage(
-      { type: 'prayer-settings-sync', settings },
+      {
+        type: 'prayer-settings-sync',
+        settings,
+      },
       window.location.origin
     );
   }

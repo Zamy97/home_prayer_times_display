@@ -72,6 +72,11 @@ export class HomeComponent implements OnInit {
     return String(this.settings.clockPanelScale?.clock ?? 1);
   }
 
+  @HostBinding('style.--scale-clock-double')
+  get scaleClockDouble(): string {
+    return String(this.settings.clockPanelScale?.clockDouble ?? this.settings.clockPanelScale?.clock ?? 1);
+  }
+
   @HostBinding('style.--scale-countdown')
   get scaleCountdown(): string {
     return String(this.settings.clockPanelScale?.countdown ?? 1);
@@ -628,6 +633,25 @@ export class HomeComponent implements OnInit {
   }
 
   private setNow(date: Date): void {
+    const currentKey = this.prayerTimes.getLocalDateKey(date);
+    if (currentKey !== this.lastDateKey) {
+      this.lastDateKey = currentKey;
+      this.updateDateLabels(date);
+      this.loadPrayerTimes();
+      this.updateClockFromDate(date);
+      return;
+    }
+
+    this.updateClockFromDate(date);
+
+    // Update next-prayer highlight as time passes.
+    if (this.times?.raw) this.updateNextPrayer(date);
+    this.updateCountdown(date);
+    this.tickPrayerAnnounce(date.getTime());
+    this.updateNightMode(date);
+  }
+
+  private updateClockFromDate(date: Date): void {
     const parts = this.timeFormatter.formatToParts(date);
     const hour = parts.find((p) => p.type === 'hour')?.value ?? '';
     const minute = parts.find((p) => p.type === 'minute')?.value ?? '';
@@ -639,21 +663,6 @@ export class HomeComponent implements OnInit {
     this.nowAmPm = dayPeriod;
     const hourNum = parseInt(hour, 10);
     this.nowSingleDigitHour = hourNum >= 1 && hourNum <= 9;
-
-    // Ensure date/prayer-times switch over immediately at midnight.
-    const currentKey = this.prayerTimes.getLocalDateKey(date);
-    if (currentKey !== this.lastDateKey) {
-      this.lastDateKey = currentKey;
-      this.updateDateLabels(date);
-      this.loadPrayerTimes();
-      return;
-    }
-
-    // Update next-prayer highlight as time passes.
-    if (this.times?.raw) this.updateNextPrayer(date);
-    this.updateCountdown(date);
-    this.tickPrayerAnnounce(date.getTime());
-    this.updateNightMode(date);
   }
 
   /**

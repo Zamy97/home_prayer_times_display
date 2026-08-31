@@ -255,7 +255,7 @@ app-home.night .clockTimeSlot {
     padding-inline: var(--clock-pad-x);
     /* Reserve width for :ss + AM/PM so centered digits never clip the side stack */
     font-size: clamp(
-      calc(140px * var(--scale-clock, 1)),
+      calc(140px * var(--scale-clock-double, 1)),
       min(
         calc(
           (
@@ -264,7 +264,7 @@ app-home.night .clockTimeSlot {
         ),
         calc((100cqb - clamp(4px, 1.1cqb, 26px)) / var(--clock-h-div-night))
       ),
-      calc(1500px * var(--scale-clock, 1))
+      calc(1500px * var(--scale-clock-double, 1))
     );
   }
 
@@ -303,14 +303,14 @@ app-home.night .clockTimeSlot {
         justify-content: center;
         padding-inline: var(--clock-pad-x);
         font-size: clamp(
-          calc(150px * var(--scale-clock, 1)),
+          calc(150px * var(--scale-clock-double, 1)),
           min(
             calc(
               (100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)) / var(--clock-w-div-night-cqi)
             ),
-            calc(82vmin * var(--scale-clock, 1))
+            calc(82vmin * var(--scale-clock-double, 1))
           ),
-          calc(1600px * var(--scale-clock, 1))
+          calc(1600px * var(--scale-clock-double, 1))
         );
       }
       app-home.night .now.now--single-hour {

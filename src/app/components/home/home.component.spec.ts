@@ -19,7 +19,7 @@ describe('HomeComponent', () => {
     panelLeft: true,
     nightMode: 'off',
     screenLayout: 'landscape',
-    clockPanelScale: { date: 1, temp: 1, clock: 1, countdown: 1, sun: 1 },
+    clockPanelScale: { date: 1, temp: 1, clock: 1, clockDouble: 1, countdown: 1, sun: 1 },
     prayerPanelScale: { names: 1, times: 1, labels: 1 },
     dayClockColor: 'black',
     nightClockColor: 'amber',

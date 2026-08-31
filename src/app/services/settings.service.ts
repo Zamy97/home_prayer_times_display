@@ -28,7 +28,10 @@ function isScreenLayout(value: unknown): value is ScreenLayout {
 export type ClockPanelScale = {
   date: number;
   temp: number;
+  /** Main clock when the hour is 1–9. */
   clock: number;
+  /** Main clock when the hour is 10–12. */
+  clockDouble: number;
   countdown: number;
   sun: number;
 };
@@ -46,6 +49,7 @@ export const DEFAULT_CLOCK_PANEL_SCALE: ClockPanelScale = {
   date: 1,
   temp: 1,
   clock: 1,
+  clockDouble: 1,
   countdown: 1,
   sun: 1,
 };
@@ -69,35 +73,35 @@ const LEGACY_MONITOR_PRESETS: Record<
   { clock: ClockPanelScale; prayer: PrayerPanelScale }
 > = {
   '14': {
-    clock: { date: 0.74, temp: 0.78, clock: 1, countdown: 0.74, sun: 0.74 },
+    clock: { date: 0.74, temp: 0.78, clock: 1, clockDouble: 1, countdown: 0.74, sun: 0.74 },
     prayer: { names: 0.82, times: 0.82, labels: 0.82 },
   },
   '15': {
-    clock: { date: 0.8, temp: 0.84, clock: 1, countdown: 0.8, sun: 0.8 },
+    clock: { date: 0.8, temp: 0.84, clock: 1, clockDouble: 1, countdown: 0.8, sun: 0.8 },
     prayer: { names: 0.86, times: 0.86, labels: 0.86 },
   },
   '16': {
-    clock: { date: 0.84, temp: 0.87, clock: 1, countdown: 0.84, sun: 0.84 },
+    clock: { date: 0.84, temp: 0.87, clock: 1, clockDouble: 1, countdown: 0.84, sun: 0.84 },
     prayer: { names: 0.9, times: 0.9, labels: 0.9 },
   },
   '22': {
-    clock: { date: 0.88, temp: 0.9, clock: 1, countdown: 0.88, sun: 0.88 },
+    clock: { date: 0.88, temp: 0.9, clock: 1, clockDouble: 1, countdown: 0.88, sun: 0.88 },
     prayer: { names: 0.92, times: 0.92, labels: 0.92 },
   },
   '23': {
-    clock: { date: 0.94, temp: 0.95, clock: 1, countdown: 0.94, sun: 0.94 },
+    clock: { date: 0.94, temp: 0.95, clock: 1, clockDouble: 1, countdown: 0.94, sun: 0.94 },
     prayer: { names: 0.96, times: 0.96, labels: 0.96 },
   },
   '24': {
-    clock: { date: 1, temp: 1, clock: 1, countdown: 1, sun: 1 },
+    clock: { date: 1, temp: 1, clock: 1, clockDouble: 1, countdown: 1, sun: 1 },
     prayer: { names: 1, times: 1, labels: 1 },
   },
   '27': {
-    clock: { date: 1.08, temp: 0.96, clock: 1, countdown: 1.1, sun: 1 },
+    clock: { date: 1.08, temp: 0.96, clock: 1, clockDouble: 1, countdown: 1.1, sun: 1 },
     prayer: { names: 1.08, times: 1.08, labels: 1.08 },
   },
   '32': {
-    clock: { date: 1.12, temp: 0.94, clock: 1, countdown: 1.14, sun: 1 },
+    clock: { date: 1.12, temp: 0.94, clock: 1, clockDouble: 1, countdown: 1.14, sun: 1 },
     prayer: { names: 1.12, times: 1.12, labels: 1.12 },
   },
 };
@@ -127,10 +131,12 @@ function isClockPanelScale(value: unknown): value is ClockPanelScale {
 }
 
 function normalizeClockPanelScale(scale: ClockPanelScale): ClockPanelScale {
+  const clock = clampScale(scale.clock);
   return {
     date: clampScale(scale.date),
     temp: clampScale(scale.temp),
-    clock: clampScale(scale.clock),
+    clock,
+    clockDouble: clampScale(scale.clockDouble ?? clock),
     countdown: clampScale(scale.countdown),
     sun: clampScale(scale.sun),
   };

@@ -635,9 +635,9 @@ app-home .now {
   padding-inline: var(--clock-pad-x);
   box-sizing: border-box;
   font-size: clamp(
-    calc(108px * var(--scale-clock, 1)),
-    min(calc(23.5vw * var(--scale-clock, 1)), calc(55vmin * var(--scale-clock, 1))),
-    calc(760px * var(--scale-clock, 1))
+    calc(108px * var(--scale-clock-double, 1)),
+    min(calc(23.5vw * var(--scale-clock-double, 1)), calc(55vmin * var(--scale-clock-double, 1))),
+    calc(760px * var(--scale-clock-double, 1))
   );
   line-height: 1;
   letter-spacing: 0.022em;
@@ -701,7 +701,7 @@ app-home .now .ampm {
       padding-inline: var(--clock-pad-x);
       letter-spacing: 0.022em;
       font-size: clamp(
-        calc(104px * var(--scale-clock, 1)),
+        calc(104px * var(--scale-clock-double, 1)),
         min(
           calc(
             (
@@ -710,7 +710,7 @@ app-home .now .ampm {
           ),
           calc((100cqb - clamp(4px, 1.1cqb, 26px)) / var(--clock-h-div))
         ),
-        calc(1200px * var(--scale-clock, 1))
+        calc(1200px * var(--scale-clock-double, 1))
       );
     }
 
@@ -763,16 +763,16 @@ app-home .now .ampm {
         padding-inline: var(--clock-pad-x);
         letter-spacing: 0.022em;
         font-size: clamp(
-          calc(96px * var(--scale-clock, 1)),
+          calc(96px * var(--scale-clock-double, 1)),
           min(
             calc(
               (
                 100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)
               ) / var(--clock-w-div)
             ),
-            calc(72vmin * var(--scale-clock, 1))
+            calc(72vmin * var(--scale-clock-double, 1))
           ),
-          calc(1200px * var(--scale-clock, 1))
+          calc(1200px * var(--scale-clock-double, 1))
         );
       }
 
