@@ -1,18 +1,25 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { PrayTimeMethod } from '../../lib/praytime';
 import { CITIES, OTHER_CITY_ID } from '../../data/cities';
 import { GeoError, GeolocationService } from '../../services/geolocation.service';
 import {
   AsrMethod,
+  ClockPanelScale,
   DayClockColor,
-  MonitorSize,
+  DEFAULT_CLOCK_PANEL_SCALE,
+  DEFAULT_PRAYER_PANEL_SCALE,
   NightClockColor,
   NightMode,
+  PANEL_SCALE_MAX,
+  PANEL_SCALE_MIN,
+  PANEL_SCALE_STEP,
+  PrayerPanelScale,
   PrayerSettings,
   ScreenLayout,
   SettingsService,
 } from '../../services/settings.service';
+
+type SizingStudio = 'clock' | 'prayer';
 
 @Component({
   selector: 'app-settings',
@@ -22,7 +29,6 @@ import {
 export class SettingsComponent implements OnInit {
   private readonly settingsService = inject(SettingsService);
   private readonly geolocation = inject(GeolocationService);
-  private readonly router = inject(Router);
 
   /** 'loading' while requesting, null when idle, message when error */
   geoStatus: 'loading' | null | string = null;
@@ -57,16 +63,23 @@ export class SettingsComponent implements OnInit {
     { value: 'portrait', label: 'Portrait (stacked — clock on top)' },
   ];
 
-  readonly monitorSizeOptions: Array<{ value: MonitorSize; label: string }> = [
-    { value: '14', label: '14″ portable monitor' },
-    { value: '15', label: '15″ portable monitor' },
-    { value: '16', label: '16″ portable monitor' },
-    { value: '22', label: '22″ monitor / TV' },
-    { value: '23', label: '23″ monitor / TV' },
-    { value: '24', label: '24″ monitor / TV (default)' },
-    { value: '27', label: '27″ monitor / TV' },
-    { value: '32', label: '32″ monitor / TV' },
+  readonly clockPanelScaleOptions: Array<{ key: keyof ClockPanelScale; label: string }> = [
+    { key: 'date', label: 'Date bar' },
+    { key: 'temp', label: 'Weather / temperature' },
+    { key: 'clock', label: 'Main clock' },
+    { key: 'countdown', label: 'Next prayer countdown' },
+    { key: 'sun', label: 'Sunrise / sunset' },
   ];
+
+  readonly prayerPanelScaleOptions: Array<{ key: keyof PrayerPanelScale; label: string }> = [
+    { key: 'names', label: 'Prayer names' },
+    { key: 'times', label: 'Prayer times' },
+    { key: 'labels', label: 'Column labels (Starts)' },
+  ];
+
+  readonly scaleMin = PANEL_SCALE_MIN;
+  readonly scaleMax = PANEL_SCALE_MAX;
+  readonly scaleStep = PANEL_SCALE_STEP;
 
   readonly dayClockColorOptions: Array<{ value: DayClockColor; label: string }> = [
     { value: 'black', label: 'Black' },
@@ -127,9 +140,17 @@ export class SettingsComponent implements OnInit {
   panelLeft = true;
   nightMode: NightMode = 'off';
   screenLayout: ScreenLayout = 'auto';
-  monitorSize: MonitorSize = '24';
+  clockPanelScale: ClockPanelScale = { ...DEFAULT_CLOCK_PANEL_SCALE };
+  prayerPanelScale: PrayerPanelScale = { ...DEFAULT_PRAYER_PANEL_SCALE };
   dayClockColor: DayClockColor = 'black';
   nightClockColor: NightClockColor = 'amber';
+  sizingStudio: SizingStudio | null = null;
+
+  @ViewChild('prayerPreviewFrame')
+  private prayerPreviewFrame?: ElementRef<HTMLIFrameElement>;
+
+  @ViewChild('clockPreviewFrame')
+  private clockPreviewFrame?: ElementRef<HTMLIFrameElement>;
 
   ngOnInit(): void {
     const s = this.settingsService.getSettings();
@@ -141,7 +162,8 @@ export class SettingsComponent implements OnInit {
     this.panelLeft = s.panelLeft ?? true;
     this.nightMode = s.nightMode ?? 'off';
     this.screenLayout = s.screenLayout ?? 'auto';
-    this.monitorSize = s.monitorSize ?? '24';
+    this.clockPanelScale = { ...(s.clockPanelScale ?? DEFAULT_CLOCK_PANEL_SCALE) };
+    this.prayerPanelScale = { ...(s.prayerPanelScale ?? DEFAULT_PRAYER_PANEL_SCALE) };
     this.dayClockColor = s.dayClockColor ?? 'black';
     this.nightClockColor = s.nightClockColor ?? 'amber';
     const savedCityId = s.cityId ?? OTHER_CITY_ID;
@@ -192,6 +214,101 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  clockScalePercent(key: keyof ClockPanelScale): number {
+    return Math.round(this.clockPanelScale[key] * 100);
+  }
+
+  prayerScalePercent(key: keyof PrayerPanelScale): number {
+    return Math.round(this.prayerPanelScale[key] * 100);
+  }
+
+  onClockScaleInput(key: keyof ClockPanelScale, percent: number): void {
+    const next = Math.min(this.scaleMax, Math.max(this.scaleMin, percent / 100));
+    this.clockPanelScale = {
+      ...this.clockPanelScale,
+      [key]: Math.round(next * 100) / 100,
+    };
+    this.pushClockScalePreview();
+  }
+
+  onPrayerScaleInput(key: keyof PrayerPanelScale, percent: number): void {
+    const next = Math.min(this.scaleMax, Math.max(this.scaleMin, percent / 100));
+    this.prayerPanelScale = {
+      ...this.prayerPanelScale,
+      [key]: Math.round(next * 100) / 100,
+    };
+    this.pushPrayerScalePreview();
+  }
+
+  onClockScaleTyped(key: keyof ClockPanelScale, raw: number | string | null): void {
+    if (raw === '' || raw === null || raw === undefined) return;
+    const num = Number(raw);
+    if (!Number.isFinite(num)) return;
+    this.onClockScaleInput(key, num);
+  }
+
+  onPrayerScaleTyped(key: keyof PrayerPanelScale, raw: number | string | null): void {
+    if (raw === '' || raw === null || raw === undefined) return;
+    const num = Number(raw);
+    if (!Number.isFinite(num)) return;
+    this.onPrayerScaleInput(key, num);
+  }
+
+  resetClockPanelScale(): void {
+    this.clockPanelScale = { ...DEFAULT_CLOCK_PANEL_SCALE };
+    this.pushClockScalePreview();
+  }
+
+  resetPrayerPanelScale(): void {
+    this.prayerPanelScale = { ...DEFAULT_PRAYER_PANEL_SCALE };
+    this.pushPrayerScalePreview();
+  }
+
+  openClockSizingStudio(): void {
+    this.sizingStudio = 'clock';
+  }
+
+  openPrayerSizingStudio(): void {
+    this.sizingStudio = 'prayer';
+    this.pushPrayerScalePreview();
+  }
+
+  closeSizingStudio(): void {
+    this.sizingStudio = null;
+  }
+
+  /** Push current settings into a preview iframe (same tab — storage events do not reach it). */
+  onPreviewFrameLoad(event: Event): void {
+    this.syncPreviewFrame(event.target as HTMLIFrameElement | null);
+  }
+
+  private syncPreviewFrames(): void {
+    this.syncPreviewFrame(this.prayerPreviewFrame?.nativeElement ?? null);
+    this.syncPreviewFrame(this.clockPreviewFrame?.nativeElement ?? null);
+  }
+
+  private syncPreviewFrame(iframe: HTMLIFrameElement | null): void {
+    const settings = this.settingsService.getSettings();
+    iframe?.contentWindow?.postMessage(
+      { type: 'prayer-settings-sync', settings },
+      window.location.origin
+    );
+  }
+
+  private pushClockScalePreview(): void {
+    this.settingsService.previewClockPanelScale(this.clockPanelScale);
+    this.syncPreviewFrames();
+  }
+
+  private pushPrayerScalePreview(): void {
+    this.settingsService.previewPrayerPanelScale(this.prayerPanelScale);
+    this.syncPreviewFrames();
+  }
+
+  reloadDisplay(): void {
+    window.location.assign('/');
+  }
+
   save(): void {
     let coords: PrayerSettings['coords'];
     let timezone = this.timezone;
@@ -218,13 +335,14 @@ export class SettingsComponent implements OnInit {
       panelLeft: this.panelLeft,
       nightMode: this.nightMode,
       screenLayout: this.screenLayout,
-      monitorSize: this.monitorSize,
+      clockPanelScale: { ...this.clockPanelScale },
+      prayerPanelScale: { ...this.prayerPanelScale },
       dayClockColor: this.dayClockColor,
       nightClockColor: this.nightClockColor,
       cityId,
     };
     this.settingsService.saveSettings(next);
-    this.router.navigate(['/']);
+    window.location.assign('/');
   }
 
   private parseCoords(): PrayerSettings['coords'] {
@@ -236,4 +354,3 @@ export class SettingsComponent implements OnInit {
     return { lat, lng };
   }
 }
-

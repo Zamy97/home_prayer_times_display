@@ -261,6 +261,8 @@ app-home .cell.dark:has(.timeStack) {
 
 app-home .grid > .cell:nth-child(2n) {
   border-right: none;
+  container-type: size;
+  overflow: hidden;
 }
 
 app-home .row-last {
@@ -282,7 +284,7 @@ app-home .cell.is-next {
 app-home .prayer {
   font-family: var(--font-ui);
   letter-spacing: 0.02em;
-  font-size: calc(44px * var(--scale-prayer, 1));
+  font-size: calc(44px * var(--scale-prayer-name, 1));
   text-transform: uppercase;
 }
 
@@ -295,6 +297,7 @@ app-home .timeStack {
   align-items: stretch;
   justify-content: flex-start;
   gap: 0;
+  container-type: size;
 }
 
 /* Center prayer digits in the space below STARTS (between band bottom and cell border) */
@@ -326,7 +329,7 @@ app-home .cell.is-next .startsBand {
   background: var(--navy);
   color: #fff;
   min-height: calc(2 * var(--pair-band-padding-y) + 1.35em);
-  font-size: 26px;
+  font-size: calc(26px * var(--scale-prayer-label, 1));
   line-height: 1.35;
 }
 
@@ -348,7 +351,7 @@ app-home .prayerPairBand {
   flex-shrink: 0;
   /* Match visual height of .startsBand (padding + one line of colLabel) */
   min-height: calc(2 * var(--pair-band-padding-y) + 1.35em);
-  font-size: 26px;
+  font-size: calc(26px * var(--scale-prayer-label, 1));
   line-height: 1.35;
 }
 
@@ -363,7 +366,7 @@ app-home .prayerPairAfter {
 app-home .colLabel {
   font-family: var(--font-ui);
   letter-spacing: 0.22em;
-  font-size: 26px;
+  font-size: calc(26px * var(--scale-prayer-label, 1));
   text-transform: uppercase;
   opacity: 0.95;
 }
@@ -391,10 +394,20 @@ app-home .grid > .cell:nth-child(2n) > .time {
 
 app-home .time {
   font-family: var(--font-num);
-  font-size: calc(128px * var(--scale-prayer, 1));
   line-height: 0.95;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* Prayer times slider: scale digits inside each fixed row (not a viewport zoom). */
+app-home .grid > .cell:nth-child(2n) > .time {
+  font-size: calc(0.62cqb * var(--scale-prayer-time, 1));
+}
+
+app-home .timeStack > .time {
+  font-size: calc(0.78cqb * var(--scale-prayer-time, 1));
 }
 
 /* Chosen color applies to every time numeral, not just the big clock. */
@@ -412,10 +425,10 @@ app-home .sunBar .sunTime {
 
 app-home .ampm {
   font-family: inherit;
-  font-size: 35px;
+  font-size: 0.27em;
   letter-spacing: 0.06em;
-  margin-left: 6px;
-  vertical-align: 18px;
+  margin-left: 0.05em;
+  vertical-align: 0.14em;
 }
 
 app-home .panel {
@@ -626,7 +639,11 @@ app-home .now {
   margin-inline: auto;
   padding-inline: var(--clock-pad-x);
   box-sizing: border-box;
-  font-size: clamp(108px, min(23.5vw, 55vmin), 760px);
+  font-size: clamp(
+    calc(108px * var(--scale-clock, 1)),
+    min(calc(23.5vw * var(--scale-clock, 1)), calc(55vmin * var(--scale-clock, 1))),
+    calc(760px * var(--scale-clock, 1))
+  );
   line-height: 1;
   letter-spacing: 0.022em;
   color: var(--clock-color, #000);
@@ -637,7 +654,11 @@ app-home .now {
 
 /* 12h hours 1–9: scale up the HH:MM row */
 app-home .now.now--single-hour {
-  font-size: clamp(116px, min(25.5vw, 61vmin), 820px);
+  font-size: clamp(
+    calc(116px * var(--scale-clock, 1)),
+    min(calc(25.5vw * var(--scale-clock, 1)), calc(61vmin * var(--scale-clock, 1))),
+    calc(820px * var(--scale-clock, 1))
+  );
 }
 
 app-home .nowMain {
@@ -685,16 +706,16 @@ app-home .now .ampm {
       padding-inline: var(--clock-pad-x);
       letter-spacing: 0.022em;
       font-size: clamp(
-        104px,
+        calc(104px * var(--scale-clock, 1)),
         min(
           calc(
             (
               100cqw - 2 * var(--clock-pad-x) - var(--clock-side-reserve)
-            ) / 2.95
+            ) / var(--clock-w-div)
           ),
-          calc((100cqb - clamp(4px, 1.1cqb, 26px)) / 0.88)
+          calc((100cqb - clamp(4px, 1.1cqb, 26px)) / var(--clock-h-div))
         ),
-        1200px
+        calc(1200px * var(--scale-clock, 1))
       );
     }
 
@@ -714,16 +735,16 @@ app-home .now .ampm {
 
     app-home .now.now--single-hour {
       font-size: clamp(
-        112px,
+        calc(112px * var(--scale-clock, 1)),
         min(
           calc(
             (
               100cqw - 2 * var(--clock-pad-x) - var(--clock-side-reserve)
-            ) / 2.55
+            ) / var(--clock-w-div-single)
           ),
-          calc((100cqb - clamp(4px, 1.1cqb, 26px)) / 0.82)
+          calc((100cqb - clamp(4px, 1.1cqb, 26px)) / var(--clock-h-div-single))
         ),
-        1200px
+        calc(1200px * var(--scale-clock, 1))
       );
     }
   }
@@ -747,16 +768,16 @@ app-home .now .ampm {
         padding-inline: var(--clock-pad-x);
         letter-spacing: 0.022em;
         font-size: clamp(
-          96px,
+          calc(96px * var(--scale-clock, 1)),
           min(
             calc(
               (
                 100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)
-              ) / 2.95
+              ) / var(--clock-w-div)
             ),
-            72vmin
+            calc(72vmin * var(--scale-clock, 1))
           ),
-          1200px
+          calc(1200px * var(--scale-clock, 1))
         );
       }
 
@@ -776,14 +797,14 @@ app-home .now .ampm {
 
       app-home .now.now--single-hour {
         font-size: clamp(
-          104px,
+          calc(104px * var(--scale-clock, 1)),
           min(
             calc(
-              (100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)) / 2.55
+              (100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)) / var(--clock-w-div-single)
             ),
-            78vmin
+            calc(78vmin * var(--scale-clock, 1))
           ),
-          1200px
+          calc(1200px * var(--scale-clock, 1))
         );
       }
     }
@@ -1021,13 +1042,10 @@ app-home .icon {
     font-weight: 700;
   }
   app-home .prayer {
-    font-size: calc(48px * var(--scale-prayer, 1));
+    font-size: calc(48px * var(--scale-prayer-name, 1));
   }
   app-home .colLabel {
-    font-size: 28px;
-  }
-  app-home .time {
-    font-size: calc(126px * var(--scale-prayer, 1));
+    font-size: calc(28px * var(--scale-prayer-label, 1));
   }
   app-home .hijri {
     letter-spacing: 0.045em;

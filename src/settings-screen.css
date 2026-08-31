@@ -130,8 +130,288 @@ app-settings .displayGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px 16px;
-  flex: 1;
+  flex: 0 0 auto;
   align-content: start;
+}
+
+app-settings .page--sizing .main,
+app-settings .page--sizing .footer {
+  display: none;
+}
+
+app-settings .page--prayer-sizing .head {
+  display: none;
+}
+
+app-settings .clockPanelSizingEntry {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(7, 35, 60, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+app-settings .clockPanelSizingEntryText {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+app-settings .sizingStudio {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  background: #0a1520;
+}
+
+app-settings .sizingStudio--preview-left {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+}
+
+app-settings .sizingStudio--prayer-overlay {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+app-settings .sizingStudioPreview--full {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  z-index: 1;
+}
+
+app-settings .sizingStudio--prayer-overlay .sizingStudioPreviewFrame {
+  pointer-events: none;
+}
+
+app-settings .sizingStudioPrayerDock {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  width: 100%;
+  max-height: min(38vh, 260px);
+  overflow-y: auto;
+  padding: clamp(12px, 1.8vh, 16px) clamp(16px, 3vw, 32px) clamp(14px, 2.2vh, 18px);
+  border-radius: 16px 16px 0 0;
+  border: none;
+  border-top: 2px solid rgba(7, 35, 60, 0.18);
+  background: linear-gradient(180deg, rgba(248, 246, 244, 0.98) 0%, rgba(228, 225, 223, 0.98) 100%);
+  box-shadow: 0 -10px 36px rgba(7, 35, 60, 0.22);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+}
+
+app-settings .sizingStudioPrayerDockInner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+app-settings .sizingStudioPrayerDockHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+app-settings .sizingStudioPrayerDockActions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+app-settings .sizingStudioPrayerSliders {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 14px;
+}
+
+app-settings .scaleField--dock {
+  gap: 5px;
+}
+
+app-settings .panelSizingEntries {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(7, 35, 60, 0.1);
+}
+
+app-settings .sizingStudioPreview {
+  min-width: 0;
+  min-height: 0;
+  background: #111;
+}
+
+app-settings .sizingStudioPreviewFrame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+app-settings .sizingStudioControls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  padding: clamp(18px, 2.5vw, 28px);
+  background: linear-gradient(180deg, #ece9e6 0%, var(--panel) 100%);
+  box-shadow: 0 0 28px rgba(7, 35, 60, 0.18);
+  overflow-y: auto;
+}
+
+app-settings .sizingStudio--preview-left .sizingStudioControls {
+  border-left: 2px solid rgba(7, 35, 60, 0.12);
+  box-shadow: -8px 0 28px rgba(7, 35, 60, 0.18);
+}
+
+app-settings .sizingStudioControlsHead {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+app-settings .sizingStudioTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+app-settings .sizingStudioHint {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+app-settings .sizingStudioSliders {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+app-settings .sizingStudioDone {
+  width: 100%;
+  min-width: 0;
+  margin-top: auto;
+}
+
+app-settings .scaleField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+app-settings .btn--compact {
+  align-self: flex-start;
+  padding: 7px 14px;
+  font-size: 12px;
+}
+
+app-settings .sizingStudioControls .scaleFieldTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+app-settings .sizingStudioControls .scaleField .label {
+  color: #0a1520;
+  font-weight: 700;
+  font-size: 0.84rem;
+}
+
+app-settings .sizingStudioControls .scaleInputWrap {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  background: #fff;
+  border: 2px solid var(--navy);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+}
+
+app-settings .sizingStudioControls .scalePercentInput {
+  width: 3.4rem;
+  padding: 4px 6px 4px 10px;
+  border: none;
+  background: transparent;
+  color: var(--navy);
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+app-settings .sizingStudioControls .scalePercentInput:focus {
+  outline: none;
+  background: #f5f8fb;
+}
+
+app-settings .sizingStudioControls .scalePercentInput::-webkit-outer-spin-button,
+app-settings .sizingStudioControls .scalePercentInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+app-settings .sizingStudioControls .scalePercentSuffix {
+  padding: 4px 10px 4px 2px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+
+app-settings .sizingStudioControls .scaleValue {
+  flex-shrink: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--navy);
+  border: 2px solid #041018;
+  border-radius: 8px;
+  padding: 4px 12px;
+  min-width: 3.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+}
+
+app-settings .scaleFieldTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+app-settings .scaleValue {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+
+app-settings .scaleSlider {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--navy);
+  cursor: pointer;
 }
 
 app-settings .coordRow {
@@ -201,6 +481,7 @@ app-settings .footer {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 10px;
   padding: 14px clamp(20px, 4vw, 48px);
   background: linear-gradient(180deg, #f5f3f1 0%, #ebe8e5 100%);
   border-top: 2px solid rgba(7, 35, 60, 0.1);
@@ -270,6 +551,35 @@ app-settings .btn.primary:hover:not(:disabled) {
 
   app-settings .displayGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  app-settings .sizingStudio--preview-left {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  app-settings .sizingStudio--preview-left .sizingStudioPreview {
+    order: 1;
+  }
+
+  app-settings .sizingStudio--preview-left .sizingStudioControls {
+    order: 2;
+    border-left: none;
+    border-top: 2px solid rgba(7, 35, 60, 0.12);
+    box-shadow: 0 -8px 28px rgba(7, 35, 60, 0.12);
+    max-height: 48vh;
+  }
+
+  app-settings .sizingStudio--preview-left .sizingStudioPreview {
+    min-height: 52vh;
+  }
+
+  app-settings .sizingStudioPrayerSliders {
+    grid-template-columns: 1fr;
+  }
+
+  app-settings .sizingStudioPrayerDock {
+    max-height: min(52vh, 420px);
   }
 }
 

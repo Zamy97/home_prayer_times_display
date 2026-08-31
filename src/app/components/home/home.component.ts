@@ -1,4 +1,4 @@
-import { Component, DestroyRef, HostBinding, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectorRef, DestroyRef, HostBinding, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { interval, startWith } from 'rxjs';
@@ -56,10 +56,45 @@ export class HomeComponent implements OnInit {
   get clockLed(): boolean {
     return this.nightActive && this.settings.nightClockColor === 'led-red';
   }
-  /** Scales typography for the chosen monitor / TV size. */
-  @HostBinding('attr.data-monitor')
-  get monitorSize(): string {
-    return this.settings.monitorSize ?? '24';
+  /** User-controlled size multipliers for the clock panel (from settings). */
+  @HostBinding('style.--scale-date')
+  get scaleDate(): string {
+    return String(this.settings.clockPanelScale?.date ?? 1);
+  }
+
+  @HostBinding('style.--scale-temp')
+  get scaleTemp(): string {
+    return String(this.settings.clockPanelScale?.temp ?? 1);
+  }
+
+  @HostBinding('style.--scale-clock')
+  get scaleClock(): string {
+    return String(this.settings.clockPanelScale?.clock ?? 1);
+  }
+
+  @HostBinding('style.--scale-countdown')
+  get scaleCountdown(): string {
+    return String(this.settings.clockPanelScale?.countdown ?? 1);
+  }
+
+  @HostBinding('style.--scale-sun')
+  get scaleSun(): string {
+    return String(this.settings.clockPanelScale?.sun ?? 1);
+  }
+
+  @HostBinding('style.--scale-prayer-name')
+  get scalePrayerName(): string {
+    return String(this.settings.prayerPanelScale?.names ?? 1);
+  }
+
+  @HostBinding('style.--scale-prayer-time')
+  get scalePrayerTime(): string {
+    return String(this.settings.prayerPanelScale?.times ?? 1);
+  }
+
+  @HostBinding('style.--scale-prayer-label')
+  get scalePrayerLabel(): string {
+    return String(this.settings.prayerPanelScale?.labels ?? 1);
   }
   /** Chosen clock color for the current day/night layout. */
   @HostBinding('style.--clock-color')
@@ -105,7 +140,8 @@ export class HomeComponent implements OnInit {
   private readonly weatherService = inject(WeatherService);
   private readonly geolocation = inject(GeolocationService);
   private readonly router = inject(Router);
-  private settings = this.settingsService.getSettings();
+  private readonly cdr = inject(ChangeDetectorRef);
+  settings = this.settingsService.getSettings();
   private lastDateKey = this.prayerTimes.getLocalDateKey();
   private prayerInstants: Partial<Record<'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha', number>> = {};
   private sunriseAtMs: number | null = null;
@@ -180,13 +216,25 @@ export class HomeComponent implements OnInit {
     this.settingsService.settings$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((s) => {
+        const prev = this.settings;
         this.settings = s;
         if (s.coords) this.showGeoPrompt = false;
-        this.loadFromCache();
-        this.loadPrayerTimes();
-        this.fetchTemperature(true);
+
+        const prayerInputsChanged =
+          prev.coords !== s.coords ||
+          prev.method !== s.method ||
+          prev.asr !== s.asr ||
+          prev.timezone !== s.timezone;
+
+        if (prayerInputsChanged) {
+          this.loadFromCache();
+          this.loadPrayerTimes();
+          this.fetchTemperature(true);
+        }
+
         this.updateNightMode(new Date());
         this.updateScreenLayout();
+        this.cdr.detectChanges();
       });
 
     this.portraitMediaQuery.addEventListener('change', this.onPortraitMediaChange);

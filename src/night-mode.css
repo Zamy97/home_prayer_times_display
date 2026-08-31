@@ -255,16 +255,16 @@ app-home.night .clockTimeSlot {
     padding-inline: var(--clock-pad-x);
     /* Reserve width for :ss + AM/PM so centered digits never clip the side stack */
     font-size: clamp(
-      140px,
+      calc(140px * var(--scale-clock, 1)),
       min(
         calc(
           (
             100cqw - 2 * var(--clock-pad-x) - var(--clock-side-reserve)
-          ) / 2.95
+          ) / var(--clock-w-div)
         ),
-        calc((100cqb - clamp(4px, 1.1cqb, 26px)) / 0.66)
+        calc((100cqb - clamp(4px, 1.1cqb, 26px)) / var(--clock-h-div-night))
       ),
-      1500px
+      calc(1500px * var(--scale-clock, 1))
     );
   }
 
@@ -272,16 +272,16 @@ app-home.night .clockTimeSlot {
     justify-content: center;
     padding-inline: var(--clock-pad-x);
     font-size: clamp(
-      156px,
+      calc(156px * var(--scale-clock, 1)),
       min(
         calc(
           (
             100cqw - 2 * var(--clock-pad-x) - var(--clock-side-reserve)
-          ) / 2.55
+          ) / var(--clock-w-div-single)
         ),
-        calc((100cqb - clamp(4px, 1.1cqb, 26px)) / 0.6)
+        calc((100cqb - clamp(4px, 1.1cqb, 26px)) / var(--clock-h-div-night-single))
       ),
-      1500px
+      calc(1500px * var(--scale-clock, 1))
     );
   }
 
@@ -303,27 +303,27 @@ app-home.night .clockTimeSlot {
         justify-content: center;
         padding-inline: var(--clock-pad-x);
         font-size: clamp(
-          150px,
+          calc(150px * var(--scale-clock, 1)),
           min(
             calc(
-              (100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)) / 2.55
+              (100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)) / var(--clock-w-div-night-cqi)
             ),
-            82vmin
+            calc(82vmin * var(--scale-clock, 1))
           ),
-          1600px
+          calc(1600px * var(--scale-clock, 1))
         );
       }
       app-home.night .now.now--single-hour {
         justify-content: center;
         font-size: clamp(
-          170px,
+          calc(170px * var(--scale-clock, 1)),
           min(
             calc(
-              (100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)) / 2.15
+              (100cqi - 2 * var(--clock-pad-x) - clamp(48px, 7.5cqi, 120px)) / var(--clock-w-div-night-single-cqi)
             ),
-            88vmin
+            calc(88vmin * var(--scale-clock, 1))
           ),
-          1600px
+          calc(1600px * var(--scale-clock, 1))
         );
       }
     }

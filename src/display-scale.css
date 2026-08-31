@@ -1,0 +1,21 @@
+/* Typography scale variables — defaults; home component overrides from saved settings. */
+
+app-home {
+  --scale-date: 1;
+  --scale-countdown: 1;
+  --scale-sun: 1;
+  --scale-temp: 1;
+  --scale-clock: 1;
+  --scale-prayer-name: 1;
+  --scale-prayer-time: 1;
+  --scale-prayer-label: 1;
+  /* Clock size: lower divisor → larger digits when --scale-clock > 1 */
+  --clock-w-div: calc(2.95 / var(--scale-clock, 1));
+  --clock-w-div-single: calc(2.55 / var(--scale-clock, 1));
+  --clock-h-div: calc(0.88 / var(--scale-clock, 1));
+  --clock-h-div-single: calc(0.82 / var(--scale-clock, 1));
+  --clock-h-div-night: calc(0.66 / var(--scale-clock, 1));
+  --clock-h-div-night-single: calc(0.6 / var(--scale-clock, 1));
+  --clock-w-div-night-cqi: calc(2.55 / var(--scale-clock, 1));
+  --clock-w-div-night-single-cqi: calc(2.15 / var(--scale-clock, 1));
+}

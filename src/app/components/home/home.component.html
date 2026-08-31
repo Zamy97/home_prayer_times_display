@@ -1,4 +1,10 @@
-<main class="board" aria-label="Prayer times screen">
+<main
+  class="board"
+  aria-label="Prayer times screen"
+  [style.--scale-prayer-name]="settings.prayerPanelScale?.names ?? 1"
+  [style.--scale-prayer-time]="settings.prayerPanelScale?.times ?? 1"
+  [style.--scale-prayer-label]="settings.prayerPanelScale?.labels ?? 1"
+>
   <!-- Hidden hot corner (top-left): press & hold to open settings -->
   <div
     class="hotCorner"

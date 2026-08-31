@@ -1,4 +1,8 @@
-<div class="page">
+<div
+  class="page"
+  [class.page--sizing]="sizingStudio !== null"
+  [class.page--prayer-sizing]="sizingStudio === 'prayer'"
+>
   <header class="head">
     <div class="headInner">
       <h1>Settings</h1>
@@ -99,18 +103,6 @@
         </label>
 
         <label class="field">
-          <span class="label">Monitor size</span>
-          <select
-            class="input"
-            [(ngModel)]="monitorSize"
-            name="monitorSize"
-            title="Scales dates, next-prayer countdown, sunrise/sunset, and prayer times to match your TV or monitor."
-          >
-            <option *ngFor="let o of monitorSizeOptions" [ngValue]="o.value">{{ o.label }}</option>
-          </select>
-        </label>
-
-        <label class="field">
           <span class="label">Clock panel side</span>
           <select
             class="input"
@@ -159,10 +151,166 @@
           </select>
         </label>
       </div>
+
+      <div class="panelSizingEntries">
+        <div class="clockPanelSizingEntry">
+          <p class="clockPanelSizingEntryText">
+            Fine-tune the date bar, weather, clock, countdown, and sunrise/sunset on a full-size live preview.
+          </p>
+          <button class="btn secondary" type="button" (click)="openClockSizingStudio()">
+            Adjust clock panel sizes…
+          </button>
+        </div>
+        <div class="clockPanelSizingEntry">
+          <p class="clockPanelSizingEntryText">
+            Fine-tune prayer names, prayer times, and column labels on a full-size live preview.
+          </p>
+          <button class="btn secondary" type="button" (click)="openPrayerSizingStudio()">
+            Adjust prayer panel sizes…
+          </button>
+        </div>
+      </div>
     </section>
   </main>
 
+  @if (sizingStudio === 'clock') {
+    <div class="sizingStudio sizingStudio--preview-left" role="dialog" aria-labelledby="clockSizingStudioTitle">
+      <div class="sizingStudioPreview">
+        <iframe
+          #clockPreviewFrame
+          class="sizingStudioPreviewFrame"
+          src="/"
+          title="Full-size display preview"
+          (load)="onPreviewFrameLoad($event)"
+        ></iframe>
+      </div>
+      <aside class="sizingStudioControls">
+        <div class="sizingStudioControlsHead">
+          <h2 id="clockSizingStudioTitle" class="sizingStudioTitle">Clock panel sizing</h2>
+          <p class="sizingStudioHint">
+            Drag a slider or type a percent (60–250). Preview updates instantly and saves on this device.
+          </p>
+          <button class="btn secondary btn--compact" type="button" (click)="resetClockPanelScale()">
+            Reset all to 100%
+          </button>
+        </div>
+        <div class="sizingStudioSliders">
+          @for (item of clockPanelScaleOptions; track item.key) {
+            <label class="scaleField">
+              <span class="scaleFieldTop">
+                <span class="label">{{ item.label }}</span>
+                <span class="scaleInputWrap">
+                  <input
+                    class="scalePercentInput"
+                    type="number"
+                    [min]="scaleMin * 100"
+                    [max]="scaleMax * 100"
+                    [step]="scaleStep * 100"
+                    [value]="clockScalePercent(item.key)"
+                    (change)="onClockScaleTyped(item.key, $any($event.target).value)"
+                    [name]="'clock-scale-input-' + item.key"
+                    inputmode="numeric"
+                    [attr.aria-label]="item.label + ' size percent'"
+                  />
+                  <span class="scalePercentSuffix">%</span>
+                </span>
+              </span>
+              <input
+                class="scaleSlider"
+                type="range"
+                [min]="scaleMin * 100"
+                [max]="scaleMax * 100"
+                [step]="scaleStep * 100"
+                [ngModel]="clockScalePercent(item.key)"
+                (ngModelChange)="onClockScaleInput(item.key, $event)"
+                [name]="'clock-scale-' + item.key"
+              />
+            </label>
+          }
+        </div>
+        <button class="btn primary sizingStudioDone" type="button" (click)="closeSizingStudio()">
+          Done adjusting
+        </button>
+      </aside>
+    </div>
+  }
+
+  @if (sizingStudio === 'prayer') {
+    <div
+      class="sizingStudio sizingStudio--prayer-overlay"
+      role="dialog"
+      aria-labelledby="prayerSizingStudioTitle"
+    >
+      <div class="sizingStudioPreview sizingStudioPreview--full">
+        <iframe
+          #prayerPreviewFrame
+          class="sizingStudioPreviewFrame"
+          src="/"
+          title="Full-size display preview"
+          (load)="onPreviewFrameLoad($event)"
+        ></iframe>
+      </div>
+      <aside class="sizingStudioControls sizingStudioPrayerDock">
+        <div class="sizingStudioPrayerDockInner">
+          <div class="sizingStudioPrayerDockHead">
+            <div>
+              <h2 id="prayerSizingStudioTitle" class="sizingStudioTitle">Prayer panel sizing</h2>
+              <p class="sizingStudioHint">
+                Prayer times grows the digits inside each row — cell borders stay put. 60–250%.
+              </p>
+            </div>
+            <div class="sizingStudioPrayerDockActions">
+              <button class="btn secondary btn--compact" type="button" (click)="resetPrayerPanelScale()">
+                Reset
+              </button>
+              <button class="btn primary btn--compact" type="button" (click)="closeSizingStudio()">
+                Done
+              </button>
+            </div>
+          </div>
+          <div class="sizingStudioPrayerSliders">
+            @for (item of prayerPanelScaleOptions; track item.key) {
+              <label class="scaleField scaleField--dock">
+                <span class="scaleFieldTop">
+                  <span class="label">{{ item.label }}</span>
+                  <span class="scaleInputWrap">
+                    <input
+                      class="scalePercentInput"
+                      type="number"
+                      [min]="scaleMin * 100"
+                      [max]="scaleMax * 100"
+                      [step]="scaleStep * 100"
+                      [value]="prayerScalePercent(item.key)"
+                      (change)="onPrayerScaleTyped(item.key, $any($event.target).value)"
+                      [name]="'prayer-scale-input-' + item.key"
+                      inputmode="numeric"
+                      [attr.aria-label]="item.label + ' size percent'"
+                    />
+                    <span class="scalePercentSuffix">%</span>
+                  </span>
+                </span>
+                <input
+                  class="scaleSlider"
+                  type="range"
+                  [min]="scaleMin * 100"
+                  [max]="scaleMax * 100"
+                  [step]="scaleStep * 100"
+                  [ngModel]="prayerScalePercent(item.key)"
+                  (ngModelChange)="onPrayerScaleInput(item.key, $event)"
+                  [name]="'prayer-scale-' + item.key"
+                />
+              </label>
+            }
+          </div>
+        </div>
+      </aside>
+    </div>
+  }
+
   <footer class="footer">
+    <button class="btn secondary" type="button" (click)="reloadDisplay()">
+      Reload display
+    </button>
     <button class="btn primary" type="button" (click)="save()">Save & return home</button>
   </footer>
 </div>

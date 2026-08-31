@@ -24,13 +24,162 @@ function isScreenLayout(value: unknown): value is ScreenLayout {
   return value === 'auto' || value === 'landscape' || value === 'portrait';
 }
 
-/** Physical monitor size — scales typography to fill the screen at a comfortable read distance. */
-export type MonitorSize = '14' | '15' | '16' | '22' | '23' | '24' | '27' | '32';
+/** User-controlled size multipliers for the clock panel (1 = default). */
+export type ClockPanelScale = {
+  date: number;
+  temp: number;
+  clock: number;
+  countdown: number;
+  sun: number;
+};
 
-const MONITOR_SIZE_VALUES: MonitorSize[] = ['14', '15', '16', '22', '23', '24', '27', '32'];
+export const CLOCK_PANEL_SCALE_MIN = 0.6;
+export const CLOCK_PANEL_SCALE_MAX = 2.5;
+export const CLOCK_PANEL_SCALE_STEP = 0.02;
 
-function isMonitorSize(value: unknown): value is MonitorSize {
-  return typeof value === 'string' && MONITOR_SIZE_VALUES.includes(value as MonitorSize);
+/** Shared min/max/step for clock and prayer panel sizing studios. */
+export const PANEL_SCALE_MIN = CLOCK_PANEL_SCALE_MIN;
+export const PANEL_SCALE_MAX = CLOCK_PANEL_SCALE_MAX;
+export const PANEL_SCALE_STEP = CLOCK_PANEL_SCALE_STEP;
+
+export const DEFAULT_CLOCK_PANEL_SCALE: ClockPanelScale = {
+  date: 1,
+  temp: 1,
+  clock: 1,
+  countdown: 1,
+  sun: 1,
+};
+
+/** User-controlled size multipliers for the prayer grid. */
+export type PrayerPanelScale = {
+  names: number;
+  times: number;
+  labels: number;
+};
+
+export const DEFAULT_PRAYER_PANEL_SCALE: PrayerPanelScale = {
+  names: 1,
+  times: 1,
+  labels: 1,
+};
+
+/** One-time upgrade path for settings saved before per-element sizing sliders existed. */
+const LEGACY_MONITOR_PRESETS: Record<
+  string,
+  { clock: ClockPanelScale; prayer: PrayerPanelScale }
+> = {
+  '14': {
+    clock: { date: 0.74, temp: 0.78, clock: 1, countdown: 0.74, sun: 0.74 },
+    prayer: { names: 0.82, times: 0.82, labels: 0.82 },
+  },
+  '15': {
+    clock: { date: 0.8, temp: 0.84, clock: 1, countdown: 0.8, sun: 0.8 },
+    prayer: { names: 0.86, times: 0.86, labels: 0.86 },
+  },
+  '16': {
+    clock: { date: 0.84, temp: 0.87, clock: 1, countdown: 0.84, sun: 0.84 },
+    prayer: { names: 0.9, times: 0.9, labels: 0.9 },
+  },
+  '22': {
+    clock: { date: 0.88, temp: 0.9, clock: 1, countdown: 0.88, sun: 0.88 },
+    prayer: { names: 0.92, times: 0.92, labels: 0.92 },
+  },
+  '23': {
+    clock: { date: 0.94, temp: 0.95, clock: 1, countdown: 0.94, sun: 0.94 },
+    prayer: { names: 0.96, times: 0.96, labels: 0.96 },
+  },
+  '24': {
+    clock: { date: 1, temp: 1, clock: 1, countdown: 1, sun: 1 },
+    prayer: { names: 1, times: 1, labels: 1 },
+  },
+  '27': {
+    clock: { date: 1.08, temp: 0.96, clock: 1, countdown: 1.1, sun: 1 },
+    prayer: { names: 1.08, times: 1.08, labels: 1.08 },
+  },
+  '32': {
+    clock: { date: 1.12, temp: 0.94, clock: 1, countdown: 1.14, sun: 1 },
+    prayer: { names: 1.12, times: 1.12, labels: 1.12 },
+  },
+};
+
+function migrateLegacyMonitorPreset(monitorSize: unknown): {
+  clock: ClockPanelScale;
+  prayer: PrayerPanelScale;
+} | null {
+  if (typeof monitorSize !== 'string') return null;
+  return LEGACY_MONITOR_PRESETS[monitorSize] ?? null;
+}
+
+function clampScale(value: number): number {
+  return Math.round(Math.min(CLOCK_PANEL_SCALE_MAX, Math.max(CLOCK_PANEL_SCALE_MIN, value)) * 100) / 100;
+}
+
+function isClockPanelScale(value: unknown): value is ClockPanelScale {
+  if (!value || typeof value !== 'object') return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o['date'] === 'number' &&
+    typeof o['temp'] === 'number' &&
+    typeof o['clock'] === 'number' &&
+    typeof o['countdown'] === 'number' &&
+    typeof o['sun'] === 'number'
+  );
+}
+
+function normalizeClockPanelScale(scale: ClockPanelScale): ClockPanelScale {
+  return {
+    date: clampScale(scale.date),
+    temp: clampScale(scale.temp),
+    clock: clampScale(scale.clock),
+    countdown: clampScale(scale.countdown),
+    sun: clampScale(scale.sun),
+  };
+}
+
+function resolveClockPanelScale(parsed: {
+  clockPanelScale?: unknown;
+  monitorSize?: unknown;
+}): ClockPanelScale {
+  if (isClockPanelScale(parsed.clockPanelScale)) {
+    return normalizeClockPanelScale(parsed.clockPanelScale);
+  }
+  const migrated = migrateLegacyMonitorPreset(parsed.monitorSize);
+  if (migrated) {
+    return normalizeClockPanelScale(migrated.clock);
+  }
+  return { ...DEFAULT_CLOCK_PANEL_SCALE };
+}
+
+function isPrayerPanelScale(value: unknown): value is PrayerPanelScale {
+  if (!value || typeof value !== 'object') return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o['names'] === 'number' &&
+    typeof o['times'] === 'number' &&
+    typeof o['labels'] === 'number'
+  );
+}
+
+function normalizePrayerPanelScale(scale: PrayerPanelScale): PrayerPanelScale {
+  return {
+    names: clampScale(scale.names),
+    times: clampScale(scale.times),
+    labels: clampScale(scale.labels),
+  };
+}
+
+function resolvePrayerPanelScale(parsed: {
+  prayerPanelScale?: unknown;
+  monitorSize?: unknown;
+}): PrayerPanelScale {
+  if (isPrayerPanelScale(parsed.prayerPanelScale)) {
+    return normalizePrayerPanelScale(parsed.prayerPanelScale);
+  }
+  const migrated = migrateLegacyMonitorPreset(parsed.monitorSize);
+  if (migrated) {
+    return normalizePrayerPanelScale(migrated.prayer);
+  }
+  return { ...DEFAULT_PRAYER_PANEL_SCALE };
 }
 
 /** Clock digit color on the light (day) layout */
@@ -143,8 +292,10 @@ export type PrayerSettings = {
   nightMode: NightMode;
   /** Wall vs stacked layout. Auto follows device orientation. */
   screenLayout: ScreenLayout;
-  /** TV / monitor diagonal — scales dates, countdown, sun times, and prayer grid. */
-  monitorSize: MonitorSize;
+  /** Clock-panel typography multipliers (date, weather, clock, countdown, sunrise/sunset). */
+  clockPanelScale: ClockPanelScale;
+  /** Prayer-grid typography multipliers (names, times, column labels). */
+  prayerPanelScale: PrayerPanelScale;
   /** Clock digit color used in the light (day) layout */
   dayClockColor: DayClockColor;
   /** Clock / accent color used in the dark (night) layout */
@@ -162,7 +313,8 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   panelLeft: true,
   nightMode: 'off',
   screenLayout: 'auto',
-  monitorSize: '24',
+  clockPanelScale: { ...DEFAULT_CLOCK_PANEL_SCALE },
+  prayerPanelScale: { ...DEFAULT_PRAYER_PANEL_SCALE },
   dayClockColor: 'black',
   nightClockColor: 'amber',
 };
@@ -170,6 +322,8 @@ const DEFAULT_SETTINGS: PrayerSettings = {
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
   private readonly storageKey = 'prayerSettings';
+  private readonly previewChannel: BroadcastChannel | null =
+    typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('prayer-display-settings') : null;
 
   private readonly subject = new BehaviorSubject<PrayerSettings>(this.load());
   readonly settings$ = this.subject.asObservable();
@@ -178,12 +332,66 @@ export class SettingsService {
   private sunriseAtMs: number | null = null;
   private sunsetAtMs: number | null = null;
 
+  constructor() {
+    if (typeof window !== 'undefined') {
+      // Same-tab iframes (settings preview) — storage events do not fire in the document that wrote.
+      this.previewChannel?.addEventListener('message', (event: MessageEvent<PrayerSettings>) => {
+        if (event.data) {
+          this.subject.next(this.parseStoredSettings(event.data));
+        }
+      });
+
+      window.addEventListener('message', (event: MessageEvent) => {
+        if (event.origin !== window.location.origin) return;
+        if (event.data?.type !== 'prayer-settings-sync' || !event.data.settings) return;
+        this.subject.next(this.parseStoredSettings(event.data.settings as Partial<PrayerSettings>));
+      });
+
+      // Other tabs / windows
+      window.addEventListener('storage', (event) => {
+        if (event.key !== this.storageKey || !event.newValue) return;
+        try {
+          this.subject.next(this.parseStoredSettings(JSON.parse(event.newValue)));
+        } catch {
+          // ignore malformed storage payloads
+        }
+      });
+    }
+  }
+
   getSettings(): PrayerSettings {
     return this.subject.value;
   }
 
   saveSettings(next: PrayerSettings): void {
     this.subject.next(next);
+    this.persist(next);
+    try {
+      this.previewChannel?.postMessage(next);
+    } catch {
+      // ignore BroadcastChannel failures
+    }
+  }
+
+  /** Live preview for clock-panel sliders — persists immediately so the preview iframe can follow. */
+  previewClockPanelScale(scale: ClockPanelScale): void {
+    const next = {
+      ...this.getSettings(),
+      clockPanelScale: normalizeClockPanelScale(scale),
+    };
+    this.saveSettings(next);
+  }
+
+  /** Live preview for prayer-grid sliders — persists immediately so the preview iframe can follow. */
+  previewPrayerPanelScale(scale: PrayerPanelScale): void {
+    const next = {
+      ...this.getSettings(),
+      prayerPanelScale: normalizePrayerPanelScale(scale),
+    };
+    this.saveSettings(next);
+  }
+
+  private persist(next: PrayerSettings): void {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(next));
     } catch {
@@ -232,33 +440,41 @@ export class SettingsService {
     try {
       const raw = localStorage.getItem(this.storageKey);
       if (!raw) return DEFAULT_SETTINGS;
-      const parsed = JSON.parse(raw) as Partial<PrayerSettings>;
-      return {
-        coords: parsed.coords ?? DEFAULT_SETTINGS.coords,
-        method: (parsed.method as PrayTimeMethod) ?? DEFAULT_SETTINGS.method,
-        asr: (parsed.asr as AsrMethod) ?? DEFAULT_SETTINGS.asr,
-        timezone: parsed.timezone ?? DEFAULT_SETTINGS.timezone,
-        panelLeft: parsed.panelLeft ?? DEFAULT_SETTINGS.panelLeft,
-        nightMode:
-          parsed.nightMode === 'off' || parsed.nightMode === 'on' || parsed.nightMode === 'auto'
-            ? parsed.nightMode
-            : DEFAULT_SETTINGS.nightMode,
-        screenLayout: isScreenLayout(parsed.screenLayout)
-          ? parsed.screenLayout
-          : DEFAULT_SETTINGS.screenLayout,
-        monitorSize: isMonitorSize(parsed.monitorSize)
-          ? parsed.monitorSize
-          : DEFAULT_SETTINGS.monitorSize,
-        dayClockColor: isDayClockColor(parsed.dayClockColor)
-          ? parsed.dayClockColor
-          : DEFAULT_SETTINGS.dayClockColor,
-        nightClockColor: isNightClockColor(parsed.nightClockColor)
-          ? parsed.nightClockColor
-          : DEFAULT_SETTINGS.nightClockColor,
-        cityId: typeof parsed.cityId === 'string' ? parsed.cityId : undefined,
-      };
+      const parsed = JSON.parse(raw) as Partial<PrayerSettings> & { monitorSize?: unknown };
+      const settings = this.parseStoredSettings(parsed);
+      if ('monitorSize' in parsed) {
+        // Upgrade old monitor-size preset to slider values and drop the obsolete key.
+        this.persist(settings);
+      }
+      return settings;
     } catch {
       return DEFAULT_SETTINGS;
     }
+  }
+
+  private parseStoredSettings(parsed: Partial<PrayerSettings> & { monitorSize?: unknown }): PrayerSettings {
+    return {
+      coords: parsed.coords ?? DEFAULT_SETTINGS.coords,
+      method: (parsed.method as PrayTimeMethod) ?? DEFAULT_SETTINGS.method,
+      asr: (parsed.asr as AsrMethod) ?? DEFAULT_SETTINGS.asr,
+      timezone: parsed.timezone ?? DEFAULT_SETTINGS.timezone,
+      panelLeft: parsed.panelLeft ?? DEFAULT_SETTINGS.panelLeft,
+      nightMode:
+        parsed.nightMode === 'off' || parsed.nightMode === 'on' || parsed.nightMode === 'auto'
+          ? parsed.nightMode
+          : DEFAULT_SETTINGS.nightMode,
+      screenLayout: isScreenLayout(parsed.screenLayout)
+        ? parsed.screenLayout
+        : DEFAULT_SETTINGS.screenLayout,
+      clockPanelScale: resolveClockPanelScale(parsed),
+      prayerPanelScale: resolvePrayerPanelScale(parsed),
+      dayClockColor: isDayClockColor(parsed.dayClockColor)
+        ? parsed.dayClockColor
+        : DEFAULT_SETTINGS.dayClockColor,
+      nightClockColor: isNightClockColor(parsed.nightClockColor)
+        ? parsed.nightClockColor
+        : DEFAULT_SETTINGS.nightClockColor,
+      cityId: typeof parsed.cityId === 'string' ? parsed.cityId : undefined,
+    };
   }
 }
