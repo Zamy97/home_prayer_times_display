@@ -261,7 +261,6 @@ app-home .cell.dark:has(.timeStack) {
 
 app-home .grid > .cell:nth-child(2n) {
   border-right: none;
-  container-type: size;
   overflow: hidden;
 }
 
@@ -297,7 +296,6 @@ app-home .timeStack {
   align-items: stretch;
   justify-content: flex-start;
   gap: 0;
-  container-type: size;
 }
 
 /* Center prayer digits in the space below STARTS (between band bottom and cell border) */
@@ -394,6 +392,7 @@ app-home .grid > .cell:nth-child(2n) > .time {
 
 app-home .time {
   font-family: var(--font-num);
+  font-size: calc(128px * var(--scale-prayer-time, 1));
   line-height: 0.95;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums lining-nums;
@@ -401,15 +400,9 @@ app-home .time {
   max-width: 100%;
 }
 
-/* Prayer times slider: scale digits inside each fixed row (not a viewport zoom). */
-app-home .grid > .cell:nth-child(2n) > .time {
-  font-size: calc(128px * var(--scale-prayer-time, 1));
-  font-size: calc(0.62cqb * var(--scale-prayer-time, 1));
-}
-
+/* Fajr row: slightly smaller so digits fit below the STARTS band. */
 app-home .timeStack > .time {
-  font-size: calc(128px * var(--scale-prayer-time, 1));
-  font-size: calc(0.78cqb * var(--scale-prayer-time, 1));
+  font-size: calc(108px * var(--scale-prayer-time, 1));
 }
 
 /* Chosen color applies to every time numeral, not just the big clock. */
