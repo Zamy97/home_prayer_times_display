@@ -273,6 +273,9 @@ export class HomeComponent implements OnInit {
       if (this.skyTransitionTimer) clearTimeout(this.skyTransitionTimer);
       document.documentElement.classList.remove('theme-ready');
     });
+
+    this.loadFromCache();
+    this.loadPrayerTimes();
     this.updateNightMode(new Date());
   }
 

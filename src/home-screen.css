@@ -403,10 +403,12 @@ app-home .time {
 
 /* Prayer times slider: scale digits inside each fixed row (not a viewport zoom). */
 app-home .grid > .cell:nth-child(2n) > .time {
+  font-size: calc(128px * var(--scale-prayer-time, 1));
   font-size: calc(0.62cqb * var(--scale-prayer-time, 1));
 }
 
 app-home .timeStack > .time {
+  font-size: calc(128px * var(--scale-prayer-time, 1));
   font-size: calc(0.78cqb * var(--scale-prayer-time, 1));
 }
 
