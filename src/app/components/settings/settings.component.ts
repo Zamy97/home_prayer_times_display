@@ -5,6 +5,7 @@ import { GeoError, GeolocationService } from '../../services/geolocation.service
 import {
   AsrMethod,
   ClockPanelScale,
+  ColorRotation,
   DayClockColor,
   DEFAULT_CLOCK_PANEL_SCALE,
   DEFAULT_PRAYER_PANEL_SCALE,
@@ -55,6 +56,11 @@ export class SettingsComponent implements OnInit {
     { value: 'auto', label: 'Automatic (dark from sunset to sunrise)' },
     { value: 'on', label: 'Always on (dark)' },
     { value: 'off', label: 'Off (normal / light)' },
+  ];
+
+  readonly colorRotationOptions: Array<{ value: ColorRotation; label: string }> = [
+    { value: 'off', label: 'Off — keep chosen colors' },
+    { value: 'hourly', label: 'Every hour — cycle through colors' },
   ];
 
   readonly screenLayoutOptions: Array<{ value: ScreenLayout; label: string }> = [
@@ -145,6 +151,7 @@ export class SettingsComponent implements OnInit {
   prayerPanelScale: PrayerPanelScale = { ...DEFAULT_PRAYER_PANEL_SCALE };
   dayClockColor: DayClockColor = 'black';
   nightClockColor: NightClockColor = 'amber';
+  colorRotation: ColorRotation = 'off';
   sizingStudio: SizingStudio | null = null;
 
   @ViewChild('prayerPreviewFrame')
@@ -167,6 +174,7 @@ export class SettingsComponent implements OnInit {
     this.prayerPanelScale = { ...(s.prayerPanelScale ?? DEFAULT_PRAYER_PANEL_SCALE) };
     this.dayClockColor = s.dayClockColor ?? 'black';
     this.nightClockColor = s.nightClockColor ?? 'amber';
+    this.colorRotation = s.colorRotation ?? 'off';
     const savedCityId = s.cityId ?? OTHER_CITY_ID;
     const city = savedCityId !== OTHER_CITY_ID ? CITIES.find((c) => c.id === savedCityId) : null;
     if (city) {
@@ -344,6 +352,7 @@ export class SettingsComponent implements OnInit {
       prayerPanelScale: { ...this.prayerPanelScale },
       dayClockColor: this.dayClockColor,
       nightClockColor: this.nightClockColor,
+      colorRotation: this.colorRotation,
       cityId,
     };
     this.settingsService.saveSettings(next);

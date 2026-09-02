@@ -23,6 +23,7 @@ describe('HomeComponent', () => {
     prayerPanelScale: { names: 1, times: 1, labels: 1 },
     dayClockColor: 'black',
     nightClockColor: 'amber',
+    colorRotation: 'off',
   };
 
   const settingsSubject = new BehaviorSubject<PrayerSettings>(settingsWithCoords);

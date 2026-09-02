@@ -104,7 +104,7 @@ export class HomeComponent implements OnInit {
   /** Chosen clock color for the current day/night layout. */
   @HostBinding('style.--clock-color')
   get clockColor(): string {
-    return this.settingsService.clockColorHex(this.nightActive);
+    return this.settingsService.clockColorHex(this.nightActive, this.displayHour);
   }
 
   /**
@@ -113,10 +113,7 @@ export class HomeComponent implements OnInit {
    */
   @HostBinding('style.--clock-on-dark')
   get clockOnDark(): string {
-    if (this.nightActive) return this.settingsService.clockColorHex(true);
-    const key = this.settings.dayClockColor ?? 'black';
-    if (key === 'black') return '#ffffff';
-    return `color-mix(in srgb, ${this.settingsService.clockColorHex(false)} 42%, #fff)`;
+    return this.settingsService.clockOnDarkHex(this.nightActive, this.displayHour);
   }
   /** Current temperature in °F; null only if never fetched successfully */
   currentTempF: number | null = null;
@@ -147,6 +144,8 @@ export class HomeComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
   settings = this.settingsService.getSettings();
+  /** Local hour used for hourly color rotation (updated each tick). */
+  displayHour = new Date().getHours();
   private lastDateKey = this.prayerTimes.getLocalDateKey();
   private prayerInstants: Partial<Record<'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha', number>> = {};
   private sunriseAtMs: number | null = null;
@@ -633,6 +632,11 @@ export class HomeComponent implements OnInit {
   }
 
   private setNow(date: Date): void {
+    const hour = date.getHours();
+    if (hour !== this.displayHour) {
+      this.displayHour = hour;
+    }
+
     const currentKey = this.prayerTimes.getLocalDateKey(date);
     if (currentKey !== this.lastDateKey) {
       this.lastDateKey = currentKey;

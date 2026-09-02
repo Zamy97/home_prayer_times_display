@@ -150,6 +150,18 @@
             <option *ngFor="let c of nightClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
           </select>
         </label>
+
+        <label class="field">
+          <span class="label">Hourly color fun</span>
+          <select
+            class="input"
+            [(ngModel)]="colorRotation"
+            name="colorRotation"
+            title="Cycles through the color palette every hour. Uses day colors by day and night colors at night. Starts from your chosen color above."
+          >
+            <option *ngFor="let option of colorRotationOptions" [ngValue]="option.value">{{ option.label }}</option>
+          </select>
+        </label>
       </div>
 
       <div class="panelSizingEntries">

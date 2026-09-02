@@ -287,6 +287,13 @@ function isNightClockColor(value: unknown): value is NightClockColor {
   return typeof value === 'string' && NIGHT_CLOCK_COLOR_VALUES.includes(value as NightClockColor);
 }
 
+/** When to cycle accent colors through the day/night palettes */
+export type ColorRotation = 'off' | 'hourly';
+
+function isColorRotation(value: unknown): value is ColorRotation {
+  return value === 'off' || value === 'hourly';
+}
+
 export type PrayerSettings = {
   coords: { lat: number; lng: number } | null;
   method: PrayTimeMethod;
@@ -306,6 +313,8 @@ export type PrayerSettings = {
   dayClockColor: DayClockColor;
   /** Clock / accent color used in the dark (night) layout */
   nightClockColor: NightClockColor;
+  /** Cycle accent colors every hour (day palette by day, night palette at night). */
+  colorRotation: ColorRotation;
   /** id from cities list, or empty string when using "Other" / manual coords */
   cityId?: string;
 };
@@ -323,6 +332,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   prayerPanelScale: { ...DEFAULT_PRAYER_PANEL_SCALE },
   dayClockColor: 'black',
   nightClockColor: 'amber',
+  colorRotation: 'off',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -434,12 +444,40 @@ export class SettingsService {
   }
 
   /** Hex color for the clock in the current (or given) day/night state. */
-  clockColorHex(night = this.isNightActive()): string {
+  clockColorHex(night = this.isNightActive(), hour = new Date().getHours()): string {
     const s = this.getSettings();
+    if (s.colorRotation === 'hourly') {
+      const key = this.rotatedClockColorKey(night, hour);
+      if (night) {
+        return NIGHT_CLOCK_COLOR_HEX[key as NightClockColor] ?? NIGHT_CLOCK_COLOR_HEX.amber;
+      }
+      return DAY_CLOCK_COLOR_HEX[key as DayClockColor] ?? DAY_CLOCK_COLOR_HEX.black;
+    }
     if (night) {
       return NIGHT_CLOCK_COLOR_HEX[s.nightClockColor] ?? NIGHT_CLOCK_COLOR_HEX.amber;
     }
     return DAY_CLOCK_COLOR_HEX[s.dayClockColor] ?? DAY_CLOCK_COLOR_HEX.black;
+  }
+
+  /**
+   * Time color on dark navy cells. Night uses the same accent; day uses a
+   * light mix so dark colors stay readable (white when the day color is black).
+   */
+  clockOnDarkHex(night = this.isNightActive(), hour = new Date().getHours()): string {
+    if (night) return this.clockColorHex(true, hour);
+    const key = this.rotatedClockColorKey(false, hour);
+    if (key === 'black') return '#ffffff';
+    return `color-mix(in srgb, ${this.clockColorHex(false, hour)} 42%, #fff)`;
+  }
+
+  private rotatedClockColorKey(night: boolean, hour: number): DayClockColor | NightClockColor {
+    const s = this.getSettings();
+    const keys = night ? NIGHT_CLOCK_COLOR_VALUES : DAY_CLOCK_COLOR_VALUES;
+    const baseKey = night ? s.nightClockColor : s.dayClockColor;
+    const baseIndex = keys.indexOf(baseKey as DayClockColor & NightClockColor);
+    const normalizedHour = ((hour % 24) + 24) % 24;
+    const index = baseIndex >= 0 ? (baseIndex + normalizedHour) % keys.length : normalizedHour % keys.length;
+    return keys[index];
   }
 
   private load(): PrayerSettings {
@@ -480,6 +518,9 @@ export class SettingsService {
       nightClockColor: isNightClockColor(parsed.nightClockColor)
         ? parsed.nightClockColor
         : DEFAULT_SETTINGS.nightClockColor,
+      colorRotation: isColorRotation(parsed.colorRotation)
+        ? parsed.colorRotation
+        : DEFAULT_SETTINGS.colorRotation,
       cityId: typeof parsed.cityId === 'string' ? parsed.cityId : undefined,
     };
   }
