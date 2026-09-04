@@ -76,6 +76,30 @@
         </label>
 
         <label class="field">
+          <span class="label">Fajr angle</span>
+          <select
+            class="input"
+            [(ngModel)]="fajrAngle"
+            name="fajrAngle"
+            title="Twilight angle for Fajr. Choose 18° to match Athan+ / many masjid timetables. 'From calculation method' keeps the method default (e.g. ISNA uses 15°)."
+          >
+            <option *ngFor="let option of fajrAngleOptions" [ngValue]="option.value">{{ option.label }}</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="label">Isha angle</span>
+          <select
+            class="input"
+            [(ngModel)]="ishaAngle"
+            name="ishaAngle"
+            title="Twilight angle for Isha. Choose 15° to match Athan+ / ISNA-style Isha. 'From calculation method' keeps the method default."
+          >
+            <option *ngFor="let option of ishaAngleOptions" [ngValue]="option.value">{{ option.label }}</option>
+          </select>
+        </label>
+
+        <label class="field">
           <span class="label">Asr</span>
           <select class="input" [(ngModel)]="asr" name="asr">
             <option *ngFor="let a of asrOptions" [ngValue]="a.value">{{ a.label }}</option>

@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { HomeComponent } from './home.component';
 import { PrayerTimesService } from '../../services/prayer-times.service';
 import { SettingsService, PrayerSettings } from '../../services/settings.service';
 import { WeatherService } from '../../services/weather.service';
 import { GeolocationService } from '../../services/geolocation.service';
+import { HijriDateService } from '../../services/hijri-date.service';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -15,6 +16,8 @@ describe('HomeComponent', () => {
     coords: { lat: 42.3314, lng: -83.0458 },
     method: 'ISNA',
     asr: 'Hanafi',
+    fajrAngle: 'method',
+    ishaAngle: 'method',
     timezone: 'America/Detroit',
     panelLeft: true,
     nightMode: 'off',
@@ -70,6 +73,21 @@ describe('HomeComponent', () => {
         {
           provide: GeolocationService,
           useValue: { getCurrentPosition: () => ({ subscribe: () => undefined }) },
+        },
+        {
+          provide: HijriDateService,
+          useValue: {
+            ensureCalendar: () => of(null),
+            refresh: () => of(null),
+            formatForDate: () => ({
+              day: 21,
+              monthIndex: 3,
+              monthName: 'Rabi al-Awwal',
+              year: 1448,
+              label: 'RABI AL-AWWAL 21',
+              source: 'chc',
+            }),
+          },
         },
         { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
       ],

@@ -1,11 +1,12 @@
 import { Component, ChangeDetectorRef, DestroyRef, HostBinding, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { interval, startWith } from 'rxjs';
+import { interval, startWith, take } from 'rxjs';
 import { PrayerTimesService } from '../../services/prayer-times.service';
 import { PrayTimeTimes } from '../../lib/praytime';
 import { SettingsService } from '../../services/settings.service';
 import { WeatherService } from '../../services/weather.service';
+import { HijriDateService } from '../../services/hijri-date.service';
 import { GeoError, GeolocationService } from '../../services/geolocation.service';
 
 @Component({
@@ -140,6 +141,7 @@ export class HomeComponent implements OnInit {
   private readonly prayerTimes = inject(PrayerTimesService);
   private readonly settingsService = inject(SettingsService);
   private readonly weatherService = inject(WeatherService);
+  private readonly hijriDate = inject(HijriDateService);
   private readonly geolocation = inject(GeolocationService);
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -192,17 +194,18 @@ export class HomeComponent implements OnInit {
     day: 'numeric',
   });
 
-  // Hijri date via Intl (Islamic calendar). Month name depends on locale data.
-  private readonly hijriDateFormatter = new Intl.DateTimeFormat('en-US-u-ca-islamic', {
-    month: 'long',
-    day: 'numeric',
-  });
-
   private readonly portraitMediaQuery = window.matchMedia('(orientation: portrait)');
   private readonly onPortraitMediaChange = (): void => this.updateScreenLayout();
 
   ngOnInit(): void {
     this.updateDateLabels(new Date());
+    this.hijriDate
+      .ensureCalendar()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateDateLabels(new Date());
+        this.cdr.detectChanges();
+      });
 
     // On first landing: prompt to use current location if coords aren't set yet.
     if (!this.settings.coords) this.showGeoPrompt = true;
@@ -228,6 +231,8 @@ export class HomeComponent implements OnInit {
           prev.coords !== s.coords ||
           prev.method !== s.method ||
           prev.asr !== s.asr ||
+          prev.fajrAngle !== s.fajrAngle ||
+          prev.ishaAngle !== s.ishaAngle ||
           prev.timezone !== s.timezone;
 
         if (prayerInputsChanged) {
@@ -624,11 +629,8 @@ export class HomeComponent implements OnInit {
     const day = gParts.find((p) => p.type === 'day')?.value ?? '';
     this.gregDateLabel = `${weekday.toUpperCase()}, ${month.toUpperCase()} ${day}`;
 
-    // Hijri label like: "RABIʻ AL-THANI 11" (varies by locale/calendar data)
-    const hParts = this.hijriDateFormatter.formatToParts(date);
-    const hMonth = (hParts.find((p) => p.type === 'month')?.value ?? '').replace(/[-]/g, ' ');
-    const hDay = hParts.find((p) => p.type === 'day')?.value ?? '';
-    this.hijriDateLabel = `${hMonth.toUpperCase()} ${hDay}`.trim();
+    // Prefer CHC moonsighting calendar (https://hilalcommittee.org/); Intl is fallback.
+    this.hijriDateLabel = this.hijriDate.formatForDate(date).label;
   }
 
   private setNow(date: Date): void {
@@ -640,6 +642,10 @@ export class HomeComponent implements OnInit {
     const currentKey = this.prayerTimes.getLocalDateKey(date);
     if (currentKey !== this.lastDateKey) {
       this.lastDateKey = currentKey;
+      this.hijriDate.refresh().pipe(take(1)).subscribe(() => {
+        this.updateDateLabels(date);
+        this.cdr.detectChanges();
+      });
       this.updateDateLabels(date);
       this.loadPrayerTimes();
       this.updateClockFromDate(date);

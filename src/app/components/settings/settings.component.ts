@@ -9,6 +9,8 @@ import {
   DayClockColor,
   DEFAULT_CLOCK_PANEL_SCALE,
   DEFAULT_PRAYER_PANEL_SCALE,
+  FajrAngleOption,
+  IshaAngleOption,
   NightClockColor,
   NightMode,
   PANEL_SCALE_MAX,
@@ -35,14 +37,14 @@ export class SettingsComponent implements OnInit {
   geoStatus: 'loading' | null | string = null;
 
   readonly methodOptions: Array<{ value: PrayTimeMethod; label: string }> = [
-    { value: 'ISNA', label: 'ISNA (North America)' },
-    { value: 'MWL', label: 'MWL (Muslim World League)' },
-    { value: 'Egypt', label: 'Egyptian General Authority' },
-    { value: 'Makkah', label: 'Umm al-Qura (Makkah)' },
-    { value: 'Karachi', label: 'Karachi' },
-    { value: 'Singapore', label: 'Singapore' },
-    { value: 'France', label: 'France' },
-    { value: 'Russia', label: 'Russia' },
+    { value: 'ISNA', label: 'ISNA (North America — Fajr 15°, Isha 15°)' },
+    { value: 'MWL', label: 'MWL (Muslim World League — Fajr 18°, Isha 17°)' },
+    { value: 'Egypt', label: 'Egyptian General Authority (Fajr 19.5°, Isha 17.5°)' },
+    { value: 'Makkah', label: 'Umm al-Qura (Makkah — Fajr 18.5°, Isha 90 min)' },
+    { value: 'Karachi', label: 'Karachi (Fajr 18°, Isha 18°)' },
+    { value: 'Singapore', label: 'Singapore (Fajr 20°, Isha 18°)' },
+    { value: 'France', label: 'France (Fajr 12°, Isha 12°)' },
+    { value: 'Russia', label: 'Russia (Fajr 16°, Isha 15°)' },
     { value: 'Tehran', label: 'Tehran' },
     { value: 'Jafari', label: 'Jafari' },
   ];
@@ -50,6 +52,19 @@ export class SettingsComponent implements OnInit {
   readonly asrOptions: Array<{ value: AsrMethod; label: string }> = [
     { value: 'Hanafi', label: 'Hanafi' },
     { value: 'Standard', label: 'Standard' },
+  ];
+
+  readonly fajrAngleOptions: Array<{ value: FajrAngleOption; label: string }> = [
+    { value: 'method', label: 'From calculation method' },
+    { value: 15, label: '15°' },
+    { value: 18, label: '18°' },
+  ];
+
+  readonly ishaAngleOptions: Array<{ value: IshaAngleOption; label: string }> = [
+    { value: 'method', label: 'From calculation method' },
+    { value: 15, label: '15°' },
+    { value: 17, label: '17°' },
+    { value: 18, label: '18°' },
   ];
 
   readonly nightModeOptions: Array<{ value: NightMode; label: string }> = [
@@ -140,6 +155,8 @@ export class SettingsComponent implements OnInit {
   selectedCityId: string = OTHER_CITY_ID;
   method: PrayTimeMethod = 'ISNA';
   asr: AsrMethod = 'Hanafi';
+  fajrAngle: FajrAngleOption = 'method';
+  ishaAngle: IshaAngleOption = 'method';
   timezone = this.deviceTimezone;
   lat = '';
   lng = '';
@@ -164,6 +181,8 @@ export class SettingsComponent implements OnInit {
     const s = this.settingsService.getSettings();
     this.method = s.method;
     this.asr = s.asr;
+    this.fajrAngle = s.fajrAngle ?? 'method';
+    this.ishaAngle = s.ishaAngle ?? 'method';
     this.timezone = s.timezone;
     this.lat = s.coords?.lat?.toString() ?? '';
     this.lng = s.coords?.lng?.toString() ?? '';
@@ -344,6 +363,8 @@ export class SettingsComponent implements OnInit {
       coords,
       method: this.method,
       asr: this.asr,
+      fajrAngle: this.fajrAngle,
+      ishaAngle: this.ishaAngle,
       timezone,
       panelLeft: this.panelLeft,
       nightMode: this.nightMode,

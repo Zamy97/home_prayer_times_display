@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PrayTime, PrayTimeMethod, PrayTimeTimes } from '../lib/praytime';
+import { PrayTime, PrayTimeMethod, PrayTimeSettings, PrayTimeTimes } from '../lib/praytime';
 import { PrayerSettings } from './settings.service';
 
 type PrayerTimesCache = {
@@ -7,12 +7,14 @@ type PrayerTimesCache = {
   settings: PrayerSettings;
   method: PrayTimeMethod;
   asr: 'Standard' | 'Hanafi';
+  fajrAngle: PrayerSettings['fajrAngle'];
+  ishaAngle: PrayerSettings['ishaAngle'];
   times: PrayTimeTimes<string>;
 };
 
 @Injectable({ providedIn: 'root' })
 export class PrayerTimesService {
-  private readonly cacheKey = 'prayerTimes.v3';
+  private readonly cacheKey = 'prayerTimes.v4';
 
   getLocalDateKey(date = new Date()): string {
     const y = date.getFullYear();
@@ -44,6 +46,8 @@ export class PrayerTimesService {
     if (cached.dateKey !== todayKey) return null;
     if (cached.method !== settings.method) return null;
     if (cached.asr !== settings.asr) return null;
+    if ((cached.fajrAngle ?? 'method') !== (settings.fajrAngle ?? 'method')) return null;
+    if ((cached.ishaAngle ?? 'method') !== (settings.ishaAngle ?? 'method')) return null;
     if (cached.settings.timezone !== settings.timezone) return null;
     // Coords may be null (if not configured); in that case we don't serve cache.
     if (!settings.coords) return null;
@@ -63,6 +67,8 @@ export class PrayerTimesService {
       settings,
       method: settings.method,
       asr: settings.asr,
+      fajrAngle: settings.fajrAngle ?? 'method',
+      ishaAngle: settings.ishaAngle ?? 'method',
       times,
     };
     try {
@@ -78,9 +84,16 @@ export class PrayerTimesService {
       throw new Error('Prayer settings missing coords');
     }
 
-    const prayTime = new PrayTime(settings.method).format('12h').round('nearest').adjust({ asr: settings.asr });
+    const adjust: PrayTimeSettings = { asr: settings.asr };
+    if (settings.fajrAngle !== 'method' && typeof settings.fajrAngle === 'number') {
+      adjust.fajr = settings.fajrAngle;
+    }
+    if (settings.ishaAngle !== 'method' && typeof settings.ishaAngle === 'number') {
+      adjust.isha = settings.ishaAngle;
+    }
+
+    const prayTime = new PrayTime(settings.method).format('12h').round('nearest').adjust(adjust);
     prayTime.location([settings.coords.lat, settings.coords.lng]).timezone(settings.timezone);
     return prayTime.times(date);
   }
 }
-

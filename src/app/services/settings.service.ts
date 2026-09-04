@@ -5,6 +5,28 @@ import { PrayTimeMethod } from '../lib/praytime';
 export type AsrMethod = 'Standard' | 'Hanafi';
 
 /**
+ * Fajr twilight angle override.
+ * - 'method' : use the selected calculation method's Fajr angle
+ * - number   : override (e.g. 18 for Athan+-style Fajr 18°)
+ */
+export type FajrAngleOption = 'method' | 15 | 18;
+
+/**
+ * Isha twilight angle override.
+ * - 'method' : use the selected calculation method's Isha angle
+ * - number   : override (e.g. 15 for Athan+-style Isha 15°)
+ */
+export type IshaAngleOption = 'method' | 15 | 17 | 18;
+
+function isFajrAngleOption(value: unknown): value is FajrAngleOption {
+  return value === 'method' || value === 15 || value === 18;
+}
+
+function isIshaAngleOption(value: unknown): value is IshaAngleOption {
+  return value === 'method' || value === 15 || value === 17 || value === 18;
+}
+
+/**
  * Night mode display preference:
  * - 'off'  : always use the normal (light) layout
  * - 'on'   : always use the dark night layout
@@ -298,6 +320,10 @@ export type PrayerSettings = {
   coords: { lat: number; lng: number } | null;
   method: PrayTimeMethod;
   asr: AsrMethod;
+  /** Override Fajr angle; 'method' keeps the calculation method default. */
+  fajrAngle: FajrAngleOption;
+  /** Override Isha angle; 'method' keeps the calculation method default. */
+  ishaAngle: IshaAngleOption;
   timezone: string; // IANA tz (e.g. America/Toronto)
   /** true = clock/date panel on left, false = on right */
   panelLeft: boolean;
@@ -324,6 +350,8 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   coords: { lat: 42.4788, lng: -83.0248 },
   method: 'ISNA',
   asr: 'Hanafi',
+  fajrAngle: 'method',
+  ishaAngle: 'method',
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   panelLeft: true,
   nightMode: 'off',
@@ -501,6 +529,8 @@ export class SettingsService {
       coords: parsed.coords ?? DEFAULT_SETTINGS.coords,
       method: (parsed.method as PrayTimeMethod) ?? DEFAULT_SETTINGS.method,
       asr: (parsed.asr as AsrMethod) ?? DEFAULT_SETTINGS.asr,
+      fajrAngle: isFajrAngleOption(parsed.fajrAngle) ? parsed.fajrAngle : DEFAULT_SETTINGS.fajrAngle,
+      ishaAngle: isIshaAngleOption(parsed.ishaAngle) ? parsed.ishaAngle : DEFAULT_SETTINGS.ishaAngle,
       timezone: parsed.timezone ?? DEFAULT_SETTINGS.timezone,
       panelLeft: parsed.panelLeft ?? DEFAULT_SETTINGS.panelLeft,
       nightMode:
