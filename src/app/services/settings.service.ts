@@ -493,9 +493,18 @@ export class SettingsService {
    */
   clockOnDarkHex(night = this.isNightActive(), hour = new Date().getHours()): string {
     if (night) return this.clockColorHex(true, hour);
-    const key = this.rotatedClockColorKey(false, hour);
+    const key = this.activeDayColorKey(hour);
     if (key === 'black') return '#ffffff';
     return `color-mix(in srgb, ${this.clockColorHex(false, hour)} 42%, #fff)`;
+  }
+
+  /** Day palette key currently in effect (respects hourly rotation when enabled). */
+  private activeDayColorKey(hour: number): DayClockColor {
+    const s = this.getSettings();
+    if (s.colorRotation === 'hourly') {
+      return this.rotatedClockColorKey(false, hour) as DayClockColor;
+    }
+    return s.dayClockColor ?? 'black';
   }
 
   private rotatedClockColorKey(night: boolean, hour: number): DayClockColor | NightClockColor {
