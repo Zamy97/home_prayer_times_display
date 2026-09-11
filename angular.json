@@ -35,6 +35,7 @@
               "src/favicon.png",
               "src/favicon-32x32.png",
               "src/apple-touch-icon.png",
+              "src/og-image.jpg",
               "src/assets"
             ],
             "styles": [
@@ -108,6 +109,7 @@
               "src/favicon.png",
               "src/favicon-32x32.png",
               "src/apple-touch-icon.png",
+              "src/og-image.jpg",
               "src/assets"
             ],
             "styles": [
