@@ -32,6 +32,9 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
+              "src/favicon.png",
+              "src/favicon-32x32.png",
+              "src/apple-touch-icon.png",
               "src/assets"
             ],
             "styles": [
@@ -102,6 +105,9 @@
             "tsConfig": "tsconfig.spec.json",
             "assets": [
               "src/favicon.ico",
+              "src/favicon.png",
+              "src/favicon-32x32.png",
+              "src/apple-touch-icon.png",
               "src/assets"
             ],
             "styles": [
