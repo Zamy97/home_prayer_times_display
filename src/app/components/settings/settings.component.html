@@ -152,6 +152,19 @@
         </label>
 
         <label class="field">
+          <span class="label">Bedroom simple (midnight → Fajr)</span>
+          <select
+            class="input"
+            [(ngModel)]="bedroomSimpleMode"
+            name="bedroomSimpleMode"
+            title="From midnight until Fajr: only a large clock, Fajr start, sunrise, and countdown to sunrise. After Fajr, your normal layout returns — including the sunrise animation."
+          >
+            <option [ngValue]="false">Off (full night layout)</option>
+            <option [ngValue]="true">On — sparse bedroom layout</option>
+          </select>
+        </label>
+
+        <label class="field">
           <span class="label">Day clock color</span>
           <select
             class="input"

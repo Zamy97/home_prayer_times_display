@@ -329,6 +329,12 @@ export type PrayerSettings = {
   panelLeft: boolean;
   /** When to switch to the dark night layout. Default off so existing kiosks stay light until chosen. */
   nightMode: NightMode;
+  /**
+   * Optional sparse bedroom layout from local midnight until Fajr:
+   * big clock, Fajr start, sunrise, and countdown to sunrise.
+   * After Fajr, the normal night/day layout returns (including sunrise animation).
+   */
+  bedroomSimpleMode: boolean;
   /** Wall vs stacked layout. Auto follows device orientation. */
   screenLayout: ScreenLayout;
   /** Clock-panel typography multipliers (date, weather, clock, countdown, sunrise/sunset). */
@@ -355,6 +361,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   panelLeft: true,
   nightMode: 'off',
+  bedroomSimpleMode: false,
   screenLayout: 'auto',
   clockPanelScale: { ...DEFAULT_CLOCK_PANEL_SCALE },
   prayerPanelScale: { ...DEFAULT_PRAYER_PANEL_SCALE },
@@ -375,6 +382,8 @@ export class SettingsService {
   /** Today's sunrise/sunset instants, used by automatic night mode. */
   private sunriseAtMs: number | null = null;
   private sunsetAtMs: number | null = null;
+  /** Today's Fajr instant — used by optional bedroom simple mode (midnight → Fajr). */
+  private fajrAtMs: number | null = null;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -446,6 +455,29 @@ export class SettingsService {
   setSunTimes(sunriseAtMs: number | null, sunsetAtMs: number | null): void {
     this.sunriseAtMs = sunriseAtMs;
     this.sunsetAtMs = sunsetAtMs;
+  }
+
+  setFajrAtMs(fajrAtMs: number | null): void {
+    this.fajrAtMs = fajrAtMs;
+  }
+
+  /**
+   * Optional sparse bedroom layout: local midnight until today's Fajr.
+   * Only when bedroomSimpleMode is enabled in settings.
+   */
+  isBedroomSimpleActive(now = new Date()): boolean {
+    if (!this.getSettings().bedroomSimpleMode) return false;
+    if (this.fajrAtMs == null) return false;
+    if (new Date(this.fajrAtMs).toDateString() !== now.toDateString()) return false;
+    const start = new Date(now);
+    start.setHours(0, 0, 0, 0);
+    const t = now.getTime();
+    return t >= start.getTime() && t < this.fajrAtMs;
+  }
+
+  /** Dark theme for home or settings — night mode and/or bedroom simple window. */
+  isNightLayoutActive(now = new Date()): boolean {
+    return this.isNightActive(now) || this.isBedroomSimpleActive(now);
   }
 
   /**
@@ -546,6 +578,7 @@ export class SettingsService {
         parsed.nightMode === 'off' || parsed.nightMode === 'on' || parsed.nightMode === 'auto'
           ? parsed.nightMode
           : DEFAULT_SETTINGS.nightMode,
+      bedroomSimpleMode: parsed.bedroomSimpleMode === true,
       screenLayout: isScreenLayout(parsed.screenLayout)
         ? parsed.screenLayout
         : DEFAULT_SETTINGS.screenLayout,

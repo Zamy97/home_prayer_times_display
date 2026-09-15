@@ -503,3 +503,132 @@ html.night app-settings .btn.primary:hover:not(:disabled) {
 html.night app-settings .geoError {
   color: #f87171;
 }
+
+/* =====================================================================
+   BEDROOM SIMPLE MODE (midnight → Fajr)
+   Sparse layout: large clock, until-sunrise countdown, Fajr + sunrise.
+   Full night layout returns after Fajr; sunrise animation still runs later.
+   ===================================================================== */
+
+app-home.bedroom-simple .content--bedroom {
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+  min-height: 100%;
+  width: 100%;
+}
+
+app-home.bedroom-simple .bedroomSimple {
+  display: grid;
+  gap: clamp(1.25rem, 4vh, 3rem);
+  justify-items: center;
+  align-content: center;
+  width: min(92vw, 1100px);
+  padding: clamp(1.5rem, 5vh, 3.5rem) clamp(1rem, 4vw, 2.5rem);
+  text-align: center;
+  color: var(--amber);
+}
+
+app-home.bedroom-simple .bedroomClock {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.15em;
+  line-height: 0.9;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--amber-bright, var(--amber));
+}
+
+app-home.bedroom-simple .bedroomClock .nowMain {
+  font-size: clamp(5.5rem, 22vw, 14rem);
+}
+
+app-home.bedroom-simple .bedroomClock .nowSide {
+  display: grid;
+  gap: 0.05em;
+  padding-top: 0.18em;
+  font-weight: 650;
+}
+
+app-home.bedroom-simple .bedroomClock .seconds {
+  font-size: clamp(1.4rem, 4.5vw, 3.2rem);
+  line-height: 1;
+}
+
+app-home.bedroom-simple .bedroomClock .ampm {
+  font-size: clamp(1.1rem, 3.2vw, 2.2rem);
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+app-home.bedroom-simple .bedroomCountdown {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+}
+
+app-home.bedroom-simple .bedroomCountdownLabel {
+  font-size: clamp(0.85rem, 1.8vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  opacity: 0.72;
+}
+
+app-home.bedroom-simple .bedroomCountdownTime {
+  font-size: clamp(2.4rem, 8vw, 5.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--amber-bright, var(--amber));
+}
+
+app-home.bedroom-simple .bedroomFacts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1rem, 4vw, 3rem);
+  width: 100%;
+  max-width: 56rem;
+  margin-top: 0.5rem;
+}
+
+app-home.bedroom-simple .bedroomFact {
+  display: grid;
+  gap: 0.45rem;
+  padding: clamp(1rem, 2.5vh, 1.75rem) clamp(0.85rem, 2vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--amber) 8%, #000);
+}
+
+app-home.bedroom-simple .bedroomFactLabel {
+  font-size: clamp(0.8rem, 1.6vw, 1.15rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  opacity: 0.72;
+}
+
+app-home.bedroom-simple .bedroomFactTime {
+  font-size: clamp(2.2rem, 6.5vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--amber-bright, var(--amber));
+}
+
+app-home.bedroom-simple .bedroomFactTime .ampm {
+  margin-left: 0.2em;
+  font-size: 0.42em;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+  vertical-align: super;
+}
+
+@media (max-width: 700px), (orientation: portrait) {
+  app-home.bedroom-simple .bedroomFacts {
+    grid-template-columns: 1fr;
+  }
+
+  app-home.bedroom-simple .bedroomClock .nowMain {
+    font-size: clamp(4.5rem, 26vw, 9rem);
+  }
+}

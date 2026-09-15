@@ -36,7 +36,19 @@ export class HomeComponent implements OnInit {
   sunrise: { time: string; ampm: string } | null = null;
   sunset: { time: string; ampm: string } | null = null;
   /** True while the dark night layout is active (always, or auto between sunset and sunrise). */
-  @HostBinding('class.night') nightActive = false;
+  nightActive = false;
+  /** Sparse bedroom layout (midnight → Fajr) when enabled in settings. */
+  bedroomSimpleActive = false;
+  /** Countdown until sunrise while bedroom simple mode is showing. */
+  sunriseCountdown = '';
+  @HostBinding('class.night')
+  get nightLayoutClass(): boolean {
+    return this.nightActive || this.bedroomSimpleActive;
+  }
+  @HostBinding('class.bedroom-simple')
+  get bedroomSimpleClass(): boolean {
+    return this.bedroomSimpleActive;
+  }
   /** Enables slow color fades after the first paint so load isn't animated. */
   @HostBinding('class.theme-ready') themeReady = false;
   /** Atmospheric sunrise / sunset overlay while day ↔ night fades (clock stays visible). */
@@ -55,7 +67,7 @@ export class HomeComponent implements OnInit {
   /** Bright alarm-clock LED red: extra glow so it reads from across the room. */
   @HostBinding('class.clock-led')
   get clockLed(): boolean {
-    return this.nightActive && this.settings.nightClockColor === 'led-red';
+    return (this.nightActive || this.bedroomSimpleActive) && this.settings.nightClockColor === 'led-red';
   }
   /** User-controlled size multipliers for the clock panel (from settings). */
   @HostBinding('style.--scale-date')
@@ -105,7 +117,7 @@ export class HomeComponent implements OnInit {
   /** Chosen clock color for the current day/night layout. */
   @HostBinding('style.--clock-color')
   get clockColor(): string {
-    return this.settingsService.clockColorHex(this.nightActive, this.displayHour);
+    return this.settingsService.clockColorHex(this.nightActive || this.bedroomSimpleActive, this.displayHour);
   }
 
   /**
@@ -114,7 +126,7 @@ export class HomeComponent implements OnInit {
    */
   @HostBinding('style.--clock-on-dark')
   get clockOnDark(): string {
-    return this.settingsService.clockOnDarkHex(this.nightActive, this.displayHour);
+    return this.settingsService.clockOnDarkHex(this.nightActive || this.bedroomSimpleActive, this.displayHour);
   }
   /** Current temperature in °F; null only if never fetched successfully */
   currentTempF: number | null = null;
@@ -466,6 +478,7 @@ export class HomeComponent implements OnInit {
     this.sunriseAtMs = null;
     this.sunsetAtMs = null;
     this.settingsService.setSunTimes(null, null);
+    this.settingsService.setFajrAtMs(null);
     this.updateNightMode(new Date());
   }
 
@@ -497,6 +510,7 @@ export class HomeComponent implements OnInit {
       maghrib: this.parseTimeToEpoch(raw.maghrib, today) ?? undefined,
       isha: this.parseTimeToEpoch(raw.isha, today) ?? undefined,
     };
+    this.settingsService.setFajrAtMs(this.prayerInstants.fajr ?? null);
     this.tomorrowFajrAtMs = null;
     this.tomorrowFajrForDateKey = null;
     this.skipNextAnnounce = true;
@@ -683,6 +697,8 @@ export class HomeComponent implements OnInit {
    *
    * When auto flips at sunrise/sunset (or the user toggles), run a 30s sky overlay
    * so the fade feels like sunrise or sunset while the clock stays readable.
+   *
+   * Also updates optional bedroom simple mode (midnight → Fajr).
    */
   private updateNightMode(now: Date): void {
     const active = this.settingsService.isNightActive(now);
@@ -691,7 +707,26 @@ export class HomeComponent implements OnInit {
     }
     this.nightModeInitialized = true;
     this.nightActive = active;
-    document.documentElement.classList.toggle('night', active);
+    this.updateBedroomSimple(now);
+    document.documentElement.classList.toggle('night', this.nightActive || this.bedroomSimpleActive);
+  }
+
+  /** Sparse bedroom layout from local midnight until Fajr (optional setting). */
+  private updateBedroomSimple(now: Date): void {
+    this.bedroomSimpleActive = this.settingsService.isBedroomSimpleActive(now);
+    if (!this.bedroomSimpleActive || this.sunriseAtMs == null) {
+      this.sunriseCountdown = '';
+      return;
+    }
+    this.sunriseCountdown = this.formatDurationMs(this.sunriseAtMs - now.getTime());
+  }
+
+  private formatDurationMs(diffMs: number): string {
+    const totalSeconds = Math.floor(Math.max(0, diffMs) / 1000);
+    const hh = Math.floor(totalSeconds / 3600);
+    const mm = Math.floor((totalSeconds % 3600) / 60);
+    const ss = totalSeconds % 60;
+    return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
   }
 
   private startSkyTransition(kind: 'sunrise' | 'sunset'): void {

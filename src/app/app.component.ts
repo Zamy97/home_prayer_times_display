@@ -27,6 +27,6 @@ export class AppComponent implements OnInit {
   }
 
   private syncDocumentNight(): void {
-    document.documentElement.classList.toggle('night', this.settingsService.isNightActive());
+    document.documentElement.classList.toggle('night', this.settingsService.isNightLayoutActive());
   }
 }

@@ -81,7 +81,44 @@
   </div>
   }
 
-  <section class="content" [class.panel-left]="panelLeft">
+  <section class="content" [class.panel-left]="panelLeft" [class.content--bedroom]="bedroomSimpleActive">
+    @if (bedroomSimpleActive) {
+      <div class="bedroomSimple" aria-label="Bedroom night display">
+        <div
+          class="bedroomClock"
+          [class.now--single-hour]="nowSingleDigitHour"
+          aria-label="Current time"
+        >
+          <span class="nowMain">{{ nowTime }}</span>
+          <span class="nowSide" aria-label="Seconds and meridiem">
+            <span class="seconds">:{{ nowSeconds }}</span>
+            <span class="ampm">{{ nowAmPm }}</span>
+          </span>
+        </div>
+
+        <div class="bedroomCountdown" aria-label="Time until sunrise">
+          <span class="bedroomCountdownLabel">UNTIL SUNRISE</span>
+          <span class="bedroomCountdownTime">{{ sunriseCountdown || '--:--:--' }}</span>
+        </div>
+
+        <div class="bedroomFacts">
+          <div class="bedroomFact">
+            <span class="bedroomFactLabel">FAJR STARTS</span>
+            <span class="bedroomFactTime"
+              >{{ times?.fajr?.time ?? '-----'
+              }}<span class="ampm">{{ times?.fajr?.ampm }}</span></span
+            >
+          </div>
+          <div class="bedroomFact">
+            <span class="bedroomFactLabel">SUNRISE</span>
+            <span class="bedroomFactTime"
+              >{{ sunrise?.time ?? '-----'
+              }}<span class="ampm">{{ sunrise?.ampm }}</span></span
+            >
+          </div>
+        </div>
+      </div>
+    } @else {
     <div class="grid" aria-label="Prayer times grid">
       <!-- Row 1 (FAJR) -->
       <div
@@ -326,6 +363,7 @@
         </div>
       </div>
     </aside>
+    }
   </section>
 </main>
 
