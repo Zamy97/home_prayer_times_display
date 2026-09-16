@@ -505,9 +505,9 @@ html.night app-settings .geoError {
 }
 
 /* =====================================================================
-   SLEEP MODE (30 minutes after Isha → Fajr)
+   SLEEP MODE (30 minutes after Isha → sunrise)
    Sparse bedroom layout: large clock, until-sunrise countdown, Fajr + sunrise.
-   Full night layout returns after Fajr; sunrise animation still runs later.
+   At sunrise, the user's selected day/night layout returns.
    ===================================================================== */
 
 app-home.sleep-mode .content--sleep {

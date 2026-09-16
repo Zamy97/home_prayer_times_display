@@ -374,7 +374,7 @@ export type PrayerSettings = {
   /** When to switch to the dark night layout. Default off so existing kiosks stay light until chosen. */
   nightMode: NightMode;
   /**
-   * Optional sparse Sleep mode from 30 minutes after Isha until Fajr:
+   * Optional sparse Sleep mode from 30 minutes after Isha until sunrise:
    * big clock, Fajr start, sunrise, and countdown to sunrise.
    */
   sleepMode: boolean;
@@ -428,8 +428,7 @@ export class SettingsService {
   /** Today's sunrise/sunset instants, used by automatic night mode. */
   private sunriseAtMs: number | null = null;
   private sunsetAtMs: number | null = null;
-  /** Today's Fajr and Isha instants — used by optional Sleep mode. */
-  private fajrAtMs: number | null = null;
+  /** Today's Isha instant — used by optional Sleep mode. */
   private ishaAtMs: number | null = null;
 
   constructor() {
@@ -513,20 +512,19 @@ export class SettingsService {
     this.sunsetAtMs = sunsetAtMs;
   }
 
-  setSleepPrayerTimes(fajrAtMs: number | null, ishaAtMs: number | null): void {
-    this.fajrAtMs = fajrAtMs;
+  setSleepIshaAtMs(ishaAtMs: number | null): void {
     this.ishaAtMs = ishaAtMs;
   }
 
   /**
-   * Optional sparse Sleep mode: 30 minutes after Isha until Fajr.
-   * Before today's Fajr, the start was yesterday evening and is therefore
+   * Optional sparse Sleep mode: 30 minutes after Isha until sunrise.
+   * Before today's sunrise, the start was yesterday evening and is therefore
    * already satisfied; after Isha, use today's calculated Isha instant.
    */
   isSleepModeActive(now = new Date()): boolean {
     if (!this.getSettings().sleepMode) return false;
     const t = now.getTime();
-    if (this.fajrAtMs != null && t < this.fajrAtMs) return true;
+    if (this.sunriseAtMs != null && t < this.sunriseAtMs) return true;
     const thirtyMinutesAfterIsha =
       this.ishaAtMs == null ? null : this.ishaAtMs + 30 * 60 * 1000;
     return thirtyMinutesAfterIsha != null && t >= thirtyMinutesAfterIsha;

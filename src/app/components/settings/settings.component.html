@@ -157,10 +157,10 @@
             class="input"
             [(ngModel)]="sleepMode"
             name="sleepMode"
-            title="From 30 minutes after Isha until Fajr: only a large clock, Fajr start, sunrise, and countdown to sunrise. After Fajr, your normal layout returns."
+            title="From 30 minutes after Isha until sunrise: only a large clock, Fajr start, sunrise, and countdown to sunrise. At sunrise, your chosen day or night layout returns."
           >
             <option [ngValue]="false">Off (full night layout)</option>
-            <option [ngValue]="true">On — after Isha until Fajr</option>
+            <option [ngValue]="true">On — after Isha until sunrise</option>
           </select>
         </label>
 
