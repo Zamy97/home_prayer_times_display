@@ -374,7 +374,7 @@ export type PrayerSettings = {
   /** When to switch to the dark night layout. Default off so existing kiosks stay light until chosen. */
   nightMode: NightMode;
   /**
-   * Optional sparse Sleep mode from 30 minutes after Isha until sunrise:
+   * Optional sparse Sleep mode from 15 minutes after Isha until sunrise:
    * big clock, Fajr start, sunrise, and countdown to sunrise.
    */
   sleepMode: boolean;
@@ -517,7 +517,7 @@ export class SettingsService {
   }
 
   /**
-   * Optional sparse Sleep mode: 30 minutes after Isha until sunrise.
+   * Optional sparse Sleep mode: 15 minutes after Isha until sunrise.
    * Before today's sunrise, the start was yesterday evening and is therefore
    * already satisfied; after Isha, use today's calculated Isha instant.
    */
@@ -525,9 +525,9 @@ export class SettingsService {
     if (!this.getSettings().sleepMode) return false;
     const t = now.getTime();
     if (this.sunriseAtMs != null && t < this.sunriseAtMs) return true;
-    const thirtyMinutesAfterIsha =
-      this.ishaAtMs == null ? null : this.ishaAtMs + 30 * 60 * 1000;
-    return thirtyMinutesAfterIsha != null && t >= thirtyMinutesAfterIsha;
+    const fifteenMinutesAfterIsha =
+      this.ishaAtMs == null ? null : this.ishaAtMs + 15 * 60 * 1000;
+    return fifteenMinutesAfterIsha != null && t >= fifteenMinutesAfterIsha;
   }
 
   /** Dark theme for home or settings — night mode and/or Sleep mode. */

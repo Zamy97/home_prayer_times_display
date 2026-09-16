@@ -50,7 +50,7 @@ export class HomeComponent implements OnInit {
   }
   /** True while the dark night layout is active (always, or auto between sunset and sunrise). */
   nightActive = false;
-  /** Sparse Sleep mode (30 minutes after Isha → sunrise) when enabled in settings. */
+  /** Sparse Sleep mode (15 minutes after Isha → sunrise) when enabled in settings. */
   sleepModeActive = false;
   /** Countdown until sunrise while Sleep mode is showing. */
   sunriseCountdown = '';
@@ -741,7 +741,7 @@ export class HomeComponent implements OnInit {
    * When auto flips at sunrise/sunset (or the user toggles), run a 30s sky overlay
    * so the fade feels like sunrise or sunset while the clock stays readable.
    *
-   * Also updates optional Sleep mode (30 minutes after Isha → sunrise).
+   * Also updates optional Sleep mode (15 minutes after Isha → sunrise).
    */
   private updateNightMode(now: Date): void {
     const active = this.settingsService.isNightActive(now);
@@ -754,7 +754,7 @@ export class HomeComponent implements OnInit {
     document.documentElement.classList.toggle('night', this.nightActive || this.sleepModeActive);
   }
 
-  /** Sparse Sleep mode from 30 minutes after Isha until sunrise (optional setting). */
+  /** Sparse Sleep mode from 15 minutes after Isha until sunrise (optional setting). */
   private updateSleepMode(now: Date): void {
     this.sleepModeActive =
       this.forceSleepPreview || this.settingsService.isSleepModeActive(now);

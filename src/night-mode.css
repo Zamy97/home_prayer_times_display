@@ -505,7 +505,7 @@ html.night app-settings .geoError {
 }
 
 /* =====================================================================
-   SLEEP MODE (30 minutes after Isha → sunrise)
+   SLEEP MODE (15 minutes after Isha → sunrise)
    Sparse bedroom layout: large clock, until-sunrise countdown, Fajr + sunrise.
    At sunrise, the user's selected day/night layout returns.
    ===================================================================== */
@@ -529,6 +529,20 @@ app-home.sleep-mode .sleepMode {
   padding: clamp(12px, 2.5vh, 28px) clamp(12px, 3vw, 36px);
   text-align: center;
   color: var(--amber);
+  animation: sleep-mode-enter 2.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes sleep-mode-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+    filter: blur(7px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
 }
 
 app-home.sleep-mode .bedroomClock {
@@ -656,5 +670,11 @@ app-home.sleep-mode .bedroomFactTime .ampm {
     font-size: calc(
       clamp(128px, min(33vw, 24vh), 330px) * var(--scale-sleep-clock, 1)
     );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  app-home.sleep-mode .sleepMode {
+    animation: none;
   }
 }
