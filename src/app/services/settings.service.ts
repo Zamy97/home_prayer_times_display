@@ -76,6 +76,24 @@ export const DEFAULT_CLOCK_PANEL_SCALE: ClockPanelScale = {
   sun: 1,
 };
 
+/** Independent sizing for the sparse Sleep mode. */
+export type SleepModeScale = {
+  /** Sleep clock when the hour is 1–9. */
+  clock: number;
+  /** Sleep clock when the hour is 10–12. */
+  clockDouble: number;
+  countdown: number;
+  /** Fajr and sunrise cards. */
+  facts: number;
+};
+
+export const DEFAULT_SLEEP_MODE_SCALE: SleepModeScale = {
+  clock: 1,
+  clockDouble: 1,
+  countdown: 1,
+  facts: 1,
+};
+
 /** User-controlled size multipliers for the prayer grid. */
 export type PrayerPanelScale = {
   names: number;
@@ -176,6 +194,32 @@ function resolveClockPanelScale(parsed: {
     return normalizeClockPanelScale(migrated.clock);
   }
   return { ...DEFAULT_CLOCK_PANEL_SCALE };
+}
+
+function isSleepModeScale(value: unknown): value is SleepModeScale {
+  if (!value || typeof value !== 'object') return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o['clock'] === 'number' &&
+    typeof o['clockDouble'] === 'number' &&
+    typeof o['countdown'] === 'number' &&
+    typeof o['facts'] === 'number'
+  );
+}
+
+function normalizeSleepModeScale(scale: SleepModeScale): SleepModeScale {
+  return {
+    clock: clampScale(scale.clock),
+    clockDouble: clampScale(scale.clockDouble),
+    countdown: clampScale(scale.countdown),
+    facts: clampScale(scale.facts),
+  };
+}
+
+function resolveSleepModeScale(parsed: { sleepModeScale?: unknown }): SleepModeScale {
+  return isSleepModeScale(parsed.sleepModeScale)
+    ? normalizeSleepModeScale(parsed.sleepModeScale)
+    : { ...DEFAULT_SLEEP_MODE_SCALE };
 }
 
 function isPrayerPanelScale(value: unknown): value is PrayerPanelScale {
@@ -334,6 +378,8 @@ export type PrayerSettings = {
    * big clock, Fajr start, sunrise, and countdown to sunrise.
    */
   sleepMode: boolean;
+  /** Independent typography multipliers for Sleep mode. */
+  sleepModeScale: SleepModeScale;
   /** Wall vs stacked layout. Auto follows device orientation. */
   screenLayout: ScreenLayout;
   /** Clock-panel typography multipliers (date, weather, clock, countdown, sunrise/sunset). */
@@ -361,6 +407,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   panelLeft: true,
   nightMode: 'off',
   sleepMode: false,
+  sleepModeScale: { ...DEFAULT_SLEEP_MODE_SCALE },
   screenLayout: 'auto',
   clockPanelScale: { ...DEFAULT_CLOCK_PANEL_SCALE },
   prayerPanelScale: { ...DEFAULT_PRAYER_PANEL_SCALE },
@@ -431,6 +478,15 @@ export class SettingsService {
     const next = {
       ...this.getSettings(),
       clockPanelScale: normalizeClockPanelScale(scale),
+    };
+    this.saveSettings(next);
+  }
+
+  /** Live preview for the independent Sleep mode sizing studio. */
+  previewSleepModeScale(scale: SleepModeScale): void {
+    const next = {
+      ...this.getSettings(),
+      sleepModeScale: normalizeSleepModeScale(scale),
     };
     this.saveSettings(next);
   }
@@ -587,6 +643,7 @@ export class SettingsService {
           : DEFAULT_SETTINGS.nightMode,
       // Migrate the short-lived bedroomSimpleMode setting without losing the user's choice.
       sleepMode: parsed.sleepMode === true || parsed.bedroomSimpleMode === true,
+      sleepModeScale: resolveSleepModeScale(parsed),
       screenLayout: isScreenLayout(parsed.screenLayout)
         ? parsed.screenLayout
         : DEFAULT_SETTINGS.screenLayout,

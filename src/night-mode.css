@@ -542,16 +542,16 @@ app-home.sleep-mode .bedroomClock {
 }
 
 app-home.sleep-mode .bedroomClock .nowMain {
-  /* Uses the same 10–12 clock slider as the regular display. */
+  /* Independent Sleep mode 10–12 clock size. */
   font-size: calc(
-    clamp(150px, min(30vw, 36vh), 420px) * var(--scale-clock-double, 1)
+    clamp(150px, min(30vw, 36vh), 420px) * var(--scale-sleep-clock-double, 1)
   );
 }
 
 app-home.sleep-mode .bedroomClock.now--single-hour .nowMain {
-  /* Uses the same 1–9 clock slider as the regular display. */
+  /* Independent Sleep mode 1–9 clock size. */
   font-size: calc(
-    clamp(165px, min(33vw, 39vh), 450px) * var(--scale-clock, 1)
+    clamp(165px, min(33vw, 39vh), 450px) * var(--scale-sleep-clock, 1)
   );
 }
 
@@ -587,9 +587,9 @@ app-home.sleep-mode .bedroomCountdownLabel {
 }
 
 app-home.sleep-mode .bedroomCountdownTime {
-  /* Reuses “Next prayer countdown” in the clock sizing studio. */
+  /* Independent Sleep mode countdown size. */
   font-size: calc(
-    clamp(48px, min(9vw, 13vh), 120px) * var(--scale-countdown, 1)
+    clamp(48px, min(9vw, 13vh), 120px) * var(--scale-sleep-countdown, 1)
   );
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -623,9 +623,9 @@ app-home.sleep-mode .bedroomFactLabel {
 }
 
 app-home.sleep-mode .bedroomFactTime {
-  /* Reuses “Sunrise / sunset” in the clock sizing studio. */
+  /* Independent Sleep mode Fajr / sunrise size. */
   font-size: calc(
-    clamp(54px, min(8vw, 12vh), 112px) * var(--scale-sun, 1)
+    clamp(54px, min(8vw, 12vh), 112px) * var(--scale-sleep-facts, 1)
   );
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -648,13 +648,13 @@ app-home.sleep-mode .bedroomFactTime .ampm {
 
   app-home.sleep-mode .bedroomClock .nowMain {
     font-size: calc(
-      clamp(118px, min(30vw, 22vh), 300px) * var(--scale-clock-double, 1)
+      clamp(118px, min(30vw, 22vh), 300px) * var(--scale-sleep-clock-double, 1)
     );
   }
 
   app-home.sleep-mode .bedroomClock.now--single-hour .nowMain {
     font-size: calc(
-      clamp(128px, min(33vw, 24vh), 330px) * var(--scale-clock, 1)
+      clamp(128px, min(33vw, 24vh), 330px) * var(--scale-sleep-clock, 1)
     );
   }
 }

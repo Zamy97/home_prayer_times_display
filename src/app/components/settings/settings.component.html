@@ -205,10 +205,17 @@
         <div class="clockPanelSizingEntry">
           <p class="clockPanelSizingEntryText">
             Fine-tune the date bar, weather, clock, countdown, and sunrise/sunset on a full-size live preview.
-            Clock, countdown, and sun sizes also control Sleep mode.
           </p>
           <button class="btn secondary" type="button" (click)="openClockSizingStudio()">
             Adjust clock panel sizes…
+          </button>
+        </div>
+        <div class="clockPanelSizingEntry">
+          <p class="clockPanelSizingEntryText">
+            Size the Sleep mode clock, sunrise countdown, Fajr, and sunrise separately.
+          </p>
+          <button class="btn secondary" type="button" (click)="openSleepSizingStudio()">
+            Adjust Sleep mode sizes…
           </button>
         </div>
         <div class="clockPanelSizingEntry">
@@ -274,6 +281,68 @@
                 [ngModel]="clockScalePercent(item.key)"
                 (ngModelChange)="onClockScaleInput(item.key, $event)"
                 [name]="'clock-scale-' + item.key"
+              />
+            </label>
+          }
+        </div>
+        <button class="btn primary sizingStudioDone" type="button" (click)="closeSizingStudio()">
+          Done adjusting
+        </button>
+      </aside>
+    </div>
+  }
+
+  @if (sizingStudio === 'sleep') {
+    <div class="sizingStudio sizingStudio--preview-left" role="dialog" aria-labelledby="sleepSizingStudioTitle">
+      <div class="sizingStudioPreview">
+        <iframe
+          #sleepPreviewFrame
+          class="sizingStudioPreviewFrame"
+          src="/?sleepPreview=1"
+          title="Full-size Sleep mode preview"
+          (load)="onPreviewFrameLoad($event)"
+        ></iframe>
+      </div>
+      <aside class="sizingStudioControls">
+        <div class="sizingStudioControlsHead">
+          <h2 id="sleepSizingStudioTitle" class="sizingStudioTitle">Sleep mode sizing</h2>
+          <p class="sizingStudioHint">
+            These sizes only affect Sleep mode. Drag a slider or type a percent (60–250).
+          </p>
+          <button class="btn secondary btn--compact" type="button" (click)="resetSleepModeScale()">
+            Reset all to 100%
+          </button>
+        </div>
+        <div class="sizingStudioSliders">
+          @for (item of sleepModeScaleOptions; track item.key) {
+            <label class="scaleField">
+              <span class="scaleFieldTop">
+                <span class="label">{{ item.label }}</span>
+                <span class="scaleInputWrap">
+                  <input
+                    class="scalePercentInput"
+                    type="number"
+                    [min]="scaleMin * 100"
+                    [max]="scaleMax * 100"
+                    [step]="scaleStep * 100"
+                    [value]="sleepScalePercent(item.key)"
+                    (change)="onSleepScaleTyped(item.key, $any($event.target).value)"
+                    [name]="'sleep-scale-input-' + item.key"
+                    inputmode="numeric"
+                    [attr.aria-label]="item.label + ' size percent'"
+                  />
+                  <span class="scalePercentSuffix">%</span>
+                </span>
+              </span>
+              <input
+                class="scaleSlider"
+                type="range"
+                [min]="scaleMin * 100"
+                [max]="scaleMax * 100"
+                [step]="scaleStep * 100"
+                [ngModel]="sleepScalePercent(item.key)"
+                (ngModelChange)="onSleepScaleInput(item.key, $event)"
+                [name]="'sleep-scale-' + item.key"
               />
             </label>
           }

@@ -9,6 +9,7 @@ import {
   DayClockColor,
   DEFAULT_CLOCK_PANEL_SCALE,
   DEFAULT_PRAYER_PANEL_SCALE,
+  DEFAULT_SLEEP_MODE_SCALE,
   FajrAngleOption,
   IshaAngleOption,
   NightClockColor,
@@ -19,10 +20,11 @@ import {
   PrayerPanelScale,
   PrayerSettings,
   ScreenLayout,
+  SleepModeScale,
   SettingsService,
 } from '../../services/settings.service';
 
-type SizingStudio = 'clock' | 'prayer';
+type SizingStudio = 'clock' | 'prayer' | 'sleep';
 
 @Component({
   selector: 'app-settings',
@@ -87,10 +89,17 @@ export class SettingsComponent implements OnInit {
   readonly clockPanelScaleOptions: Array<{ key: keyof ClockPanelScale; label: string }> = [
     { key: 'date', label: 'Date bar' },
     { key: 'temp', label: 'Weather / temperature' },
-    { key: 'clock', label: 'Main clock (1–9) · also Sleep mode' },
-    { key: 'clockDouble', label: 'Main clock (10–12) · also Sleep mode' },
-    { key: 'countdown', label: 'Countdown · also Sleep mode' },
-    { key: 'sun', label: 'Sunrise / sunset · also Sleep mode Fajr & sunrise' },
+    { key: 'clock', label: 'Main clock (1–9)' },
+    { key: 'clockDouble', label: 'Main clock (10–12)' },
+    { key: 'countdown', label: 'Next prayer countdown' },
+    { key: 'sun', label: 'Sunrise / sunset' },
+  ];
+
+  readonly sleepModeScaleOptions: Array<{ key: keyof SleepModeScale; label: string }> = [
+    { key: 'clock', label: 'Sleep clock (1–9)' },
+    { key: 'clockDouble', label: 'Sleep clock (10–12)' },
+    { key: 'countdown', label: 'Until sunrise countdown' },
+    { key: 'facts', label: 'Fajr & sunrise times' },
   ];
 
   readonly prayerPanelScaleOptions: Array<{ key: keyof PrayerPanelScale; label: string }> = [
@@ -166,6 +175,7 @@ export class SettingsComponent implements OnInit {
   sleepMode = false;
   screenLayout: ScreenLayout = 'auto';
   clockPanelScale: ClockPanelScale = { ...DEFAULT_CLOCK_PANEL_SCALE };
+  sleepModeScale: SleepModeScale = { ...DEFAULT_SLEEP_MODE_SCALE };
   prayerPanelScale: PrayerPanelScale = { ...DEFAULT_PRAYER_PANEL_SCALE };
   dayClockColor: DayClockColor = 'black';
   nightClockColor: NightClockColor = 'amber';
@@ -177,6 +187,9 @@ export class SettingsComponent implements OnInit {
 
   @ViewChild('clockPreviewFrame')
   private clockPreviewFrame?: ElementRef<HTMLIFrameElement>;
+
+  @ViewChild('sleepPreviewFrame')
+  private sleepPreviewFrame?: ElementRef<HTMLIFrameElement>;
 
   ngOnInit(): void {
     const s = this.settingsService.getSettings();
@@ -192,6 +205,7 @@ export class SettingsComponent implements OnInit {
     this.sleepMode = s.sleepMode === true;
     this.screenLayout = s.screenLayout ?? 'auto';
     this.clockPanelScale = { ...(s.clockPanelScale ?? DEFAULT_CLOCK_PANEL_SCALE) };
+    this.sleepModeScale = { ...(s.sleepModeScale ?? DEFAULT_SLEEP_MODE_SCALE) };
     this.prayerPanelScale = { ...(s.prayerPanelScale ?? DEFAULT_PRAYER_PANEL_SCALE) };
     this.dayClockColor = s.dayClockColor ?? 'black';
     this.nightClockColor = s.nightClockColor ?? 'amber';
@@ -252,6 +266,10 @@ export class SettingsComponent implements OnInit {
     return Math.round(this.prayerPanelScale[key] * 100);
   }
 
+  sleepScalePercent(key: keyof SleepModeScale): number {
+    return Math.round(this.sleepModeScale[key] * 100);
+  }
+
   onClockScaleInput(key: keyof ClockPanelScale, percent: number): void {
     const next = Math.min(this.scaleMax, Math.max(this.scaleMin, percent / 100));
     this.clockPanelScale = {
@@ -270,6 +288,15 @@ export class SettingsComponent implements OnInit {
     this.pushPrayerScalePreview();
   }
 
+  onSleepScaleInput(key: keyof SleepModeScale, percent: number): void {
+    const next = Math.min(this.scaleMax, Math.max(this.scaleMin, percent / 100));
+    this.sleepModeScale = {
+      ...this.sleepModeScale,
+      [key]: Math.round(next * 100) / 100,
+    };
+    this.pushSleepScalePreview();
+  }
+
   onClockScaleTyped(key: keyof ClockPanelScale, raw: number | string | null): void {
     if (raw === '' || raw === null || raw === undefined) return;
     const num = Number(raw);
@@ -284,6 +311,13 @@ export class SettingsComponent implements OnInit {
     this.onPrayerScaleInput(key, num);
   }
 
+  onSleepScaleTyped(key: keyof SleepModeScale, raw: number | string | null): void {
+    if (raw === '' || raw === null || raw === undefined) return;
+    const num = Number(raw);
+    if (!Number.isFinite(num)) return;
+    this.onSleepScaleInput(key, num);
+  }
+
   resetClockPanelScale(): void {
     this.clockPanelScale = { ...DEFAULT_CLOCK_PANEL_SCALE };
     this.pushClockScalePreview();
@@ -294,6 +328,11 @@ export class SettingsComponent implements OnInit {
     this.pushPrayerScalePreview();
   }
 
+  resetSleepModeScale(): void {
+    this.sleepModeScale = { ...DEFAULT_SLEEP_MODE_SCALE };
+    this.pushSleepScalePreview();
+  }
+
   openClockSizingStudio(): void {
     this.sizingStudio = 'clock';
     this.syncPreviewFrames();
@@ -302,6 +341,11 @@ export class SettingsComponent implements OnInit {
   openPrayerSizingStudio(): void {
     this.sizingStudio = 'prayer';
     this.pushPrayerScalePreview();
+  }
+
+  openSleepSizingStudio(): void {
+    this.sizingStudio = 'sleep';
+    this.pushSleepScalePreview();
   }
 
   closeSizingStudio(): void {
@@ -316,6 +360,7 @@ export class SettingsComponent implements OnInit {
   private syncPreviewFrames(): void {
     this.syncPreviewFrame(this.prayerPreviewFrame?.nativeElement ?? null);
     this.syncPreviewFrame(this.clockPreviewFrame?.nativeElement ?? null);
+    this.syncPreviewFrame(this.sleepPreviewFrame?.nativeElement ?? null);
   }
 
   private syncPreviewFrame(iframe: HTMLIFrameElement | null): void {
@@ -336,6 +381,11 @@ export class SettingsComponent implements OnInit {
 
   private pushPrayerScalePreview(): void {
     this.settingsService.previewPrayerPanelScale(this.prayerPanelScale);
+    this.syncPreviewFrames();
+  }
+
+  private pushSleepScalePreview(): void {
+    this.settingsService.previewSleepModeScale(this.sleepModeScale);
     this.syncPreviewFrames();
   }
 
@@ -373,6 +423,7 @@ export class SettingsComponent implements OnInit {
       sleepMode: this.sleepMode,
       screenLayout: this.screenLayout,
       clockPanelScale: { ...this.clockPanelScale },
+      sleepModeScale: { ...this.sleepModeScale },
       prayerPanelScale: { ...this.prayerPanelScale },
       dayClockColor: this.dayClockColor,
       nightClockColor: this.nightClockColor,

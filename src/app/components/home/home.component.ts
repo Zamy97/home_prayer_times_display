@@ -41,12 +41,12 @@ export class HomeComponent implements OnInit {
     const now = Date.now();
     return this.prayerInstants.fajr != null && this.prayerInstants.fajr > now
       ? this.times?.fajr ?? null
-      : this.tomorrowFajr;
+      : this.tomorrowFajr ?? (this.forceSleepPreview ? this.times?.fajr ?? null : null);
   }
   get sleepSunrise(): { time: string; ampm: string } | null {
     return this.sunriseAtMs != null && this.sunriseAtMs > Date.now()
       ? this.sunrise
-      : this.tomorrowSunrise;
+      : this.tomorrowSunrise ?? (this.forceSleepPreview ? this.sunrise : null);
   }
   /** True while the dark night layout is active (always, or auto between sunset and sunrise). */
   nightActive = false;
@@ -111,6 +111,26 @@ export class HomeComponent implements OnInit {
   @HostBinding('style.--scale-sun')
   get scaleSun(): string {
     return String(this.settings.clockPanelScale?.sun ?? 1);
+  }
+
+  @HostBinding('style.--scale-sleep-clock')
+  get scaleSleepClock(): string {
+    return String(this.settings.sleepModeScale?.clock ?? 1);
+  }
+
+  @HostBinding('style.--scale-sleep-clock-double')
+  get scaleSleepClockDouble(): string {
+    return String(this.settings.sleepModeScale?.clockDouble ?? 1);
+  }
+
+  @HostBinding('style.--scale-sleep-countdown')
+  get scaleSleepCountdown(): string {
+    return String(this.settings.sleepModeScale?.countdown ?? 1);
+  }
+
+  @HostBinding('style.--scale-sleep-facts')
+  get scaleSleepFacts(): string {
+    return String(this.settings.sleepModeScale?.facts ?? 1);
   }
 
   @HostBinding('style.--scale-prayer-name')
@@ -201,6 +221,9 @@ export class HomeComponent implements OnInit {
   /** How often we poll for a fresh reading (Open-Meteo is free — 10 min stays current). */
   private readonly tempRefreshMs = 10 * 60 * 1000;
   private lastTempFetchAtMs = 0;
+  /** Settings sizing iframe can force Sleep mode regardless of current time. */
+  private readonly forceSleepPreview =
+    new URLSearchParams(window.location.search).get('sleepPreview') === '1';
 
   /** From settings: true = clock/date panel on left */
   get panelLeft(): boolean {
@@ -736,12 +759,16 @@ export class HomeComponent implements OnInit {
 
   /** Sparse Sleep mode from 30 minutes after Isha until Fajr (optional setting). */
   private updateSleepMode(now: Date): void {
-    this.sleepModeActive = this.settingsService.isSleepModeActive(now);
+    this.sleepModeActive =
+      this.forceSleepPreview || this.settingsService.isSleepModeActive(now);
     const nowMs = now.getTime();
     const targetSunrise =
       this.sunriseAtMs != null && this.sunriseAtMs > nowMs
         ? this.sunriseAtMs
-        : this.tomorrowSunriseAtMs;
+        : this.tomorrowSunriseAtMs ??
+          (this.forceSleepPreview && this.sunriseAtMs != null
+            ? this.sunriseAtMs + 24 * 60 * 60 * 1000
+            : null);
     if (!this.sleepModeActive || targetSunrise == null) {
       this.sunriseCountdown = '';
       return;
