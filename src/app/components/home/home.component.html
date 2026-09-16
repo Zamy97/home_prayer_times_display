@@ -81,9 +81,9 @@
   </div>
   }
 
-  <section class="content" [class.panel-left]="panelLeft" [class.content--bedroom]="bedroomSimpleActive">
-    @if (bedroomSimpleActive) {
-      <div class="bedroomSimple" aria-label="Bedroom night display">
+  <section class="content" [class.panel-left]="panelLeft" [class.content--sleep]="sleepModeActive">
+    @if (sleepModeActive) {
+      <div class="sleepMode" aria-label="Sleep mode display">
         <div
           class="bedroomClock"
           [class.now--single-hour]="nowSingleDigitHour"
@@ -105,15 +105,15 @@
           <div class="bedroomFact">
             <span class="bedroomFactLabel">FAJR STARTS</span>
             <span class="bedroomFactTime"
-              >{{ times?.fajr?.time ?? '-----'
-              }}<span class="ampm">{{ times?.fajr?.ampm }}</span></span
+              >{{ sleepFajr?.time ?? '-----'
+              }}<span class="ampm">{{ sleepFajr?.ampm }}</span></span
             >
           </div>
           <div class="bedroomFact">
             <span class="bedroomFactLabel">SUNRISE</span>
             <span class="bedroomFactTime"
-              >{{ sunrise?.time ?? '-----'
-              }}<span class="ampm">{{ sunrise?.ampm }}</span></span
+              >{{ sleepSunrise?.time ?? '-----'
+              }}<span class="ampm">{{ sleepSunrise?.ampm }}</span></span
             >
           </div>
         </div>

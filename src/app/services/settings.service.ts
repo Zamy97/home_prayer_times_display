@@ -330,11 +330,10 @@ export type PrayerSettings = {
   /** When to switch to the dark night layout. Default off so existing kiosks stay light until chosen. */
   nightMode: NightMode;
   /**
-   * Optional sparse bedroom layout from local midnight until Fajr:
+   * Optional sparse Sleep mode from 30 minutes after Isha until Fajr:
    * big clock, Fajr start, sunrise, and countdown to sunrise.
-   * After Fajr, the normal night/day layout returns (including sunrise animation).
    */
-  bedroomSimpleMode: boolean;
+  sleepMode: boolean;
   /** Wall vs stacked layout. Auto follows device orientation. */
   screenLayout: ScreenLayout;
   /** Clock-panel typography multipliers (date, weather, clock, countdown, sunrise/sunset). */
@@ -361,7 +360,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   panelLeft: true,
   nightMode: 'off',
-  bedroomSimpleMode: false,
+  sleepMode: false,
   screenLayout: 'auto',
   clockPanelScale: { ...DEFAULT_CLOCK_PANEL_SCALE },
   prayerPanelScale: { ...DEFAULT_PRAYER_PANEL_SCALE },
@@ -382,8 +381,9 @@ export class SettingsService {
   /** Today's sunrise/sunset instants, used by automatic night mode. */
   private sunriseAtMs: number | null = null;
   private sunsetAtMs: number | null = null;
-  /** Today's Fajr instant — used by optional bedroom simple mode (midnight → Fajr). */
+  /** Today's Fajr and Isha instants — used by optional Sleep mode. */
   private fajrAtMs: number | null = null;
+  private ishaAtMs: number | null = null;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -457,27 +457,28 @@ export class SettingsService {
     this.sunsetAtMs = sunsetAtMs;
   }
 
-  setFajrAtMs(fajrAtMs: number | null): void {
+  setSleepPrayerTimes(fajrAtMs: number | null, ishaAtMs: number | null): void {
     this.fajrAtMs = fajrAtMs;
+    this.ishaAtMs = ishaAtMs;
   }
 
   /**
-   * Optional sparse bedroom layout: local midnight until today's Fajr.
-   * Only when bedroomSimpleMode is enabled in settings.
+   * Optional sparse Sleep mode: 30 minutes after Isha until Fajr.
+   * Before today's Fajr, the start was yesterday evening and is therefore
+   * already satisfied; after Isha, use today's calculated Isha instant.
    */
-  isBedroomSimpleActive(now = new Date()): boolean {
-    if (!this.getSettings().bedroomSimpleMode) return false;
-    if (this.fajrAtMs == null) return false;
-    if (new Date(this.fajrAtMs).toDateString() !== now.toDateString()) return false;
-    const start = new Date(now);
-    start.setHours(0, 0, 0, 0);
+  isSleepModeActive(now = new Date()): boolean {
+    if (!this.getSettings().sleepMode) return false;
     const t = now.getTime();
-    return t >= start.getTime() && t < this.fajrAtMs;
+    if (this.fajrAtMs != null && t < this.fajrAtMs) return true;
+    const thirtyMinutesAfterIsha =
+      this.ishaAtMs == null ? null : this.ishaAtMs + 30 * 60 * 1000;
+    return thirtyMinutesAfterIsha != null && t >= thirtyMinutesAfterIsha;
   }
 
-  /** Dark theme for home or settings — night mode and/or bedroom simple window. */
+  /** Dark theme for home or settings — night mode and/or Sleep mode. */
   isNightLayoutActive(now = new Date()): boolean {
-    return this.isNightActive(now) || this.isBedroomSimpleActive(now);
+    return this.isNightActive(now) || this.isSleepModeActive(now);
   }
 
   /**
@@ -565,7 +566,13 @@ export class SettingsService {
     }
   }
 
-  private parseStoredSettings(parsed: Partial<PrayerSettings> & { monitorSize?: unknown }): PrayerSettings {
+  private parseStoredSettings(
+    parsed: Partial<PrayerSettings> & {
+      monitorSize?: unknown;
+      /** Legacy name used briefly before the feature was renamed Sleep mode. */
+      bedroomSimpleMode?: unknown;
+    }
+  ): PrayerSettings {
     return {
       coords: parsed.coords ?? DEFAULT_SETTINGS.coords,
       method: (parsed.method as PrayTimeMethod) ?? DEFAULT_SETTINGS.method,
@@ -578,7 +585,8 @@ export class SettingsService {
         parsed.nightMode === 'off' || parsed.nightMode === 'on' || parsed.nightMode === 'auto'
           ? parsed.nightMode
           : DEFAULT_SETTINGS.nightMode,
-      bedroomSimpleMode: parsed.bedroomSimpleMode === true,
+      // Migrate the short-lived bedroomSimpleMode setting without losing the user's choice.
+      sleepMode: parsed.sleepMode === true || parsed.bedroomSimpleMode === true,
       screenLayout: isScreenLayout(parsed.screenLayout)
         ? parsed.screenLayout
         : DEFAULT_SETTINGS.screenLayout,

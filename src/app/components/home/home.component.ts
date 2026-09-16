@@ -35,19 +35,32 @@ export class HomeComponent implements OnInit {
 
   sunrise: { time: string; ampm: string } | null = null;
   sunset: { time: string; ampm: string } | null = null;
+  private tomorrowFajr: { time: string; ampm: string } | null = null;
+  private tomorrowSunrise: { time: string; ampm: string } | null = null;
+  get sleepFajr(): { time: string; ampm: string } | null {
+    const now = Date.now();
+    return this.prayerInstants.fajr != null && this.prayerInstants.fajr > now
+      ? this.times?.fajr ?? null
+      : this.tomorrowFajr;
+  }
+  get sleepSunrise(): { time: string; ampm: string } | null {
+    return this.sunriseAtMs != null && this.sunriseAtMs > Date.now()
+      ? this.sunrise
+      : this.tomorrowSunrise;
+  }
   /** True while the dark night layout is active (always, or auto between sunset and sunrise). */
   nightActive = false;
-  /** Sparse bedroom layout (midnight → Fajr) when enabled in settings. */
-  bedroomSimpleActive = false;
-  /** Countdown until sunrise while bedroom simple mode is showing. */
+  /** Sparse Sleep mode (30 minutes after Isha → Fajr) when enabled in settings. */
+  sleepModeActive = false;
+  /** Countdown until sunrise while Sleep mode is showing. */
   sunriseCountdown = '';
   @HostBinding('class.night')
   get nightLayoutClass(): boolean {
-    return this.nightActive || this.bedroomSimpleActive;
+    return this.nightActive || this.sleepModeActive;
   }
-  @HostBinding('class.bedroom-simple')
-  get bedroomSimpleClass(): boolean {
-    return this.bedroomSimpleActive;
+  @HostBinding('class.sleep-mode')
+  get sleepModeClass(): boolean {
+    return this.sleepModeActive;
   }
   /** Enables slow color fades after the first paint so load isn't animated. */
   @HostBinding('class.theme-ready') themeReady = false;
@@ -67,7 +80,7 @@ export class HomeComponent implements OnInit {
   /** Bright alarm-clock LED red: extra glow so it reads from across the room. */
   @HostBinding('class.clock-led')
   get clockLed(): boolean {
-    return (this.nightActive || this.bedroomSimpleActive) && this.settings.nightClockColor === 'led-red';
+    return (this.nightActive || this.sleepModeActive) && this.settings.nightClockColor === 'led-red';
   }
   /** User-controlled size multipliers for the clock panel (from settings). */
   @HostBinding('style.--scale-date')
@@ -117,7 +130,7 @@ export class HomeComponent implements OnInit {
   /** Chosen clock color for the current day/night layout. */
   @HostBinding('style.--clock-color')
   get clockColor(): string {
-    return this.settingsService.clockColorHex(this.nightActive || this.bedroomSimpleActive, this.displayHour);
+    return this.settingsService.clockColorHex(this.nightActive || this.sleepModeActive, this.displayHour);
   }
 
   /**
@@ -126,7 +139,7 @@ export class HomeComponent implements OnInit {
    */
   @HostBinding('style.--clock-on-dark')
   get clockOnDark(): string {
-    return this.settingsService.clockOnDarkHex(this.nightActive || this.bedroomSimpleActive, this.displayHour);
+    return this.settingsService.clockOnDarkHex(this.nightActive || this.sleepModeActive, this.displayHour);
   }
   /** Current temperature in °F; null only if never fetched successfully */
   currentTempF: number | null = null;
@@ -166,6 +179,7 @@ export class HomeComponent implements OnInit {
   private sunsetAtMs: number | null = null;
   private nextPrayerAtMs: number | null = null;
   private tomorrowFajrAtMs: number | null = null;
+  private tomorrowSunriseAtMs: number | null = null;
   private tomorrowFajrForDateKey: string | null = null;
   /** Skip the 30s “it’s time” banner on first compute / settings reload. */
   private skipNextAnnounce = true;
@@ -478,7 +492,7 @@ export class HomeComponent implements OnInit {
     this.sunriseAtMs = null;
     this.sunsetAtMs = null;
     this.settingsService.setSunTimes(null, null);
-    this.settingsService.setFajrAtMs(null);
+    this.settingsService.setSleepPrayerTimes(null, null);
     this.updateNightMode(new Date());
   }
 
@@ -510,8 +524,14 @@ export class HomeComponent implements OnInit {
       maghrib: this.parseTimeToEpoch(raw.maghrib, today) ?? undefined,
       isha: this.parseTimeToEpoch(raw.isha, today) ?? undefined,
     };
-    this.settingsService.setFajrAtMs(this.prayerInstants.fajr ?? null);
+    this.settingsService.setSleepPrayerTimes(
+      this.prayerInstants.fajr ?? null,
+      this.prayerInstants.isha ?? null
+    );
     this.tomorrowFajrAtMs = null;
+    this.tomorrowSunriseAtMs = null;
+    this.tomorrowFajr = null;
+    this.tomorrowSunrise = null;
     this.tomorrowFajrForDateKey = null;
     this.skipNextAnnounce = true;
     this.updateNextPrayer(today);
@@ -577,6 +597,9 @@ export class HomeComponent implements OnInit {
           tomorrow.setDate(tomorrow.getDate() + 1);
           const tomorrowTimes = this.prayerTimes.computeTimes(this.settings, tomorrow);
           this.tomorrowFajrAtMs = this.parseTimeToEpoch(tomorrowTimes.fajr, tomorrow);
+          this.tomorrowSunriseAtMs = this.parseTimeToEpoch(tomorrowTimes.sunrise, tomorrow);
+          this.tomorrowFajr = this.splitTime(tomorrowTimes.fajr);
+          this.tomorrowSunrise = this.splitTime(tomorrowTimes.sunrise);
           this.tomorrowFajrForDateKey = todayKey;
         }
         nextAt = this.tomorrowFajrAtMs;
@@ -698,7 +721,7 @@ export class HomeComponent implements OnInit {
    * When auto flips at sunrise/sunset (or the user toggles), run a 30s sky overlay
    * so the fade feels like sunrise or sunset while the clock stays readable.
    *
-   * Also updates optional bedroom simple mode (midnight → Fajr).
+   * Also updates optional Sleep mode (30 minutes after Isha → Fajr).
    */
   private updateNightMode(now: Date): void {
     const active = this.settingsService.isNightActive(now);
@@ -707,18 +730,23 @@ export class HomeComponent implements OnInit {
     }
     this.nightModeInitialized = true;
     this.nightActive = active;
-    this.updateBedroomSimple(now);
-    document.documentElement.classList.toggle('night', this.nightActive || this.bedroomSimpleActive);
+    this.updateSleepMode(now);
+    document.documentElement.classList.toggle('night', this.nightActive || this.sleepModeActive);
   }
 
-  /** Sparse bedroom layout from local midnight until Fajr (optional setting). */
-  private updateBedroomSimple(now: Date): void {
-    this.bedroomSimpleActive = this.settingsService.isBedroomSimpleActive(now);
-    if (!this.bedroomSimpleActive || this.sunriseAtMs == null) {
+  /** Sparse Sleep mode from 30 minutes after Isha until Fajr (optional setting). */
+  private updateSleepMode(now: Date): void {
+    this.sleepModeActive = this.settingsService.isSleepModeActive(now);
+    const nowMs = now.getTime();
+    const targetSunrise =
+      this.sunriseAtMs != null && this.sunriseAtMs > nowMs
+        ? this.sunriseAtMs
+        : this.tomorrowSunriseAtMs;
+    if (!this.sleepModeActive || targetSunrise == null) {
       this.sunriseCountdown = '';
       return;
     }
-    this.sunriseCountdown = this.formatDurationMs(this.sunriseAtMs - now.getTime());
+    this.sunriseCountdown = this.formatDurationMs(targetSunrise - nowMs);
   }
 
   private formatDurationMs(diffMs: number): string {
