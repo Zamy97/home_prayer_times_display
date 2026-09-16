@@ -87,10 +87,10 @@ export class SettingsComponent implements OnInit {
   readonly clockPanelScaleOptions: Array<{ key: keyof ClockPanelScale; label: string }> = [
     { key: 'date', label: 'Date bar' },
     { key: 'temp', label: 'Weather / temperature' },
-    { key: 'clock', label: 'Main clock (1–9)' },
-    { key: 'clockDouble', label: 'Main clock (10–12)' },
-    { key: 'countdown', label: 'Next prayer countdown' },
-    { key: 'sun', label: 'Sunrise / sunset' },
+    { key: 'clock', label: 'Main clock (1–9) · also Sleep mode' },
+    { key: 'clockDouble', label: 'Main clock (10–12) · also Sleep mode' },
+    { key: 'countdown', label: 'Countdown · also Sleep mode' },
+    { key: 'sun', label: 'Sunrise / sunset · also Sleep mode Fajr & sunrise' },
   ];
 
   readonly prayerPanelScaleOptions: Array<{ key: keyof PrayerPanelScale; label: string }> = [

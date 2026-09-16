@@ -521,12 +521,12 @@ app-home.sleep-mode .content--sleep {
 
 app-home.sleep-mode .sleepMode {
   display: grid;
-  gap: clamp(1.25rem, 4vh, 3rem);
+  gap: clamp(12px, 2.8vh, 28px);
   justify-items: center;
   align-content: center;
-  width: min(92vw, 1100px);
+  width: min(96vw, 1400px);
   margin-inline: auto;
-  padding: clamp(1.5rem, 5vh, 3.5rem) clamp(1rem, 4vw, 2.5rem);
+  padding: clamp(12px, 2.5vh, 28px) clamp(12px, 3vw, 36px);
   text-align: center;
   color: var(--amber);
 }
@@ -542,7 +542,17 @@ app-home.sleep-mode .bedroomClock {
 }
 
 app-home.sleep-mode .bedroomClock .nowMain {
-  font-size: clamp(5.5rem, 22vw, 14rem);
+  /* Uses the same 10–12 clock slider as the regular display. */
+  font-size: calc(
+    clamp(150px, min(30vw, 36vh), 420px) * var(--scale-clock-double, 1)
+  );
+}
+
+app-home.sleep-mode .bedroomClock.now--single-hour .nowMain {
+  /* Uses the same 1–9 clock slider as the regular display. */
+  font-size: calc(
+    clamp(165px, min(33vw, 39vh), 450px) * var(--scale-clock, 1)
+  );
 }
 
 app-home.sleep-mode .bedroomClock .nowSide {
@@ -553,12 +563,12 @@ app-home.sleep-mode .bedroomClock .nowSide {
 }
 
 app-home.sleep-mode .bedroomClock .seconds {
-  font-size: clamp(1.4rem, 4.5vw, 3.2rem);
+  font-size: clamp(28px, min(5vw, 7vh), 62px);
   line-height: 1;
 }
 
 app-home.sleep-mode .bedroomClock .ampm {
-  font-size: clamp(1.1rem, 3.2vw, 2.2rem);
+  font-size: clamp(22px, min(3.5vw, 5vh), 44px);
   letter-spacing: 0.06em;
   opacity: 0.85;
 }
@@ -577,7 +587,10 @@ app-home.sleep-mode .bedroomCountdownLabel {
 }
 
 app-home.sleep-mode .bedroomCountdownTime {
-  font-size: clamp(2.4rem, 8vw, 5.5rem);
+  /* Reuses “Next prayer countdown” in the clock sizing studio. */
+  font-size: calc(
+    clamp(48px, min(9vw, 13vh), 120px) * var(--scale-countdown, 1)
+  );
   font-weight: 700;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
@@ -589,7 +602,7 @@ app-home.sleep-mode .bedroomFacts {
   grid-template-columns: 1fr 1fr;
   gap: clamp(1rem, 4vw, 3rem);
   width: 100%;
-  max-width: 56rem;
+  max-width: 1050px;
   margin-top: 0.5rem;
 }
 
@@ -610,7 +623,10 @@ app-home.sleep-mode .bedroomFactLabel {
 }
 
 app-home.sleep-mode .bedroomFactTime {
-  font-size: clamp(2.2rem, 6.5vw, 4.5rem);
+  /* Reuses “Sunrise / sunset” in the clock sizing studio. */
+  font-size: calc(
+    clamp(54px, min(8vw, 12vh), 112px) * var(--scale-sun, 1)
+  );
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -631,6 +647,14 @@ app-home.sleep-mode .bedroomFactTime .ampm {
   }
 
   app-home.sleep-mode .bedroomClock .nowMain {
-    font-size: clamp(4.5rem, 26vw, 9rem);
+    font-size: calc(
+      clamp(118px, min(30vw, 22vh), 300px) * var(--scale-clock-double, 1)
+    );
+  }
+
+  app-home.sleep-mode .bedroomClock.now--single-hour .nowMain {
+    font-size: calc(
+      clamp(128px, min(33vw, 24vh), 330px) * var(--scale-clock, 1)
+    );
   }
 }
