@@ -39,14 +39,21 @@ export class HomeComponent implements OnInit {
   private tomorrowSunrise: { time: string; ampm: string } | null = null;
   get sleepFajr(): { time: string; ampm: string } | null {
     const now = Date.now();
-    return this.prayerInstants.fajr != null && this.prayerInstants.fajr > now
-      ? this.times?.fajr ?? null
-      : this.tomorrowFajr ?? (this.forceSleepPreview ? this.times?.fajr ?? null : null);
+    // Until sunrise, keep showing today's Fajr even after it has started.
+    if (this.sunriseAtMs != null && now < this.sunriseAtMs) {
+      return this.times?.fajr ?? null;
+    }
+    // Evening Sleep window: show tomorrow morning's Fajr.
+    return this.tomorrowFajr ?? (this.forceSleepPreview ? this.times?.fajr ?? null : null);
   }
   get sleepSunrise(): { time: string; ampm: string } | null {
-    return this.sunriseAtMs != null && this.sunriseAtMs > Date.now()
-      ? this.sunrise
-      : this.tomorrowSunrise ?? (this.forceSleepPreview ? this.sunrise : null);
+    const now = Date.now();
+    // Until sunrise, keep showing today's sunrise time.
+    if (this.sunriseAtMs != null && now < this.sunriseAtMs) {
+      return this.sunrise;
+    }
+    // Evening Sleep window: show tomorrow's sunrise.
+    return this.tomorrowSunrise ?? (this.forceSleepPreview ? this.sunrise : null);
   }
   /** True while the dark night layout is active (always, or auto between sunset and sunrise). */
   nightActive = false;
