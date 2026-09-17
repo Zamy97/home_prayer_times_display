@@ -157,7 +157,7 @@
             class="input"
             [(ngModel)]="sleepMode"
             name="sleepMode"
-            title="From 15 minutes after Isha until sunrise: only a large clock, Fajr start, sunrise, and countdown to sunrise. At sunrise, your chosen day or night layout returns."
+            title="From 15 minutes after Isha until sunrise: large clock, countdown until sunrise, and sunrise time. At sunrise, your chosen day or night layout returns."
           >
             <option [ngValue]="false">Off (full night layout)</option>
             <option [ngValue]="true">On — after Isha until sunrise</option>
@@ -212,7 +212,7 @@
         </div>
         <div class="clockPanelSizingEntry">
           <p class="clockPanelSizingEntryText">
-            Size the Sleep mode clock, Fajr, and sunrise separately.
+            Size the Sleep mode clock, sunrise countdown, and sunrise separately.
           </p>
           <button class="btn secondary" type="button" (click)="openSleepSizingStudio()">
             Adjust Sleep mode sizes…

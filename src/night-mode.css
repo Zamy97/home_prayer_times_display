@@ -506,7 +506,7 @@ html.night app-settings .geoError {
 
 /* =====================================================================
    SLEEP MODE (15 minutes after Isha → sunrise)
-   Sparse bedroom layout: large clock, Fajr, and sunrise.
+   Sparse bedroom layout: large clock, until-sunrise countdown, and sunrise.
    At sunrise, the user's selected day/night layout returns.
    ===================================================================== */
 
@@ -628,7 +628,7 @@ app-home.sleep-mode .bedroomFactLabel {
 }
 
 app-home.sleep-mode .bedroomFactTime {
-  /* Independent Sleep mode Fajr / sunrise size. */
+  /* Independent Sleep mode countdown / sunrise size. */
   font-size: calc(
     clamp(82px, min(12vw, 17vh), 175px) * var(--scale-sleep-facts, 1)
   );
@@ -637,6 +637,11 @@ app-home.sleep-mode .bedroomFactTime {
   line-height: 1;
   white-space: nowrap;
   color: var(--amber-bright, var(--amber));
+}
+
+app-home.sleep-mode .bedroomFactTime--countdown {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 app-home.sleep-mode .bedroomFactTime .ampm {

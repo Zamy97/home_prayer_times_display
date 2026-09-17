@@ -82,7 +82,7 @@ export type SleepModeScale = {
   clock: number;
   /** Sleep clock when the hour is 10–12. */
   clockDouble: number;
-  /** Fajr and sunrise cards. */
+  /** Until-sunrise countdown and sunrise cards. */
   facts: number;
 };
 

@@ -98,7 +98,7 @@ export class SettingsComponent implements OnInit {
   readonly sleepModeScaleOptions: Array<{ key: keyof SleepModeScale; label: string }> = [
     { key: 'clock', label: 'Sleep clock (1–9)' },
     { key: 'clockDouble', label: 'Sleep clock (10–12)' },
-    { key: 'facts', label: 'Fajr & sunrise times' },
+    { key: 'facts', label: 'Countdown & sunrise' },
   ];
 
   readonly prayerPanelScaleOptions: Array<{ key: keyof PrayerPanelScale; label: string }> = [
