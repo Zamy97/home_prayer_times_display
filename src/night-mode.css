@@ -628,7 +628,7 @@ app-home.sleep-mode .bedroomFactLabel {
 app-home.sleep-mode .bedroomFactTime {
   /* Independent Sleep mode Fajr / sunrise size. */
   font-size: calc(
-    clamp(70px, min(10vw, 15vh), 145px) * var(--scale-sleep-facts, 1)
+    clamp(82px, min(12vw, 17vh), 175px) * var(--scale-sleep-facts, 1)
   );
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -638,11 +638,15 @@ app-home.sleep-mode .bedroomFactTime {
 }
 
 app-home.sleep-mode .bedroomFactTime .ampm {
+  display: inline-block;
   margin-left: 0.2em;
-  font-size: 0.42em;
-  letter-spacing: 0.06em;
+  font-size: 0.34em;
+  line-height: 1;
+  letter-spacing: 0.02em;
   opacity: 0.85;
-  vertical-align: super;
+  vertical-align: 0.35em;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
 }
 
 @media (max-width: 700px), (orientation: portrait) {
