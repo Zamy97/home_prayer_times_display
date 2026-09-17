@@ -600,9 +600,9 @@ app-home.sleep-mode .bedroomClock .ampm {
 app-home.sleep-mode .bedroomFacts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(1rem, 4vw, 3rem);
-  width: 100%;
-  max-width: min(1200px, 100%);
+  gap: clamp(16px, 3vw, 40px);
+  width: min(calc(100vw - 64px), 1400px);
+  max-width: none;
   margin-inline: auto;
 }
 
