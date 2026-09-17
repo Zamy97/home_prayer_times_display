@@ -506,7 +506,7 @@ html.night app-settings .geoError {
 
 /* =====================================================================
    SLEEP MODE (15 minutes after Isha → sunrise)
-   Sparse bedroom layout: large clock, until-sunrise countdown, Fajr + sunrise.
+   Sparse bedroom layout: large clock, Fajr, and sunrise.
    At sunrise, the user's selected day/night layout returns.
    ===================================================================== */
 
@@ -521,7 +521,7 @@ app-home.sleep-mode .content--sleep {
 
 app-home.sleep-mode .sleepMode {
   display: grid;
-  gap: clamp(12px, 2.8vh, 28px);
+  gap: clamp(22px, 5vh, 52px);
   justify-items: center;
   align-content: center;
   width: min(96vw, 1400px);
@@ -558,14 +558,14 @@ app-home.sleep-mode .bedroomClock {
 app-home.sleep-mode .bedroomClock .nowMain {
   /* Independent Sleep mode 10–12 clock size. */
   font-size: calc(
-    clamp(150px, min(30vw, 36vh), 420px) * var(--scale-sleep-clock-double, 1)
+    clamp(180px, min(35vw, 43vh), 480px) * var(--scale-sleep-clock-double, 1)
   );
 }
 
 app-home.sleep-mode .bedroomClock.now--single-hour .nowMain {
   /* Independent Sleep mode 1–9 clock size. */
   font-size: calc(
-    clamp(165px, min(33vw, 39vh), 450px) * var(--scale-sleep-clock, 1)
+    clamp(195px, min(38vw, 46vh), 520px) * var(--scale-sleep-clock, 1)
   );
 }
 
@@ -587,50 +587,25 @@ app-home.sleep-mode .bedroomClock .ampm {
   opacity: 0.85;
 }
 
-app-home.sleep-mode .bedroomCountdown {
-  display: grid;
-  gap: 0.35rem;
-  justify-items: center;
-}
-
-app-home.sleep-mode .bedroomCountdownLabel {
-  font-size: clamp(0.85rem, 1.8vw, 1.35rem);
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  opacity: 0.72;
-}
-
-app-home.sleep-mode .bedroomCountdownTime {
-  /* Independent Sleep mode countdown size. */
-  font-size: calc(
-    clamp(48px, min(9vw, 13vh), 120px) * var(--scale-sleep-countdown, 1)
-  );
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-  color: var(--amber-bright, var(--amber));
-}
-
 app-home.sleep-mode .bedroomFacts {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(1rem, 4vw, 3rem);
   width: 100%;
-  max-width: 1050px;
-  margin-top: 0.5rem;
+  max-width: 1200px;
 }
 
 app-home.sleep-mode .bedroomFact {
   display: grid;
-  gap: 0.45rem;
-  padding: clamp(1rem, 2.5vh, 1.75rem) clamp(0.85rem, 2vw, 1.5rem);
+  gap: clamp(10px, 1.8vh, 20px);
+  padding: clamp(20px, 4vh, 42px) clamp(16px, 3vw, 36px);
   border: 1px solid var(--line);
   border-radius: 1rem;
   background: color-mix(in srgb, var(--amber) 8%, #000);
 }
 
 app-home.sleep-mode .bedroomFactLabel {
-  font-size: clamp(0.8rem, 1.6vw, 1.15rem);
+  font-size: clamp(18px, min(2.3vw, 3.3vh), 34px);
   font-weight: 700;
   letter-spacing: 0.14em;
   opacity: 0.72;
@@ -639,7 +614,7 @@ app-home.sleep-mode .bedroomFactLabel {
 app-home.sleep-mode .bedroomFactTime {
   /* Independent Sleep mode Fajr / sunrise size. */
   font-size: calc(
-    clamp(54px, min(8vw, 12vh), 112px) * var(--scale-sleep-facts, 1)
+    clamp(70px, min(10vw, 15vh), 145px) * var(--scale-sleep-facts, 1)
   );
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -662,13 +637,13 @@ app-home.sleep-mode .bedroomFactTime .ampm {
 
   app-home.sleep-mode .bedroomClock .nowMain {
     font-size: calc(
-      clamp(118px, min(30vw, 22vh), 300px) * var(--scale-sleep-clock-double, 1)
+      clamp(138px, min(34vw, 25vh), 340px) * var(--scale-sleep-clock-double, 1)
     );
   }
 
   app-home.sleep-mode .bedroomClock.now--single-hour .nowMain {
     font-size: calc(
-      clamp(128px, min(33vw, 24vh), 330px) * var(--scale-sleep-clock, 1)
+      clamp(150px, min(37vw, 27vh), 375px) * var(--scale-sleep-clock, 1)
     );
   }
 }

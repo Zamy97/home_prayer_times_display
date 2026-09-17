@@ -98,7 +98,6 @@ export class SettingsComponent implements OnInit {
   readonly sleepModeScaleOptions: Array<{ key: keyof SleepModeScale; label: string }> = [
     { key: 'clock', label: 'Sleep clock (1–9)' },
     { key: 'clockDouble', label: 'Sleep clock (10–12)' },
-    { key: 'countdown', label: 'Until sunrise countdown' },
     { key: 'facts', label: 'Fajr & sunrise times' },
   ];
 

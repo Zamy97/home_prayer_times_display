@@ -52,8 +52,6 @@ export class HomeComponent implements OnInit {
   nightActive = false;
   /** Sparse Sleep mode (15 minutes after Isha → sunrise) when enabled in settings. */
   sleepModeActive = false;
-  /** Countdown until sunrise while Sleep mode is showing. */
-  sunriseCountdown = '';
   @HostBinding('class.night')
   get nightLayoutClass(): boolean {
     return this.nightActive || this.sleepModeActive;
@@ -121,11 +119,6 @@ export class HomeComponent implements OnInit {
   @HostBinding('style.--scale-sleep-clock-double')
   get scaleSleepClockDouble(): string {
     return String(this.settings.sleepModeScale?.clockDouble ?? 1);
-  }
-
-  @HostBinding('style.--scale-sleep-countdown')
-  get scaleSleepCountdown(): string {
-    return String(this.settings.sleepModeScale?.countdown ?? 1);
   }
 
   @HostBinding('style.--scale-sleep-facts')
@@ -199,7 +192,6 @@ export class HomeComponent implements OnInit {
   private sunsetAtMs: number | null = null;
   private nextPrayerAtMs: number | null = null;
   private tomorrowFajrAtMs: number | null = null;
-  private tomorrowSunriseAtMs: number | null = null;
   private tomorrowFajrForDateKey: string | null = null;
   /** Skip the 30s “it’s time” banner on first compute / settings reload. */
   private skipNextAnnounce = true;
@@ -549,7 +541,6 @@ export class HomeComponent implements OnInit {
     };
     this.settingsService.setSleepIshaAtMs(this.prayerInstants.isha ?? null);
     this.tomorrowFajrAtMs = null;
-    this.tomorrowSunriseAtMs = null;
     this.tomorrowFajr = null;
     this.tomorrowSunrise = null;
     this.tomorrowFajrForDateKey = null;
@@ -617,7 +608,6 @@ export class HomeComponent implements OnInit {
           tomorrow.setDate(tomorrow.getDate() + 1);
           const tomorrowTimes = this.prayerTimes.computeTimes(this.settings, tomorrow);
           this.tomorrowFajrAtMs = this.parseTimeToEpoch(tomorrowTimes.fajr, tomorrow);
-          this.tomorrowSunriseAtMs = this.parseTimeToEpoch(tomorrowTimes.sunrise, tomorrow);
           this.tomorrowFajr = this.splitTime(tomorrowTimes.fajr);
           this.tomorrowSunrise = this.splitTime(tomorrowTimes.sunrise);
           this.tomorrowFajrForDateKey = todayKey;
@@ -758,27 +748,6 @@ export class HomeComponent implements OnInit {
   private updateSleepMode(now: Date): void {
     this.sleepModeActive =
       this.forceSleepPreview || this.settingsService.isSleepModeActive(now);
-    const nowMs = now.getTime();
-    const targetSunrise =
-      this.sunriseAtMs != null && this.sunriseAtMs > nowMs
-        ? this.sunriseAtMs
-        : this.tomorrowSunriseAtMs ??
-          (this.forceSleepPreview && this.sunriseAtMs != null
-            ? this.sunriseAtMs + 24 * 60 * 60 * 1000
-            : null);
-    if (!this.sleepModeActive || targetSunrise == null) {
-      this.sunriseCountdown = '';
-      return;
-    }
-    this.sunriseCountdown = this.formatDurationMs(targetSunrise - nowMs);
-  }
-
-  private formatDurationMs(diffMs: number): string {
-    const totalSeconds = Math.floor(Math.max(0, diffMs) / 1000);
-    const hh = Math.floor(totalSeconds / 3600);
-    const mm = Math.floor((totalSeconds % 3600) / 60);
-    const ss = totalSeconds % 60;
-    return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
   }
 
   private startSkyTransition(kind: 'sunrise' | 'sunset'): void {

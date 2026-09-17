@@ -82,7 +82,6 @@ export type SleepModeScale = {
   clock: number;
   /** Sleep clock when the hour is 10–12. */
   clockDouble: number;
-  countdown: number;
   /** Fajr and sunrise cards. */
   facts: number;
 };
@@ -90,7 +89,6 @@ export type SleepModeScale = {
 export const DEFAULT_SLEEP_MODE_SCALE: SleepModeScale = {
   clock: 1,
   clockDouble: 1,
-  countdown: 1,
   facts: 1,
 };
 
@@ -202,7 +200,6 @@ function isSleepModeScale(value: unknown): value is SleepModeScale {
   return (
     typeof o['clock'] === 'number' &&
     typeof o['clockDouble'] === 'number' &&
-    typeof o['countdown'] === 'number' &&
     typeof o['facts'] === 'number'
   );
 }
@@ -211,7 +208,6 @@ function normalizeSleepModeScale(scale: SleepModeScale): SleepModeScale {
   return {
     clock: clampScale(scale.clock),
     clockDouble: clampScale(scale.clockDouble),
-    countdown: clampScale(scale.countdown),
     facts: clampScale(scale.facts),
   };
 }
