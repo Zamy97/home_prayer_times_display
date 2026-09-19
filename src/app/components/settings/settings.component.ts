@@ -107,7 +107,8 @@ export class SettingsComponent implements OnInit {
   readonly sleepModeScaleOptions: Array<{ key: keyof SleepModeScale; label: string }> = [
     { key: 'clock', label: 'Sleep clock (1–9)' },
     { key: 'clockDouble', label: 'Sleep clock (10–12)' },
-    { key: 'facts', label: 'Fact cards (prayer / sunrise)' },
+    { key: 'facts', label: 'Card times (prayer / sunrise)' },
+    { key: 'labels', label: 'Card labels (SUNSET, FAJR, …)' },
   ];
 
   readonly prayerPanelScaleOptions: Array<{ key: keyof PrayerPanelScale; label: string }> = [

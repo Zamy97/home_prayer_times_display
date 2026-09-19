@@ -82,14 +82,17 @@ export type SleepModeScale = {
   clock: number;
   /** Sleep clock when the hour is 10–12. */
   clockDouble: number;
-  /** Until-sunrise countdown and sunrise cards. */
+  /** Prayer / sunrise / sunset times on the fact cards. */
   facts: number;
+  /** Labels on the fact cards (NEXT, SUNSET, FAJR, …). */
+  labels: number;
 };
 
 export const DEFAULT_SLEEP_MODE_SCALE: SleepModeScale = {
   clock: 1,
   clockDouble: 1,
   facts: 1,
+  labels: 1,
 };
 
 /** User-controlled size multipliers for the prayer grid. */
@@ -204,11 +207,13 @@ function isSleepModeScale(value: unknown): value is SleepModeScale {
   );
 }
 
-function normalizeSleepModeScale(scale: SleepModeScale): SleepModeScale {
+function normalizeSleepModeScale(scale: SleepModeScale | Record<string, unknown>): SleepModeScale {
+  const labelsRaw = (scale as { labels?: unknown }).labels;
   return {
-    clock: clampScale(scale.clock),
-    clockDouble: clampScale(scale.clockDouble),
-    facts: clampScale(scale.facts),
+    clock: clampScale(Number((scale as SleepModeScale).clock)),
+    clockDouble: clampScale(Number((scale as SleepModeScale).clockDouble)),
+    facts: clampScale(Number((scale as SleepModeScale).facts)),
+    labels: clampScale(typeof labelsRaw === 'number' ? labelsRaw : 1),
   };
 }
 

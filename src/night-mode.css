@@ -696,8 +696,11 @@ app-home.sleep-mode .bedroomFact {
 }
 
 app-home.sleep-mode .bedroomFactLabel {
-  /* Modest bump over the original — readable farther away, still secondary. */
-  font-size: clamp(22px, min(2.8vw, 3.8vh), 40px);
+  /* Modest bump over the original — readable farther away, still secondary.
+     Users can fine-tune with Settings → Simple / Sleep → Card labels. */
+  font-size: calc(
+    clamp(24px, min(3vw, 4.1vh), 44px) * var(--scale-sleep-labels, 1)
+  );
   font-weight: 700;
   letter-spacing: 0.12em;
   opacity: 0.78;

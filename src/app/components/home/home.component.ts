@@ -188,6 +188,11 @@ export class HomeComponent implements OnInit {
     return String(this.settings.sleepModeScale?.facts ?? 1);
   }
 
+  @HostBinding('style.--scale-sleep-labels')
+  get scaleSleepLabels(): string {
+    return String(this.settings.sleepModeScale?.labels ?? 1);
+  }
+
   @HostBinding('style.--scale-prayer-name')
   get scalePrayerName(): string {
     return String(this.settings.prayerPanelScale?.names ?? 1);
