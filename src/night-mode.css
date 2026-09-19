@@ -465,6 +465,19 @@ html.night app-settings .panel--prayer .sectionDot { background: #d68f47; }
 html.night app-settings .panel--display .sectionTitle { color: #f2a95a; }
 html.night app-settings .panel--display .sectionDot { background: #986734; }
 
+html.night app-settings .displayGroup {
+  background: rgba(20, 14, 8, 0.55);
+  border-color: rgba(214, 143, 71, 0.16);
+}
+
+html.night app-settings .displayGroupTitle {
+  color: #f2a95a;
+}
+
+html.night app-settings .displayGroupHint {
+  color: rgba(212, 180, 140, 0.72);
+}
+
 html.night app-settings .footer {
   background: linear-gradient(180deg, #100c08 0%, #000 100%);
   border-top-color: rgba(214, 143, 71, 0.2);

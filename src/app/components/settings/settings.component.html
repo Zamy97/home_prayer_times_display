@@ -113,154 +113,168 @@
         <span class="sectionDot"></span>
         Display
       </h2>
-      <div class="displayGrid">
-        <label class="field">
-          <span class="label">Screen layout</span>
-          <select
-            class="input"
-            [(ngModel)]="screenLayout"
-            name="screenLayout"
-            title="Landscape: wall display. Portrait: stacked clock, prayers, sun times, and date."
-          >
-            <option *ngFor="let o of screenLayoutOptions" [ngValue]="o.value">{{ o.label }}</option>
-          </select>
-        </label>
 
-        <label class="field">
-          <span class="label">Clock panel side</span>
-          <select
-            class="input"
-            [(ngModel)]="panelLeft"
-            name="panelLeft"
-            title="Landscape only — which side shows the clock and prayer grid."
-          >
-            <option [ngValue]="true">Clock & date on left</option>
-            <option [ngValue]="false">Clock & date on right</option>
-          </select>
-        </label>
+      <div class="displayGroups">
+        <div class="displayGroup">
+          <h3 class="displayGroupTitle">Layout</h3>
+          <p class="displayGroupHint">How the board is arranged on the wall.</p>
+          <div class="displayGrid displayGrid--2">
+            <label class="field">
+              <span class="label">Screen</span>
+              <select
+                class="input"
+                [(ngModel)]="screenLayout"
+                name="screenLayout"
+                title="Landscape: wall display. Portrait: stacked clock, prayers, sun times, and date."
+              >
+                <option *ngFor="let o of screenLayoutOptions" [ngValue]="o.value">{{ o.label }}</option>
+              </select>
+            </label>
 
-        <label class="field">
-          <span class="label">Night mode</span>
-          <select
-            class="input"
-            [(ngModel)]="nightMode"
-            name="nightMode"
-            title="Dark, dim display for a bedroom. Automatic uses your location's sunset and sunrise."
-          >
-            <option *ngFor="let n of nightModeOptions" [ngValue]="n.value">{{ n.label }}</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span class="label">Simple / Sleep layout</span>
-          <select
-            class="input"
-            [(ngModel)]="sleepMode"
-            name="sleepMode"
-            title="Sleep only: sparse bedroom layout from 15 minutes after Isha until sunrise. Always: same simple big-clock layout all day — day colors until sunset, then night colors overnight."
-          >
-            <option *ngFor="let option of sleepModeOptions" [ngValue]="option.value">{{ option.label }}</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span class="label">Do not pray alert</span>
-          <select
-            class="input"
-            [(ngModel)]="prayerBanAlert"
-            name="prayerBanAlert"
-            title="During the three classical prohibited times (after sunrise, around midday before Dhuhr, and before Maghrib), show a large 'do not pray' message on the full layout and on the Sleep / Always simple layout."
-          >
-            <option [ngValue]="true">On — show during prohibited times</option>
-            <option [ngValue]="false">Off</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span class="label">Day background</span>
-          <select
-            class="input"
-            [(ngModel)]="dayBackground"
-            name="dayBackground"
-            title="Board background for daytime and Always-simple until sunset. Pair with Day clock color."
-          >
-            <option *ngFor="let c of dayBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span class="label">Day clock color</span>
-          <select
-            class="input"
-            [(ngModel)]="dayClockColor"
-            name="dayClockColor"
-            title="Color of all times in the normal day layout, and for Always-simple layout from sunrise until sunset."
-          >
-            <option *ngFor="let c of dayClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span class="label">Night background</span>
-          <select
-            class="input"
-            [(ngModel)]="nightBackground"
-            name="nightBackground"
-            title="Board background for night layout, Sleep overnight, and Always-simple after sunset. Pair with Night clock color."
-          >
-            <option *ngFor="let c of nightBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span class="label">Night clock color</span>
-          <select
-            class="input"
-            [(ngModel)]="nightClockColor"
-            name="nightClockColor"
-            title="Dark layout, Sleep overnight, and Always-simple after sunset: clock, prayers, countdown, sunrise/sunset."
-          >
-            <option *ngFor="let c of nightClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span class="label">Hourly color fun</span>
-          <select
-            class="input"
-            [(ngModel)]="colorRotation"
-            name="colorRotation"
-            title="Cycles through the color palette every hour. Uses day colors by day and night colors at night. Starts from your chosen color above."
-          >
-            <option *ngFor="let option of colorRotationOptions" [ngValue]="option.value">{{ option.label }}</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="panelSizingEntries">
-        <div class="clockPanelSizingEntry">
-          <p class="clockPanelSizingEntryText">
-            Fine-tune the date bar, weather, clock, countdown, and sunrise/sunset on a full-size live preview.
-          </p>
-          <button class="btn secondary" type="button" (click)="openClockSizingStudio()">
-            Adjust clock panel sizes…
-          </button>
+            <label class="field">
+              <span class="label">Clock side</span>
+              <select
+                class="input"
+                [(ngModel)]="panelLeft"
+                name="panelLeft"
+                title="Landscape only — which side shows the clock and prayer grid."
+              >
+                <option [ngValue]="true">Left</option>
+                <option [ngValue]="false">Right</option>
+              </select>
+            </label>
+          </div>
         </div>
-        <div class="clockPanelSizingEntry">
-          <p class="clockPanelSizingEntryText">
-            Size the Sleep / Always simple layout clock, countdown, and fact cards separately.
-          </p>
-          <button class="btn secondary" type="button" (click)="openSleepSizingStudio()">
-            Adjust Sleep mode sizes…
-          </button>
+
+        <div class="displayGroup">
+          <h3 class="displayGroupTitle">Modes</h3>
+          <p class="displayGroupHint">Dark theme, sparse bedroom clock, and prayer alerts.</p>
+          <div class="displayGrid displayGrid--3">
+            <label class="field">
+              <span class="label">Night mode</span>
+              <select
+                class="input"
+                [(ngModel)]="nightMode"
+                name="nightMode"
+                title="Dark, dim display for a bedroom. Automatic uses your location's sunset and sunrise."
+              >
+                <option *ngFor="let n of nightModeOptions" [ngValue]="n.value">{{ n.label }}</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="label">Simple layout</span>
+              <select
+                class="input"
+                [(ngModel)]="sleepMode"
+                name="sleepMode"
+                title="Sleep only: sparse bedroom layout from 15 minutes after Isha until sunrise. Always: same simple big-clock layout all day — day colors until sunset, then night colors overnight."
+              >
+                <option *ngFor="let option of sleepModeOptions" [ngValue]="option.value">{{ option.label }}</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="label">Do not pray</span>
+              <select
+                class="input"
+                [(ngModel)]="prayerBanAlert"
+                name="prayerBanAlert"
+                title="During the three classical prohibited times (after sunrise, around midday before Dhuhr, and before Maghrib), show a large 'do not pray' message."
+              >
+                <option [ngValue]="true">On</option>
+                <option [ngValue]="false">Off</option>
+              </select>
+            </label>
+          </div>
         </div>
-        <div class="clockPanelSizingEntry">
-          <p class="clockPanelSizingEntryText">
-            Fine-tune prayer names, prayer times, and column labels on a full-size live preview.
-          </p>
-          <button class="btn secondary" type="button" (click)="openPrayerSizingStudio()">
-            Adjust prayer panel sizes…
-          </button>
+
+        <div class="displayGroup">
+          <h3 class="displayGroupTitle">Day look</h3>
+          <p class="displayGroupHint">Sunrise → sunset (and Always-simple daytime).</p>
+          <div class="displayGrid displayGrid--2">
+            <label class="field">
+              <span class="label">Background</span>
+              <select
+                class="input"
+                [(ngModel)]="dayBackground"
+                name="dayBackground"
+                title="Board background for daytime and Always-simple until sunset."
+              >
+                <option *ngFor="let c of dayBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="label">Clock color</span>
+              <select
+                class="input"
+                [(ngModel)]="dayClockColor"
+                name="dayClockColor"
+                title="Color of times in the day layout, and Always-simple from sunrise until sunset."
+              >
+                <option *ngFor="let c of dayClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="displayGroup">
+          <h3 class="displayGroupTitle">Night look</h3>
+          <p class="displayGroupHint">After sunset, Sleep overnight, and Always-simple overnight.</p>
+          <div class="displayGrid displayGrid--3">
+            <label class="field">
+              <span class="label">Background</span>
+              <select
+                class="input"
+                [(ngModel)]="nightBackground"
+                name="nightBackground"
+                title="Board background for night layout, Sleep overnight, and Always-simple after sunset."
+              >
+                <option *ngFor="let c of nightBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="label">Clock color</span>
+              <select
+                class="input"
+                [(ngModel)]="nightClockColor"
+                name="nightClockColor"
+                title="Dark layout, Sleep overnight, and Always-simple after sunset."
+              >
+                <option *ngFor="let c of nightClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="label">Hourly cycle</span>
+              <select
+                class="input"
+                [(ngModel)]="colorRotation"
+                name="colorRotation"
+                title="Cycles through the color palette every hour. Uses day colors by day and night colors at night."
+              >
+                <option *ngFor="let option of colorRotationOptions" [ngValue]="option.value">{{ option.label }}</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="displayGroup displayGroup--sizes">
+          <h3 class="displayGroupTitle">Sizes</h3>
+          <p class="displayGroupHint">Open a live preview and drag sliders (saved on this device).</p>
+          <div class="sizingBtnRow">
+            <button class="btn secondary sizingBtn" type="button" (click)="openClockSizingStudio()">
+              Clock panel
+            </button>
+            <button class="btn secondary sizingBtn" type="button" (click)="openSleepSizingStudio()">
+              Simple / Sleep
+            </button>
+            <button class="btn secondary sizingBtn" type="button" (click)="openPrayerSizingStudio()">
+              Prayer panel
+            </button>
+          </div>
         </div>
       </div>
     </section>
