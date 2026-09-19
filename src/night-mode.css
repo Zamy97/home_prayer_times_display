@@ -132,6 +132,13 @@ app-home.night.clock-led .countdownTime {
   text-shadow: 0 0 10px color-mix(in srgb, var(--clock-color) 70%, transparent);
 }
 
+app-home.sleep-mode.clock-led .bedroomClock .nowMain,
+app-home.sleep-mode.clock-led .bedroomClock .seconds,
+app-home.sleep-mode.clock-led .bedroomClock .ampm,
+app-home.sleep-mode.clock-led .bedroomFactTime {
+  text-shadow: 0 0 10px color-mix(in srgb, var(--clock-color) 70%, transparent);
+}
+
 /* Countdown row */
 app-home.night .countdown {
   color: var(--amber-dim);
