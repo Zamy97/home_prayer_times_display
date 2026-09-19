@@ -667,11 +667,14 @@ app-home.sleep-mode .bedroomClock .ampm {
 app-home.sleep-mode .bedroomFacts {
   display: grid;
   position: absolute;
+  /* Keep cards in the lower half so they never collide with the clock. */
+  top: 52%;
   right: clamp(16px, 2.4vw, 36px);
   bottom: clamp(16px, 3vh, 32px);
   left: clamp(16px, 2.4vw, 36px);
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(16px, 3vw, 40px);
+  align-content: end;
   width: auto;
   max-width: none;
 }
@@ -684,25 +687,26 @@ app-home.sleep-mode .bedroomFact {
   display: grid;
   min-width: 0;
   width: 100%;
-  gap: clamp(10px, 1.8vh, 20px);
+  gap: clamp(8px, 1.4vh, 16px);
   place-items: center;
-  padding: clamp(20px, 4vh, 42px) clamp(16px, 3vw, 36px);
+  padding: clamp(16px, 3vh, 32px) clamp(14px, 2.5vw, 28px);
   border: 1px solid var(--line);
   border-radius: 1rem;
   background: color-mix(in srgb, var(--amber) 8%, #000);
 }
 
 app-home.sleep-mode .bedroomFactLabel {
-  font-size: clamp(32px, min(4vw, 5.4vh), 60px);
+  /* Modest bump over the original — readable farther away, still secondary. */
+  font-size: clamp(22px, min(2.8vw, 3.8vh), 40px);
   font-weight: 700;
   letter-spacing: 0.12em;
   opacity: 0.78;
 }
 
 app-home.sleep-mode .bedroomFactTime {
-  /* Independent Sleep mode countdown / sunrise size — readable from farther away. */
+  /* Slightly larger than the original balanced size; stays under the clock. */
   font-size: calc(
-    clamp(108px, min(15.5vw, 22vh), 230px) * var(--scale-sleep-facts, 1)
+    clamp(90px, min(12.5vw, 16vh), 168px) * var(--scale-sleep-facts, 1)
   );
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -718,14 +722,14 @@ app-home.sleep-mode .bedroomFactTime--countdown {
 
 app-home.sleep-mode .bedroomFactTime--ban {
   font-size: calc(
-    clamp(42px, min(6.5vw, 9.5vh), 88px) * var(--scale-sleep-facts, 1)
+    clamp(36px, min(5.5vw, 8vh), 72px) * var(--scale-sleep-facts, 1)
   );
   letter-spacing: 0.08em;
   animation: prayerBanPulse 1.8s ease-in-out infinite;
 }
 
 app-home.sleep-mode .bedroomFact--ban .bedroomFactLabel {
-  font-size: clamp(34px, min(5vw, 6.5vh), 68px);
+  font-size: clamp(28px, min(4.2vw, 5.5vh), 56px);
   letter-spacing: 0.12em;
   animation: prayerBanPulse 1.8s ease-in-out infinite;
 }
@@ -739,12 +743,12 @@ app-home.sleep-mode .bedroomFact--ban .bedroomFactLabel {
 
 app-home.sleep-mode .bedroomFactTime .ampm {
   display: inline-block;
-  margin-left: 0.2em;
-  font-size: 0.34em;
+  margin-left: 0.28em;
+  font-size: 0.26em;
   line-height: 1;
   letter-spacing: 0.02em;
-  opacity: 0.85;
-  vertical-align: 0.35em;
+  opacity: 0.8;
+  vertical-align: 0.4em;
   writing-mode: vertical-rl;
   text-orientation: upright;
 }
