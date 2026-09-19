@@ -189,6 +189,18 @@
         </label>
 
         <label class="field">
+          <span class="label">Day background</span>
+          <select
+            class="input"
+            [(ngModel)]="dayBackground"
+            name="dayBackground"
+            title="Board background for daytime and Always-simple until sunset. Pair with Day clock color."
+          >
+            <option *ngFor="let c of dayBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
+          </select>
+        </label>
+
+        <label class="field">
           <span class="label">Day clock color</span>
           <select
             class="input"
@@ -197,6 +209,18 @@
             title="Color of all times in the normal day layout, and for Always-simple layout from sunrise until sunset."
           >
             <option *ngFor="let c of dayClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="label">Night background</span>
+          <select
+            class="input"
+            [(ngModel)]="nightBackground"
+            name="nightBackground"
+            title="Board background for night layout, Sleep overnight, and Always-simple after sunset. Pair with Night / Sleep clock colors."
+          >
+            <option *ngFor="let c of nightBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
           </select>
         </label>
 

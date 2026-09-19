@@ -20,11 +20,11 @@ app-home.night {
   --amber-faint: color-mix(in srgb, var(--amber) 55%, transparent);
 
   --navy: color-mix(in srgb, var(--amber) 18%, #000); /* dim band behind labels / bars */
-  --panel: #000000;         /* right panel background (was beige) */
+  --panel: var(--board-bg, #000000); /* right panel background */
   --line: color-mix(in srgb, var(--amber) 14%, transparent);
   --line-dark: color-mix(in srgb, var(--amber) 12%, transparent);
   --seam: color-mix(in srgb, var(--amber) 32%, transparent);
-  --white: #000000;         /* board background (was pure white) */
+  --white: var(--board-bg, #000000); /* board background */
   --text: var(--amber);
 }
 
@@ -552,10 +552,10 @@ app-home.sleep-mode .sleepMode {
   animation: sleep-mode-enter 2.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Always-simple daytime: white board, day accent (not forced night amber). */
+/* Always-simple daytime: chosen day board + day accent. */
 app-home.sleep-mode:not(.night) .board,
 app-home.sleep-mode:not(.night) .content--sleep {
-  background: #fff;
+  background: var(--board-bg, #fff);
 }
 
 app-home.sleep-mode:not(.night) .sleepMode {

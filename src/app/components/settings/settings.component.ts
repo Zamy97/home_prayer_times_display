@@ -7,12 +7,14 @@ import {
   ClockPanelScale,
   ColorRotation,
   DayClockColor,
+  DayBackground,
   DEFAULT_CLOCK_PANEL_SCALE,
   DEFAULT_PRAYER_PANEL_SCALE,
   DEFAULT_SLEEP_MODE_SCALE,
   FajrAngleOption,
   IshaAngleOption,
   NightClockColor,
+  NightBackground,
   NightMode,
   SleepModeOption,
   PANEL_SCALE_MAX,
@@ -122,18 +124,23 @@ export class SettingsComponent implements OnInit {
     { value: 'black', label: 'Black' },
     { value: 'navy', label: 'Navy' },
     { value: 'charcoal', label: 'Charcoal' },
+    { value: 'slate', label: 'Slate' },
     { value: 'brown', label: 'Brown' },
+    { value: 'copper', label: 'Copper' },
     { value: 'amber', label: 'Amber' },
     { value: 'soft-gold', label: 'Soft gold' },
     { value: 'orange', label: 'Orange' },
     { value: 'coral', label: 'Coral' },
     { value: 'maroon', label: 'Maroon' },
+    { value: 'burgundy', label: 'Burgundy' },
     { value: 'rose', label: 'Rose' },
     { value: 'pink', label: 'Pink' },
     { value: 'hot-pink', label: 'Hot pink' },
     { value: 'lilac', label: 'Lilac' },
     { value: 'purple', label: 'Purple' },
+    { value: 'indigo', label: 'Indigo' },
     { value: 'green', label: 'Forest green' },
+    { value: 'olive', label: 'Olive' },
     { value: 'mint', label: 'Mint' },
     { value: 'teal', label: 'Teal' },
     { value: 'blue', label: 'Royal blue' },
@@ -141,43 +148,83 @@ export class SettingsComponent implements OnInit {
     { value: 'navy-blue', label: 'Navy blue' },
   ];
 
+  readonly dayBackgroundOptions: Array<{ value: DayBackground; label: string }> = [
+    { value: 'white', label: 'White' },
+    { value: 'soft-white', label: 'Soft white' },
+    { value: 'warm-cream', label: 'Warm cream' },
+    { value: 'cool-gray', label: 'Cool gray' },
+    { value: 'mist', label: 'Mist' },
+    { value: 'soft-blue', label: 'Soft blue' },
+    { value: 'soft-sage', label: 'Soft sage' },
+    { value: 'linen', label: 'Linen' },
+    { value: 'sand', label: 'Sand' },
+    { value: 'blush', label: 'Blush' },
+  ];
+
   readonly nightClockColorOptions: Array<{ value: NightClockColor; label: string }> = [
     { value: 'amber', label: 'Amber (default)' },
     { value: 'soft-gold', label: 'Soft gold' },
+    { value: 'lemon', label: 'Lemon' },
     { value: 'orange', label: 'Orange' },
+    { value: 'peach', label: 'Peach' },
     { value: 'coral', label: 'Coral' },
     { value: 'led-red', label: 'LED red (alarm clock, easy from a distance)' },
     { value: 'red', label: 'Red (softer, easier on eyes at night)' },
+    { value: 'crimson', label: 'Crimson' },
     { value: 'rose', label: 'Rose' },
     { value: 'pink', label: 'Pink' },
     { value: 'hot-pink', label: 'Hot pink (bright)' },
     { value: 'lilac', label: 'Lilac' },
+    { value: 'lavender', label: 'Lavender' },
     { value: 'purple', label: 'Purple' },
     { value: 'mint', label: 'Mint' },
+    { value: 'seafoam', label: 'Seafoam' },
     { value: 'green', label: 'Green' },
+    { value: 'emerald', label: 'Emerald' },
     { value: 'teal', label: 'Teal' },
     { value: 'sky-blue', label: 'Sky blue' },
+    { value: 'ice-blue', label: 'Ice blue' },
     { value: 'navy-blue', label: 'Navy blue' },
     { value: 'warm-white', label: 'Warm white' },
     { value: 'dim-white', label: 'Dim white' },
+  ];
+
+  readonly nightBackgroundOptions: Array<{ value: NightBackground; label: string }> = [
+    { value: 'black', label: 'Black' },
+    { value: 'deep-navy', label: 'Deep navy' },
+    { value: 'ink-blue', label: 'Ink blue' },
+    { value: 'midnight', label: 'Midnight' },
+    { value: 'charcoal', label: 'Charcoal' },
+    { value: 'graphite', label: 'Graphite' },
+    { value: 'warm-black', label: 'Warm black' },
+    { value: 'deep-brown', label: 'Deep brown' },
+    { value: 'deep-forest', label: 'Deep forest' },
+    { value: 'deep-plum', label: 'Deep plum' },
   ];
 
   readonly sleepClockColorOptions: Array<{ value: NightClockColor; label: string }> = [
     { value: 'red', label: 'Red (default — softer for bedroom)' },
     { value: 'amber', label: 'Amber' },
     { value: 'soft-gold', label: 'Soft gold' },
+    { value: 'lemon', label: 'Lemon' },
     { value: 'orange', label: 'Orange' },
+    { value: 'peach', label: 'Peach' },
     { value: 'coral', label: 'Coral' },
     { value: 'led-red', label: 'LED red (alarm clock, easy from a distance)' },
+    { value: 'crimson', label: 'Crimson' },
     { value: 'rose', label: 'Rose' },
     { value: 'pink', label: 'Pink' },
     { value: 'hot-pink', label: 'Hot pink (bright)' },
     { value: 'lilac', label: 'Lilac' },
+    { value: 'lavender', label: 'Lavender' },
     { value: 'purple', label: 'Purple' },
     { value: 'mint', label: 'Mint' },
+    { value: 'seafoam', label: 'Seafoam' },
     { value: 'green', label: 'Green' },
+    { value: 'emerald', label: 'Emerald' },
     { value: 'teal', label: 'Teal' },
     { value: 'sky-blue', label: 'Sky blue' },
+    { value: 'ice-blue', label: 'Ice blue' },
     { value: 'navy-blue', label: 'Navy blue' },
     { value: 'warm-white', label: 'Warm white' },
     { value: 'dim-white', label: 'Dim white' },
@@ -208,6 +255,8 @@ export class SettingsComponent implements OnInit {
   dayClockColor: DayClockColor = 'black';
   nightClockColor: NightClockColor = 'amber';
   sleepClockColor: NightClockColor = 'red';
+  dayBackground: DayBackground = 'white';
+  nightBackground: NightBackground = 'black';
   colorRotation: ColorRotation = 'off';
   sizingStudio: SizingStudio | null = null;
 
@@ -240,6 +289,8 @@ export class SettingsComponent implements OnInit {
     this.dayClockColor = s.dayClockColor ?? 'black';
     this.nightClockColor = s.nightClockColor ?? 'amber';
     this.sleepClockColor = s.sleepClockColor ?? 'red';
+    this.dayBackground = s.dayBackground ?? 'white';
+    this.nightBackground = s.nightBackground ?? 'black';
     this.colorRotation = s.colorRotation ?? 'off';
     const savedCityId = s.cityId ?? OTHER_CITY_ID;
     const city = savedCityId !== OTHER_CITY_ID ? CITIES.find((c) => c.id === savedCityId) : null;
@@ -460,6 +511,8 @@ export class SettingsComponent implements OnInit {
       dayClockColor: this.dayClockColor,
       nightClockColor: this.nightClockColor,
       sleepClockColor: this.sleepClockColor,
+      dayBackground: this.dayBackground,
+      nightBackground: this.nightBackground,
       colorRotation: this.colorRotation,
       cityId,
     };

@@ -30,6 +30,8 @@ describe('HomeComponent', () => {
     dayClockColor: 'black',
     nightClockColor: 'amber',
     sleepClockColor: 'red',
+    dayBackground: 'white',
+    nightBackground: 'black',
     colorRotation: 'off',
   };
 

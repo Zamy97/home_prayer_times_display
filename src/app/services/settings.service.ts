@@ -255,12 +255,17 @@ export type DayClockColor =
   | 'black'
   | 'navy'
   | 'charcoal'
+  | 'slate'
   | 'brown'
   | 'green'
+  | 'olive'
   | 'maroon'
+  | 'burgundy'
   | 'blue'
+  | 'indigo'
   | 'amber'
   | 'soft-gold'
+  | 'copper'
   | 'orange'
   | 'coral'
   | 'rose'
@@ -278,32 +283,70 @@ export type NightClockColor =
   | 'amber'
   | 'red'
   | 'led-red'
+  | 'crimson'
   | 'orange'
+  | 'peach'
   | 'warm-white'
   | 'green'
+  | 'emerald'
   | 'teal'
+  | 'seafoam'
   | 'rose'
   | 'dim-white'
+  | 'ice-blue'
   | 'sky-blue'
   | 'navy-blue'
   | 'pink'
   | 'hot-pink'
   | 'purple'
   | 'lilac'
+  | 'lavender'
   | 'mint'
   | 'coral'
-  | 'soft-gold';
+  | 'soft-gold'
+  | 'lemon';
+
+/** Light board / panel background (day + Always-simple daytime). */
+export type DayBackground =
+  | 'white'
+  | 'soft-white'
+  | 'warm-cream'
+  | 'cool-gray'
+  | 'soft-blue'
+  | 'soft-sage'
+  | 'linen'
+  | 'blush'
+  | 'sand'
+  | 'mist';
+
+/** Dark board background (night + Sleep / Always after sunset). */
+export type NightBackground =
+  | 'black'
+  | 'deep-navy'
+  | 'charcoal'
+  | 'warm-black'
+  | 'deep-forest'
+  | 'deep-plum'
+  | 'deep-brown'
+  | 'ink-blue'
+  | 'graphite'
+  | 'midnight';
 
 export const DAY_CLOCK_COLOR_HEX: Record<DayClockColor, string> = {
   black: '#111111',
   navy: '#07233c',
   charcoal: '#3a3a3a',
+  slate: '#334155',
   brown: '#5c3a21',
   green: '#1f4d2e',
+  olive: '#4a5c28',
   maroon: '#6b1c2a',
+  burgundy: '#7a1f3d',
   blue: '#1a3a6b',
+  indigo: '#3730a3',
   amber: '#9a6018',
   'soft-gold': '#8a6518',
+  copper: '#8a4b2a',
   orange: '#9a5018',
   coral: '#b04a38',
   rose: '#9a4058',
@@ -321,25 +364,60 @@ export const NIGHT_CLOCK_COLOR_HEX: Record<NightClockColor, string> = {
   amber: '#d68f47',
   red: '#b54a3c',
   'led-red': '#ff2a2a',
+  crimson: '#e04560',
   orange: '#c46a2b',
+  peach: '#e8a878',
   'warm-white': '#d4c4a8',
   green: '#4a8f5c',
+  emerald: '#3ecf8e',
   teal: '#3d8a8a',
+  seafoam: '#7ad4c0',
   rose: '#c47a8a',
   'dim-white': '#b8b8b8',
+  'ice-blue': '#a8d4f0',
   'sky-blue': '#72cce8',
   'navy-blue': '#5a8fd4',
   pink: '#e8a0c4',
   'hot-pink': '#ff6eb8',
   purple: '#9b86d8',
   lilac: '#b8a0e8',
+  lavender: '#c4b5fd',
   mint: '#6ecfb0',
   coral: '#e09078',
   'soft-gold': '#d4b870',
+  lemon: '#e8d878',
+};
+
+export const DAY_BACKGROUND_HEX: Record<DayBackground, string> = {
+  white: '#ffffff',
+  'soft-white': '#f6f6f3',
+  'warm-cream': '#f3ebe0',
+  'cool-gray': '#e8ecef',
+  'soft-blue': '#e8eef6',
+  'soft-sage': '#e6eee8',
+  linen: '#efe8dc',
+  blush: '#f3e8ea',
+  sand: '#ebe4d6',
+  mist: '#eef2f5',
+};
+
+export const NIGHT_BACKGROUND_HEX: Record<NightBackground, string> = {
+  black: '#000000',
+  'deep-navy': '#061525',
+  charcoal: '#121212',
+  'warm-black': '#0c0a08',
+  'deep-forest': '#07140e',
+  'deep-plum': '#120814',
+  'deep-brown': '#140e0a',
+  'ink-blue': '#081018',
+  graphite: '#1a1c1e',
+  midnight: '#020617',
 };
 
 const DAY_CLOCK_COLOR_VALUES = Object.keys(DAY_CLOCK_COLOR_HEX) as DayClockColor[];
 const NIGHT_CLOCK_COLOR_VALUES = Object.keys(NIGHT_CLOCK_COLOR_HEX) as NightClockColor[];
+const DAY_BACKGROUND_VALUES = Object.keys(DAY_BACKGROUND_HEX) as DayBackground[];
+const NIGHT_BACKGROUND_VALUES = Object.keys(NIGHT_BACKGROUND_HEX) as NightBackground[];
 
 function isDayClockColor(value: unknown): value is DayClockColor {
   return typeof value === 'string' && DAY_CLOCK_COLOR_VALUES.includes(value as DayClockColor);
@@ -347,6 +425,14 @@ function isDayClockColor(value: unknown): value is DayClockColor {
 
 function isNightClockColor(value: unknown): value is NightClockColor {
   return typeof value === 'string' && NIGHT_CLOCK_COLOR_VALUES.includes(value as NightClockColor);
+}
+
+function isDayBackground(value: unknown): value is DayBackground {
+  return typeof value === 'string' && DAY_BACKGROUND_VALUES.includes(value as DayBackground);
+}
+
+function isNightBackground(value: unknown): value is NightBackground {
+  return typeof value === 'string' && NIGHT_BACKGROUND_VALUES.includes(value as NightBackground);
 }
 
 /** When to cycle accent colors through the day/night palettes */
@@ -412,6 +498,10 @@ export type PrayerSettings = {
   nightClockColor: NightClockColor;
   /** Clock / accent color used only in Sleep mode (same palette as night). */
   sleepClockColor: NightClockColor;
+  /** Board background for day / Always-simple daytime. */
+  dayBackground: DayBackground;
+  /** Board background for night / Sleep / Always after sunset. */
+  nightBackground: NightBackground;
   /** Cycle accent colors every hour (day palette by day, night palette at night). */
   colorRotation: ColorRotation;
   /** id from cities list, or empty string when using "Other" / manual coords */
@@ -438,6 +528,8 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   nightClockColor: 'amber',
   // Softer than night amber — better default for a dark bedroom.
   sleepClockColor: 'red',
+  dayBackground: 'white',
+  nightBackground: 'black',
   colorRotation: 'off',
 };
 
@@ -607,6 +699,15 @@ export class SettingsService {
     return hour >= 20 || hour < 6;
   }
 
+  /** Hex board background for the current light/dark chrome. */
+  boardBackgroundHex(dark: boolean): string {
+    const s = this.getSettings();
+    if (dark) {
+      return NIGHT_BACKGROUND_HEX[s.nightBackground] ?? NIGHT_BACKGROUND_HEX.black;
+    }
+    return DAY_BACKGROUND_HEX[s.dayBackground] ?? DAY_BACKGROUND_HEX.white;
+  }
+
   /** Hex color for the clock in the current (or given) day/night/sleep state. */
   clockColorHex(
     night = this.isNightActive(),
@@ -718,6 +819,12 @@ export class SettingsService {
       sleepClockColor: isNightClockColor(parsed.sleepClockColor)
         ? parsed.sleepClockColor
         : DEFAULT_SETTINGS.sleepClockColor,
+      dayBackground: isDayBackground(parsed.dayBackground)
+        ? parsed.dayBackground
+        : DEFAULT_SETTINGS.dayBackground,
+      nightBackground: isNightBackground(parsed.nightBackground)
+        ? parsed.nightBackground
+        : DEFAULT_SETTINGS.nightBackground,
       colorRotation: isColorRotation(parsed.colorRotation)
         ? parsed.colorRotation
         : DEFAULT_SETTINGS.colorRotation,

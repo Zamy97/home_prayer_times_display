@@ -84,6 +84,12 @@ app-home {
   --pair-band-padding-y: 10px;
 }
 
+/* Day chrome follows the chosen day board background. */
+app-home:not(.night) {
+  --white: var(--board-bg, #ffffff);
+  --panel: color-mix(in srgb, var(--board-bg, #ffffff) 86%, #cfc8c0);
+}
+
 app-home * {
   box-sizing: border-box;
 }
@@ -93,7 +99,7 @@ app-home .board {
   height: 100vh;
   height: 100dvh;
   max-height: 100dvh;
-  background: var(--white);
+  background: var(--board-bg, var(--white));
   border: 0;
   box-shadow: none;
   display: flex;

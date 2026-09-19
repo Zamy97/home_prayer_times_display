@@ -218,6 +218,11 @@ export class HomeComponent implements OnInit {
     return this.settingsService.clockColorHex(this.nightActive, this.displayHour);
   }
 
+  @HostBinding('style.--board-bg')
+  get boardBackground(): string {
+    return this.settingsService.boardBackgroundHex(this.simpleLayoutUsesDarkTheme);
+  }
+
   /**
    * Time color on dark navy cells. Night/sleep use the same accent; day uses a
    * light mix so dark colors stay readable (white when the day color is black).
