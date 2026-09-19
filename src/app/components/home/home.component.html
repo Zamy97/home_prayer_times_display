@@ -96,28 +96,56 @@
           </span>
         </div>
 
-        <div class="bedroomFacts">
-          <div class="bedroomFact">
-            @if (sleepShowSunriseCountdown) {
-              <span class="bedroomFactLabel">UNTIL SUNRISE</span>
-              <span class="bedroomFactTime bedroomFactTime--countdown">{{
-                sunriseCountdown || '--:--'
-              }}</span>
-            } @else {
-              <span class="bedroomFactLabel">FAJR STARTS</span>
-              <span class="bedroomFactTime"
-                >{{ sleepFajr?.time ?? '-----'
-                }}<span class="ampm">{{ sleepFajr?.ampm }}</span></span
-              >
-            }
-          </div>
-          <div class="bedroomFact">
-            <span class="bedroomFactLabel">SUNRISE</span>
-            <span class="bedroomFactTime"
-              >{{ sleepSunrise?.time ?? '-----'
-              }}<span class="ampm">{{ sleepSunrise?.ampm }}</span></span
+        <div class="bedroomFacts" [class.bedroomFacts--ban]="showSleepPrayerBan">
+          @if (showSleepPrayerBan) {
+            <div
+              class="bedroomFact bedroomFact--ban"
+              role="status"
+              [attr.aria-label]="'Do not pray now. ' + prayerBanUntilLabel"
             >
-          </div>
+              <span class="bedroomFactLabel">DO NOT PRAY NOW</span>
+              <span class="bedroomFactTime bedroomFactTime--ban">{{
+                prayerBanUntilLabel
+              }}</span>
+            </div>
+          } @else if (sleepOvernightCards) {
+            <div class="bedroomFact">
+              @if (sleepShowSunriseCountdown) {
+                <span class="bedroomFactLabel">UNTIL SUNRISE</span>
+                <span class="bedroomFactTime bedroomFactTime--countdown">{{
+                  sunriseCountdown || '--:--'
+                }}</span>
+              } @else {
+                <span class="bedroomFactLabel">FAJR STARTS</span>
+                <span class="bedroomFactTime"
+                  >{{ sleepFajr?.time ?? '-----'
+                  }}<span class="ampm">{{ sleepFajr?.ampm }}</span></span
+                >
+              }
+            </div>
+            <div class="bedroomFact">
+              <span class="bedroomFactLabel">SUNRISE</span>
+              <span class="bedroomFactTime"
+                >{{ sleepSunrise?.time ?? '-----'
+                }}<span class="ampm">{{ sleepSunrise?.ampm }}</span></span
+              >
+            </div>
+          } @else {
+            <div class="bedroomFact">
+              <span class="bedroomFactLabel">{{ simpleLeft?.label ?? 'NEXT' }}</span>
+              <span class="bedroomFactTime"
+                >{{ simpleLeft?.time ?? '-----'
+                }}<span class="ampm">{{ simpleLeft?.ampm }}</span></span
+              >
+            </div>
+            <div class="bedroomFact">
+              <span class="bedroomFactLabel">{{ simpleRight?.label ?? 'THEN' }}</span>
+              <span class="bedroomFactTime"
+                >{{ simpleRight?.time ?? '-----'
+                }}<span class="ampm">{{ simpleRight?.ampm }}</span></span
+              >
+            </div>
+          }
         </div>
       </div>
     } @else {

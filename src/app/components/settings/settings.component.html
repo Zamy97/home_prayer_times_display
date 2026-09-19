@@ -152,25 +152,24 @@
         </label>
 
         <label class="field">
-          <span class="label">Sleep mode</span>
+          <span class="label">Simple / Sleep layout</span>
           <select
             class="input"
             [(ngModel)]="sleepMode"
             name="sleepMode"
-            title="From 15 minutes after Isha until sunrise: large clock, countdown until sunrise, and sunrise time. At sunrise, your chosen day or night layout returns."
+            title="Sleep only: sparse bedroom layout from 15 minutes after Isha until sunrise. Always: same simple big-clock layout all day, with the next prayer on the left and the one after (or sunset) on the right."
           >
-            <option [ngValue]="false">Off (full night layout)</option>
-            <option [ngValue]="true">On — after Isha until sunrise</option>
+            <option *ngFor="let option of sleepModeOptions" [ngValue]="option.value">{{ option.label }}</option>
           </select>
         </label>
 
         <label class="field">
-          <span class="label">Sleep clock color</span>
+          <span class="label">Sleep / simple clock color</span>
           <select
             class="input"
             [(ngModel)]="sleepClockColor"
             name="sleepClockColor"
-            title="Color used only in Sleep mode. Same choices as night mode, so you can pick a dimmer bedroom color without changing the regular night layout."
+            title="Color used for the sparse Sleep / Always simple layout. Same choices as night mode."
           >
             <option *ngFor="let c of sleepClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
           </select>
@@ -182,7 +181,7 @@
             class="input"
             [(ngModel)]="prayerBanAlert"
             name="prayerBanAlert"
-            title="During the three classical prohibited times (after sunrise, around midday before Dhuhr, and before Maghrib), replace the countdown and Jumu'ah area with a large 'do not pray' message."
+            title="During the three classical prohibited times (after sunrise, around midday before Dhuhr, and before Maghrib), show a large 'do not pray' message on the full layout and on the Sleep / Always simple layout."
           >
             <option [ngValue]="true">On — show during prohibited times</option>
             <option [ngValue]="false">Off</option>
@@ -237,7 +236,7 @@
         </div>
         <div class="clockPanelSizingEntry">
           <p class="clockPanelSizingEntryText">
-            Size the Sleep mode clock, sunrise countdown, and sunrise separately.
+            Size the Sleep / Always simple layout clock, countdown, and fact cards separately.
           </p>
           <button class="btn secondary" type="button" (click)="openSleepSizingStudio()">
             Adjust Sleep mode sizes…

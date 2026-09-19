@@ -356,6 +356,23 @@ function isColorRotation(value: unknown): value is ColorRotation {
   return value === 'off' || value === 'hourly';
 }
 
+/** Sparse layout: off, overnight Sleep only, or simple cards all day. */
+export type SleepModeOption = 'off' | 'sleep' | 'always';
+
+function isSleepModeOption(value: unknown): value is SleepModeOption {
+  return value === 'off' || value === 'sleep' || value === 'always';
+}
+
+function resolveSleepModeOption(parsed: {
+  sleepMode?: unknown;
+  bedroomSimpleMode?: unknown;
+}): SleepModeOption {
+  if (isSleepModeOption(parsed.sleepMode)) return parsed.sleepMode;
+  // Migrate older boolean / bedroomSimpleMode settings.
+  if (parsed.sleepMode === true || parsed.bedroomSimpleMode === true) return 'sleep';
+  return 'off';
+}
+
 export type PrayerSettings = {
   coords: { lat: number; lng: number } | null;
   method: PrayTimeMethod;
@@ -370,10 +387,12 @@ export type PrayerSettings = {
   /** When to switch to the dark night layout. Default off so existing kiosks stay light until chosen. */
   nightMode: NightMode;
   /**
-   * Optional sparse Sleep mode from 15 minutes after Isha until sunrise:
-   * big clock, Fajr start, sunrise, and countdown to sunrise.
+   * Sparse simple layout:
+   * - off: never
+   * - sleep: 15 minutes after Isha until sunrise (Fajr / sunrise cards)
+   * - always: big clock + next / following cards all day
    */
-  sleepMode: boolean;
+  sleepMode: SleepModeOption;
   /**
    * When true, replace the countdown + Jumu'ah area with a large
    * "do not pray" message during the three classical prohibited windows.
@@ -409,7 +428,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   panelLeft: true,
   nightMode: 'off',
-  sleepMode: false,
+  sleepMode: 'off',
   prayerBanAlert: true,
   sleepModeScale: { ...DEFAULT_SLEEP_MODE_SCALE },
   screenLayout: 'auto',
@@ -523,12 +542,19 @@ export class SettingsService {
   }
 
   /**
-   * Optional sparse Sleep mode: 15 minutes after Isha until sunrise.
-   * Before today's sunrise, the start was yesterday evening and is therefore
-   * already satisfied; after Isha, use today's calculated Isha instant.
+   * Sparse simple layout is showing:
+   * - always: all day
+   * - sleep: only 15 minutes after Isha until sunrise
    */
   isSleepModeActive(now = new Date()): boolean {
-    if (!this.getSettings().sleepMode) return false;
+    const mode = this.getSettings().sleepMode;
+    if (mode === 'off') return false;
+    if (mode === 'always') return true;
+    return this.isOvernightSleepWindow(now);
+  }
+
+  /** Classic overnight Sleep window only (Isha+15 → sunrise). */
+  isOvernightSleepWindow(now = new Date()): boolean {
     const t = now.getTime();
     if (this.sunriseAtMs != null && t < this.sunriseAtMs) return true;
     const fifteenMinutesAfterIsha =
@@ -657,8 +683,7 @@ export class SettingsService {
         parsed.nightMode === 'off' || parsed.nightMode === 'on' || parsed.nightMode === 'auto'
           ? parsed.nightMode
           : DEFAULT_SETTINGS.nightMode,
-      // Migrate the short-lived bedroomSimpleMode setting without losing the user's choice.
-      sleepMode: parsed.sleepMode === true || parsed.bedroomSimpleMode === true,
+      sleepMode: resolveSleepModeOption(parsed),
       // Default on for existing installs that never had this key.
       prayerBanAlert: parsed.prayerBanAlert !== false,
       sleepModeScale: resolveSleepModeScale(parsed),

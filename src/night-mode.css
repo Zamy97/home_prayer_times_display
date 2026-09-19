@@ -626,6 +626,10 @@ app-home.sleep-mode .bedroomFacts {
   max-width: none;
 }
 
+app-home.sleep-mode .bedroomFacts--ban {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 app-home.sleep-mode .bedroomFact {
   display: grid;
   min-width: 0;
@@ -660,6 +664,27 @@ app-home.sleep-mode .bedroomFactTime {
 app-home.sleep-mode .bedroomFactTime--countdown {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
+}
+
+app-home.sleep-mode .bedroomFactTime--ban {
+  font-size: calc(
+    clamp(36px, min(5.5vw, 8vh), 72px) * var(--scale-sleep-facts, 1)
+  );
+  letter-spacing: 0.08em;
+  animation: prayerBanPulse 1.8s ease-in-out infinite;
+}
+
+app-home.sleep-mode .bedroomFact--ban .bedroomFactLabel {
+  font-size: clamp(28px, min(4.2vw, 5.5vh), 56px);
+  letter-spacing: 0.12em;
+  animation: prayerBanPulse 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  app-home.sleep-mode .bedroomFactTime--ban,
+  app-home.sleep-mode .bedroomFact--ban .bedroomFactLabel {
+    animation: none;
+  }
 }
 
 app-home.sleep-mode .bedroomFactTime .ampm {

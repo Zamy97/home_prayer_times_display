@@ -21,7 +21,7 @@ describe('HomeComponent', () => {
     timezone: 'America/Detroit',
     panelLeft: true,
     nightMode: 'off',
-    sleepMode: false,
+    sleepMode: 'off',
     prayerBanAlert: true,
     sleepModeScale: { clock: 1, clockDouble: 1, facts: 1 },
     screenLayout: 'landscape',

@@ -14,6 +14,7 @@ import {
   IshaAngleOption,
   NightClockColor,
   NightMode,
+  SleepModeOption,
   PANEL_SCALE_MAX,
   PANEL_SCALE_MIN,
   PANEL_SCALE_STEP,
@@ -75,6 +76,12 @@ export class SettingsComponent implements OnInit {
     { value: 'off', label: 'Off (normal / light)' },
   ];
 
+  readonly sleepModeOptions: Array<{ value: SleepModeOption; label: string }> = [
+    { value: 'off', label: 'Off (full prayer grid)' },
+    { value: 'sleep', label: 'Sleep only — after Isha until sunrise' },
+    { value: 'always', label: 'Always — simple layout all day' },
+  ];
+
   readonly colorRotationOptions: Array<{ value: ColorRotation; label: string }> = [
     { value: 'off', label: 'Off — keep chosen colors' },
     { value: 'hourly', label: 'Every hour — cycle through colors' },
@@ -98,7 +105,7 @@ export class SettingsComponent implements OnInit {
   readonly sleepModeScaleOptions: Array<{ key: keyof SleepModeScale; label: string }> = [
     { key: 'clock', label: 'Sleep clock (1–9)' },
     { key: 'clockDouble', label: 'Sleep clock (10–12)' },
-    { key: 'facts', label: 'Countdown & sunrise' },
+    { key: 'facts', label: 'Fact cards (prayer / sunrise)' },
   ];
 
   readonly prayerPanelScaleOptions: Array<{ key: keyof PrayerPanelScale; label: string }> = [
@@ -192,7 +199,7 @@ export class SettingsComponent implements OnInit {
   /** true = clock/date panel on left */
   panelLeft = true;
   nightMode: NightMode = 'off';
-  sleepMode = false;
+  sleepMode: SleepModeOption = 'off';
   prayerBanAlert = true;
   screenLayout: ScreenLayout = 'auto';
   clockPanelScale: ClockPanelScale = { ...DEFAULT_CLOCK_PANEL_SCALE };
@@ -224,7 +231,7 @@ export class SettingsComponent implements OnInit {
     this.lng = s.coords?.lng?.toString() ?? '';
     this.panelLeft = s.panelLeft ?? true;
     this.nightMode = s.nightMode ?? 'off';
-    this.sleepMode = s.sleepMode === true;
+    this.sleepMode = s.sleepMode ?? 'off';
     this.prayerBanAlert = s.prayerBanAlert !== false;
     this.screenLayout = s.screenLayout ?? 'auto';
     this.clockPanelScale = { ...(s.clockPanelScale ?? DEFAULT_CLOCK_PANEL_SCALE) };

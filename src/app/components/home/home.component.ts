@@ -64,8 +64,17 @@ export class HomeComponent implements OnInit {
   }
   /** True while the dark night layout is active (always, or auto between sunset and sunrise). */
   nightActive = false;
-  /** Sparse Sleep mode (15 minutes after Isha → sunrise) when enabled in settings. */
+  /** Sparse Sleep / Always simple layout is showing. */
   sleepModeActive = false;
+  /**
+   * True when using classic overnight Sleep cards (Fajr / sunrise countdown),
+   * not the all-day next/following prayer cards.
+   */
+  sleepOvernightCards = false;
+  /** Always-simple left card: upcoming prayer (or event). */
+  simpleLeft: { label: string; time: string; ampm: string } | null = null;
+  /** Always-simple right card: following prayer / sunset / etc. */
+  simpleRight: { label: string; time: string; ampm: string } | null = null;
   /**
    * Classical prohibited-prayer window is active (sunrise / zawal / pre-Maghrib).
    * UI swaps countdown + Jumu'ah for a large message when showPrayerBan is true.
@@ -73,11 +82,20 @@ export class HomeComponent implements OnInit {
   prayerBanActive = false;
   /** Secondary line, e.g. "UNTIL 7:32 AM" or "UNTIL DHUHR". */
   prayerBanUntilLabel = '';
-  /** Show ban panel only when allowed by settings and not covered by sleep/announce. */
+  /** Ban panel on the full prayer-grid layout (not while simple layout is active). */
   get showPrayerBan(): boolean {
     return (
       this.prayerBanActive &&
       !this.sleepModeActive &&
+      this.announcingPrayer == null &&
+      this.settings.prayerBanAlert !== false
+    );
+  }
+  /** Ban message inside the sparse Sleep / Always layout. */
+  get showSleepPrayerBan(): boolean {
+    return (
+      this.sleepModeActive &&
+      this.prayerBanActive &&
       this.announcingPrayer == null &&
       this.settings.prayerBanAlert !== false
     );
@@ -793,34 +811,117 @@ export class HomeComponent implements OnInit {
     document.documentElement.classList.toggle('night', this.nightActive || this.sleepModeActive);
   }
 
-  /** Sparse Sleep mode from 15 minutes after Isha until sunrise (optional setting). */
+  /** Sparse Sleep / Always simple layout. */
   private updateSleepMode(now: Date): void {
     this.sleepModeActive =
       this.forceSleepPreview || this.settingsService.isSleepModeActive(now);
+    this.sleepOvernightCards =
+      this.forceSleepPreview ||
+      (this.settings.sleepMode === 'sleep' &&
+        this.settingsService.isOvernightSleepWindow(now));
+
     if (!this.sleepModeActive) {
       this.sunriseCountdown = '';
       this.sleepShowSunriseCountdown = false;
+      this.simpleLeft = null;
+      this.simpleRight = null;
       return;
     }
 
+    if (this.sleepOvernightCards) {
+      this.simpleLeft = null;
+      this.simpleRight = null;
+      const nowMs = now.getTime();
+      const fajrAt = this.resolveSleepFajrAtMs(now);
+      const countdownStartsAt =
+        fajrAt == null ? null : fajrAt + this.sleepCountdownAfterFajrMs;
+      this.sleepShowSunriseCountdown =
+        countdownStartsAt != null && nowMs >= countdownStartsAt;
+
+      if (!this.sleepShowSunriseCountdown) {
+        this.sunriseCountdown = '';
+        return;
+      }
+
+      const targetSunrise = this.resolveSleepSunriseAtMs(now);
+      if (targetSunrise == null) {
+        this.sunriseCountdown = '';
+        return;
+      }
+      this.sunriseCountdown = this.formatHoursMinutes(targetSunrise - nowMs);
+      return;
+    }
+
+    this.sunriseCountdown = '';
+    this.sleepShowSunriseCountdown = false;
+    this.updateSimpleLayoutCards(now);
+  }
+
+  /**
+   * Always-simple cards: left = next event, right = the one after.
+   * Sequence: Fajr → Dhuhr → Asr → Sunset → Maghrib (if distinct) → Isha → tomorrow Fajr.
+   */
+  private updateSimpleLayoutCards(now: Date): void {
+    const events = this.buildSimpleLayoutEvents(now);
     const nowMs = now.getTime();
-    const fajrAt = this.resolveSleepFajrAtMs(now);
-    const countdownStartsAt =
-      fajrAt == null ? null : fajrAt + this.sleepCountdownAfterFajrMs;
-    this.sleepShowSunriseCountdown =
-      countdownStartsAt != null && nowMs >= countdownStartsAt;
+    let index = events.findIndex((event) => event.atMs > nowMs);
+    if (index < 0) {
+      index = Math.max(0, events.length - 2);
+    }
+    const left = events[index] ?? null;
+    const right = events[index + 1] ?? null;
+    this.simpleLeft = left
+      ? { label: left.label, time: left.time, ampm: left.ampm }
+      : null;
+    this.simpleRight = right
+      ? { label: right.label, time: right.time, ampm: right.ampm }
+      : null;
+  }
 
-    if (!this.sleepShowSunriseCountdown) {
-      this.sunriseCountdown = '';
-      return;
+  private buildSimpleLayoutEvents(now: Date): Array<{
+    label: string;
+    time: string;
+    ampm: string;
+    atMs: number;
+  }> {
+    const events: Array<{ label: string; time: string; ampm: string; atMs: number }> = [];
+    const push = (
+      label: string,
+      split: { time: string; ampm: string } | null | undefined,
+      atMs: number | null | undefined
+    ) => {
+      if (!split || atMs == null) return;
+      events.push({ label, time: split.time, ampm: split.ampm, atMs });
+    };
+
+    push('FAJR', this.times?.fajr, this.prayerInstants.fajr);
+    push('DHUHR', this.times?.dhuhr, this.prayerInstants.dhuhr);
+    push('ASR', this.times?.asr, this.prayerInstants.asr);
+    push('SUNSET', this.sunset, this.sunsetAtMs);
+
+    const maghribAt = this.prayerInstants.maghrib ?? null;
+    const sunsetAt = this.sunsetAtMs;
+    const maghribDistinct =
+      maghribAt != null &&
+      sunsetAt != null &&
+      Math.abs(maghribAt - sunsetAt) > 60_000;
+    if (maghribDistinct) {
+      push('MAGHRIB', this.times?.maghrib, maghribAt);
     }
 
-    const targetSunrise = this.resolveSleepSunriseAtMs(now);
-    if (targetSunrise == null) {
-      this.sunriseCountdown = '';
-      return;
+    push('ISHA', this.times?.isha, this.prayerInstants.isha);
+
+    this.ensureTomorrowSunTimes(now);
+    if (this.tomorrowFajr && this.tomorrowFajrAtMs != null) {
+      events.push({
+        label: 'FAJR',
+        time: this.tomorrowFajr.time,
+        ampm: this.tomorrowFajr.ampm,
+        atMs: this.tomorrowFajrAtMs,
+      });
     }
-    this.sunriseCountdown = this.formatHoursMinutes(targetSunrise - nowMs);
+
+    return events;
   }
 
   /** Fajr instant for the current Sleep session (tonight → tomorrow Fajr, or today's morning Fajr). */
