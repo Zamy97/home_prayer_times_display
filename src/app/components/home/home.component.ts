@@ -94,7 +94,10 @@ export class HomeComponent implements OnInit {
   /** Bright alarm-clock LED red: extra glow so it reads from across the room. */
   @HostBinding('class.clock-led')
   get clockLed(): boolean {
-    return (this.nightActive || this.sleepModeActive) && this.settings.nightClockColor === 'led-red';
+    if (this.sleepModeActive) {
+      return this.settings.sleepClockColor === 'led-red';
+    }
+    return this.nightActive && this.settings.nightClockColor === 'led-red';
   }
   /** User-controlled size multipliers for the clock panel (from settings). */
   @HostBinding('style.--scale-date')
@@ -156,19 +159,25 @@ export class HomeComponent implements OnInit {
   get scalePrayerLabel(): string {
     return String(this.settings.prayerPanelScale?.labels ?? 1);
   }
-  /** Chosen clock color for the current day/night layout. */
+  /** Chosen clock color for the current day / night / sleep layout. */
   @HostBinding('style.--clock-color')
   get clockColor(): string {
-    return this.settingsService.clockColorHex(this.nightActive || this.sleepModeActive, this.displayHour);
+    if (this.sleepModeActive) {
+      return this.settingsService.clockColorHex(true, this.displayHour, true);
+    }
+    return this.settingsService.clockColorHex(this.nightActive, this.displayHour);
   }
 
   /**
-   * Time color on dark navy cells. Night uses the same accent; day uses a
+   * Time color on dark navy cells. Night/sleep use the same accent; day uses a
    * light mix so dark colors stay readable (white when the day color is black).
    */
   @HostBinding('style.--clock-on-dark')
   get clockOnDark(): string {
-    return this.settingsService.clockOnDarkHex(this.nightActive || this.sleepModeActive, this.displayHour);
+    if (this.sleepModeActive) {
+      return this.settingsService.clockOnDarkHex(true, this.displayHour, true);
+    }
+    return this.settingsService.clockOnDarkHex(this.nightActive, this.displayHour);
   }
   /** Current temperature in °F; null only if never fetched successfully */
   currentTempF: number | null = null;

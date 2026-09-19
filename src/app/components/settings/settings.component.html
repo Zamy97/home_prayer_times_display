@@ -165,6 +165,18 @@
         </label>
 
         <label class="field">
+          <span class="label">Sleep clock color</span>
+          <select
+            class="input"
+            [(ngModel)]="sleepClockColor"
+            name="sleepClockColor"
+            title="Color used only in Sleep mode. Same choices as night mode, so you can pick a dimmer bedroom color without changing the regular night layout."
+          >
+            <option *ngFor="let c of sleepClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+          </select>
+        </label>
+
+        <label class="field">
           <span class="label">Do not pray alert</span>
           <select
             class="input"
