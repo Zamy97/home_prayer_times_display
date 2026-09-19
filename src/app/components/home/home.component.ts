@@ -37,8 +37,22 @@ export class HomeComponent implements OnInit {
   sunset: { time: string; ampm: string } | null = null;
   private tomorrowFajr: { time: string; ampm: string } | null = null;
   private tomorrowSunrise: { time: string; ampm: string } | null = null;
-  /** Hours:minutes remaining until sunrise while Sleep mode is showing. */
+  /** Hours:minutes remaining until sunrise (only after Fajr + 15 minutes). */
   sunriseCountdown = '';
+  /**
+   * True once we are 15 minutes past the sleep-session Fajr — then the left
+   * card switches from Fajr start to the until-sunrise countdown.
+   */
+  sleepShowSunriseCountdown = false;
+  get sleepFajr(): { time: string; ampm: string } | null {
+    const now = Date.now();
+    // Until sunrise, keep showing today's Fajr (before or after it starts).
+    if (this.sunriseAtMs != null && now < this.sunriseAtMs) {
+      return this.times?.fajr ?? null;
+    }
+    // Evening Sleep window: show tomorrow morning's Fajr.
+    return this.tomorrowFajr ?? (this.forceSleepPreview ? this.times?.fajr ?? null : null);
+  }
   get sleepSunrise(): { time: string; ampm: string } | null {
     const now = Date.now();
     // Until sunrise, keep showing today's sunrise time.
@@ -222,6 +236,8 @@ export class HomeComponent implements OnInit {
   private readonly sunriseBanMs = 15 * 60 * 1000;
   private readonly zawalBeforeDhuhrMs = 10 * 60 * 1000;
   private readonly maghribBanMs = 15 * 60 * 1000;
+  /** Delay after Fajr before Sleep mode switches to the until-sunrise countdown. */
+  private readonly sleepCountdownAfterFajrMs = 15 * 60 * 1000;
   /** Skip the 30s “it’s time” banner on first compute / settings reload. */
   private skipNextAnnounce = true;
   private announceHoldUntilMs = 0;
@@ -783,6 +799,19 @@ export class HomeComponent implements OnInit {
       this.forceSleepPreview || this.settingsService.isSleepModeActive(now);
     if (!this.sleepModeActive) {
       this.sunriseCountdown = '';
+      this.sleepShowSunriseCountdown = false;
+      return;
+    }
+
+    const nowMs = now.getTime();
+    const fajrAt = this.resolveSleepFajrAtMs(now);
+    const countdownStartsAt =
+      fajrAt == null ? null : fajrAt + this.sleepCountdownAfterFajrMs;
+    this.sleepShowSunriseCountdown =
+      countdownStartsAt != null && nowMs >= countdownStartsAt;
+
+    if (!this.sleepShowSunriseCountdown) {
+      this.sunriseCountdown = '';
       return;
     }
 
@@ -791,7 +820,17 @@ export class HomeComponent implements OnInit {
       this.sunriseCountdown = '';
       return;
     }
-    this.sunriseCountdown = this.formatHoursMinutes(targetSunrise - now.getTime());
+    this.sunriseCountdown = this.formatHoursMinutes(targetSunrise - nowMs);
+  }
+
+  /** Fajr instant for the current Sleep session (tonight → tomorrow Fajr, or today's morning Fajr). */
+  private resolveSleepFajrAtMs(now: Date): number | null {
+    const nowMs = now.getTime();
+    if (this.sunriseAtMs != null && nowMs < this.sunriseAtMs) {
+      return this.prayerInstants.fajr ?? null;
+    }
+    this.ensureTomorrowSunTimes(now);
+    return this.tomorrowFajrAtMs;
   }
 
   /**

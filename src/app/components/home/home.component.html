@@ -98,10 +98,18 @@
 
         <div class="bedroomFacts">
           <div class="bedroomFact">
-            <span class="bedroomFactLabel">UNTIL SUNRISE</span>
-            <span class="bedroomFactTime bedroomFactTime--countdown">{{
-              sunriseCountdown || '--:--'
-            }}</span>
+            @if (sleepShowSunriseCountdown) {
+              <span class="bedroomFactLabel">UNTIL SUNRISE</span>
+              <span class="bedroomFactTime bedroomFactTime--countdown">{{
+                sunriseCountdown || '--:--'
+              }}</span>
+            } @else {
+              <span class="bedroomFactLabel">FAJR STARTS</span>
+              <span class="bedroomFactTime"
+                >{{ sleepFajr?.time ?? '-----'
+                }}<span class="ampm">{{ sleepFajr?.ampm }}</span></span
+              >
+            }
           </div>
           <div class="bedroomFact">
             <span class="bedroomFactLabel">SUNRISE</span>
