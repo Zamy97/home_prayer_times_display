@@ -562,6 +562,23 @@ export class SettingsService {
     return fifteenMinutesAfterIsha != null && t >= fifteenMinutesAfterIsha;
   }
 
+  /**
+   * True between today's sunrise and sunset (inclusive of daytime).
+   * Used by Always-simple layout so daytime stays light until sunset.
+   */
+  isDaytimeBySun(now = new Date()): boolean {
+    const nowMs = now.getTime();
+    if (
+      this.sunriseAtMs != null &&
+      this.sunsetAtMs != null &&
+      new Date(this.sunriseAtMs).toDateString() === now.toDateString()
+    ) {
+      return nowMs >= this.sunriseAtMs && nowMs < this.sunsetAtMs;
+    }
+    const hour = now.getHours();
+    return hour >= 6 && hour < 18;
+  }
+
   /** Dark theme for home or settings — night mode and/or Sleep mode. */
   isNightLayoutActive(now = new Date()): boolean {
     return this.isNightActive(now) || this.isSleepModeActive(now);

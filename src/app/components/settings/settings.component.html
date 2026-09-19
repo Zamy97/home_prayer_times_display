@@ -157,7 +157,7 @@
             class="input"
             [(ngModel)]="sleepMode"
             name="sleepMode"
-            title="Sleep only: sparse bedroom layout from 15 minutes after Isha until sunrise. Always: same simple big-clock layout all day, with the next prayer on the left and the one after (or sunset) on the right."
+            title="Sleep only: sparse bedroom layout from 15 minutes after Isha until sunrise. Always: same simple big-clock layout all day — light/day colors until sunset, then Sleep / night colors overnight."
           >
             <option *ngFor="let option of sleepModeOptions" [ngValue]="option.value">{{ option.label }}</option>
           </select>
@@ -169,7 +169,7 @@
             class="input"
             [(ngModel)]="sleepClockColor"
             name="sleepClockColor"
-            title="Color used for the sparse Sleep / Always simple layout. Same choices as night mode."
+            title="Color used for Sleep-only overnight, and for Always-simple after sunset until sunrise. Same choices as night mode."
           >
             <option *ngFor="let c of sleepClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
           </select>
@@ -194,7 +194,7 @@
             class="input"
             [(ngModel)]="dayClockColor"
             name="dayClockColor"
-            title="Color of all times in the normal layout: clock, prayers, jumu'ah, sunrise/sunset."
+            title="Color of all times in the normal day layout, and for Always-simple layout from sunrise until sunset."
           >
             <option *ngFor="let c of dayClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
           </select>

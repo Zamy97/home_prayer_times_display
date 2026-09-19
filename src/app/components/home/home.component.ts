@@ -102,11 +102,24 @@ export class HomeComponent implements OnInit {
   }
   @HostBinding('class.night')
   get nightLayoutClass(): boolean {
-    return this.nightActive || this.sleepModeActive;
+    return this.simpleLayoutUsesDarkTheme;
   }
   @HostBinding('class.sleep-mode')
   get sleepModeClass(): boolean {
     return this.sleepModeActive;
+  }
+  /**
+   * Dark chrome for the sparse layout / night grid.
+   * Always-simple stays light from sunrise→sunset, then uses night/sleep colors.
+   * Classic Sleep-only overnight is always dark while active.
+   */
+  get simpleLayoutUsesDarkTheme(): boolean {
+    if (this.sleepModeActive) {
+      if (this.sleepOvernightCards) return true;
+      // Always mode: follow the sun, not the Night mode toggle.
+      return !this.settingsService.isDaytimeBySun();
+    }
+    return this.nightActive;
   }
   /** Enables slow color fades after the first paint so load isn't animated. */
   @HostBinding('class.theme-ready') themeReady = false;
@@ -126,10 +139,11 @@ export class HomeComponent implements OnInit {
   /** Bright alarm-clock LED red: extra glow so it reads from across the room. */
   @HostBinding('class.clock-led')
   get clockLed(): boolean {
+    if (!this.simpleLayoutUsesDarkTheme) return false;
     if (this.sleepModeActive) {
       return this.settings.sleepClockColor === 'led-red';
     }
-    return this.nightActive && this.settings.nightClockColor === 'led-red';
+    return this.settings.nightClockColor === 'led-red';
   }
   /** User-controlled size multipliers for the clock panel (from settings). */
   @HostBinding('style.--scale-date')
@@ -195,7 +209,11 @@ export class HomeComponent implements OnInit {
   @HostBinding('style.--clock-color')
   get clockColor(): string {
     if (this.sleepModeActive) {
-      return this.settingsService.clockColorHex(true, this.displayHour, true);
+      if (this.simpleLayoutUsesDarkTheme) {
+        return this.settingsService.clockColorHex(true, this.displayHour, true);
+      }
+      // Always-simple daytime: use the day color palette (black, navy, …).
+      return this.settingsService.clockColorHex(false, this.displayHour, false);
     }
     return this.settingsService.clockColorHex(this.nightActive, this.displayHour);
   }
@@ -207,7 +225,10 @@ export class HomeComponent implements OnInit {
   @HostBinding('style.--clock-on-dark')
   get clockOnDark(): string {
     if (this.sleepModeActive) {
-      return this.settingsService.clockOnDarkHex(true, this.displayHour, true);
+      if (this.simpleLayoutUsesDarkTheme) {
+        return this.settingsService.clockOnDarkHex(true, this.displayHour, true);
+      }
+      return this.settingsService.clockOnDarkHex(false, this.displayHour, false);
     }
     return this.settingsService.clockOnDarkHex(this.nightActive, this.displayHour);
   }
@@ -808,7 +829,7 @@ export class HomeComponent implements OnInit {
     this.nightModeInitialized = true;
     this.nightActive = active;
     this.updateSleepMode(now);
-    document.documentElement.classList.toggle('night', this.nightActive || this.sleepModeActive);
+    document.documentElement.classList.toggle('night', this.simpleLayoutUsesDarkTheme);
   }
 
   /** Sparse Sleep / Always simple layout. */
