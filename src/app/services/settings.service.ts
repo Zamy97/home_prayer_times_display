@@ -374,6 +374,11 @@ export type PrayerSettings = {
    * big clock, Fajr start, sunrise, and countdown to sunrise.
    */
   sleepMode: boolean;
+  /**
+   * When true, replace the countdown + Jumu'ah area with a large
+   * "do not pray" message during the three classical prohibited windows.
+   */
+  prayerBanAlert: boolean;
   /** Independent typography multipliers for Sleep mode. */
   sleepModeScale: SleepModeScale;
   /** Wall vs stacked layout. Auto follows device orientation. */
@@ -403,6 +408,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   panelLeft: true,
   nightMode: 'off',
   sleepMode: false,
+  prayerBanAlert: true,
   sleepModeScale: { ...DEFAULT_SLEEP_MODE_SCALE },
   screenLayout: 'auto',
   clockPanelScale: { ...DEFAULT_CLOCK_PANEL_SCALE },
@@ -637,6 +643,8 @@ export class SettingsService {
           : DEFAULT_SETTINGS.nightMode,
       // Migrate the short-lived bedroomSimpleMode setting without losing the user's choice.
       sleepMode: parsed.sleepMode === true || parsed.bedroomSimpleMode === true,
+      // Default on for existing installs that never had this key.
+      prayerBanAlert: parsed.prayerBanAlert !== false,
       sleepModeScale: resolveSleepModeScale(parsed),
       screenLayout: isScreenLayout(parsed.screenLayout)
         ? parsed.screenLayout

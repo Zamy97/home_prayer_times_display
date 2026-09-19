@@ -172,6 +172,7 @@ export class SettingsComponent implements OnInit {
   panelLeft = true;
   nightMode: NightMode = 'off';
   sleepMode = false;
+  prayerBanAlert = true;
   screenLayout: ScreenLayout = 'auto';
   clockPanelScale: ClockPanelScale = { ...DEFAULT_CLOCK_PANEL_SCALE };
   sleepModeScale: SleepModeScale = { ...DEFAULT_SLEEP_MODE_SCALE };
@@ -202,6 +203,7 @@ export class SettingsComponent implements OnInit {
     this.panelLeft = s.panelLeft ?? true;
     this.nightMode = s.nightMode ?? 'off';
     this.sleepMode = s.sleepMode === true;
+    this.prayerBanAlert = s.prayerBanAlert !== false;
     this.screenLayout = s.screenLayout ?? 'auto';
     this.clockPanelScale = { ...(s.clockPanelScale ?? DEFAULT_CLOCK_PANEL_SCALE) };
     this.sleepModeScale = { ...(s.sleepModeScale ?? DEFAULT_SLEEP_MODE_SCALE) };
@@ -420,6 +422,7 @@ export class SettingsComponent implements OnInit {
       panelLeft: this.panelLeft,
       nightMode: this.nightMode,
       sleepMode: this.sleepMode,
+      prayerBanAlert: this.prayerBanAlert,
       screenLayout: this.screenLayout,
       clockPanelScale: { ...this.clockPanelScale },
       sleepModeScale: { ...this.sleepModeScale },

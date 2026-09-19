@@ -222,35 +222,48 @@
               </span>
             </div>
           </div>
-          <div class="countdownRow">
-            <div class="countdown">
-              @if (announcingPrayer) {
-                <span class="countdownNow">{{ announcingLabel }} NOW</span>
-                <span class="countdownDot" aria-hidden="true">·</span>
-              }
-              NEXT <span class="countdownPrayer">{{ nextPrayerLabel }}</span> IN
-              <span class="countdownTime">{{ nextPrayerCountdown || '--:--:--' }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="jumuBlock">
-          <div class="rule jumuRuleTop" aria-hidden="true"></div>
-
-          <div class="jum">
-            <p class="jumTitle">JUMU'AH</p>
-            <div class="jumGrid">
-              <div>
-                <p class="jumTime">1:30<span class="ampm">PM</span></p>
-                <p class="jumLabel">STARTS</p>
-              </div>
-              <div>
-                <p class="jumTime">2:00<span class="ampm">PM</span></p>
-                <p class="jumLabel">JUMU'AH</p>
+          @if (!showPrayerBan) {
+            <div class="countdownRow">
+              <div class="countdown">
+                @if (announcingPrayer) {
+                  <span class="countdownNow">{{ announcingLabel }} NOW</span>
+                  <span class="countdownDot" aria-hidden="true">·</span>
+                }
+                NEXT <span class="countdownPrayer">{{ nextPrayerLabel }}</span> IN
+                <span class="countdownTime">{{ nextPrayerCountdown || '--:--:--' }}</span>
               </div>
             </div>
-          </div>
+          }
         </div>
+
+        @if (showPrayerBan) {
+          <div
+            class="prayerBan"
+            role="status"
+            [attr.aria-label]="'Do not pray now. ' + prayerBanUntilLabel"
+          >
+            <div class="prayerBanTitle">DO NOT PRAY NOW</div>
+            <div class="prayerBanUntil">{{ prayerBanUntilLabel }}</div>
+          </div>
+        } @else {
+          <div class="jumuBlock">
+            <div class="rule jumuRuleTop" aria-hidden="true"></div>
+
+            <div class="jum">
+              <p class="jumTitle">JUMU'AH</p>
+              <div class="jumGrid">
+                <div>
+                  <p class="jumTime">1:30<span class="ampm">PM</span></p>
+                  <p class="jumLabel">STARTS</p>
+                </div>
+                <div>
+                  <p class="jumTime">2:00<span class="ampm">PM</span></p>
+                  <p class="jumLabel">JUMU'AH</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
 
         @if (!times?.raw && !showGeoPrompt) {
         <div class="locationNeeded">

@@ -165,6 +165,19 @@
         </label>
 
         <label class="field">
+          <span class="label">Do not pray alert</span>
+          <select
+            class="input"
+            [(ngModel)]="prayerBanAlert"
+            name="prayerBanAlert"
+            title="During the three classical prohibited times (after sunrise, around midday before Dhuhr, and before Maghrib), replace the countdown and Jumu'ah area with a large 'do not pray' message."
+          >
+            <option [ngValue]="true">On — show during prohibited times</option>
+            <option [ngValue]="false">Off</option>
+          </select>
+        </label>
+
+        <label class="field">
           <span class="label">Day clock color</span>
           <select
             class="input"

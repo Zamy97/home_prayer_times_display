@@ -839,6 +839,61 @@ app-home .countdownTime {
   font-weight: 700;
 }
 
+/* Prohibited-prayer alert — replaces countdown + Jumu'ah while active. */
+app-home .prayerBan {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 1.2vh, 14px);
+  width: 100%;
+  min-height: clamp(88px, 16vh, 168px);
+  padding: clamp(10px, 1.8vh, 20px) clamp(12px, 2vw, 24px);
+  margin: 0;
+  text-align: center;
+  box-sizing: border-box;
+  border-top: 3px solid rgba(7, 35, 60, 0.22);
+  color: var(--navy);
+  animation: prayerBanPulse 1.8s ease-in-out infinite;
+}
+
+app-home .prayerBanTitle {
+  font-family: var(--font-ui);
+  font-size: clamp(28px, min(4.6vw, 6.2vh), 64px);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+app-home .prayerBanUntil {
+  font-family: var(--font-ui);
+  font-size: clamp(18px, min(3vw, 3.8vh), 36px);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  opacity: 0.82;
+}
+
+@keyframes prayerBanPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.42;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  app-home .prayerBan {
+    animation: none;
+  }
+}
+
+
 app-home .now .nowSide {
   flex: 0 0 auto;
   flex-shrink: 0;

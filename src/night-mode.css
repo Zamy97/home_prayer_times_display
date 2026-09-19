@@ -33,6 +33,17 @@ app-home.night .jumuBlock {
   display: none;
 }
 
+/* Prohibited-prayer alert keeps amber night styling (still shows when Jumu'ah is hidden). */
+app-home.night .prayerBan {
+  border-top-color: var(--line);
+  color: var(--amber-bright, var(--amber));
+}
+
+app-home.night .prayerBanUntil {
+  color: var(--amber);
+  opacity: 0.88;
+}
+
 /* Warm, low-glow seam instead of the bright navy divider */
 app-home.night .grid {
   border-right-color: var(--seam);

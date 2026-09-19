@@ -52,6 +52,22 @@ export class HomeComponent implements OnInit {
   nightActive = false;
   /** Sparse Sleep mode (15 minutes after Isha → sunrise) when enabled in settings. */
   sleepModeActive = false;
+  /**
+   * Classical prohibited-prayer window is active (sunrise / zawal / pre-Maghrib).
+   * UI swaps countdown + Jumu'ah for a large message when showPrayerBan is true.
+   */
+  prayerBanActive = false;
+  /** Secondary line, e.g. "UNTIL 7:32 AM" or "UNTIL DHUHR". */
+  prayerBanUntilLabel = '';
+  /** Show ban panel only when allowed by settings and not covered by sleep/announce. */
+  get showPrayerBan(): boolean {
+    return (
+      this.prayerBanActive &&
+      !this.sleepModeActive &&
+      this.announcingPrayer == null &&
+      this.settings.prayerBanAlert !== false
+    );
+  }
   @HostBinding('class.night')
   get nightLayoutClass(): boolean {
     return this.nightActive || this.sleepModeActive;
@@ -194,6 +210,9 @@ export class HomeComponent implements OnInit {
   private tomorrowFajrAtMs: number | null = null;
   private tomorrowSunriseAtMs: number | null = null;
   private tomorrowFajrForDateKey: string | null = null;
+  private readonly sunriseBanMs = 15 * 60 * 1000;
+  private readonly zawalBeforeDhuhrMs = 10 * 60 * 1000;
+  private readonly maghribBanMs = 15 * 60 * 1000;
   /** Skip the 30s “it’s time” banner on first compute / settings reload. */
   private skipNextAnnounce = true;
   private announceHoldUntilMs = 0;
@@ -549,6 +568,7 @@ export class HomeComponent implements OnInit {
     this.skipNextAnnounce = true;
     this.updateNextPrayer(today);
     this.updateNightMode(today);
+    this.updatePrayerBan(today);
   }
 
   private splitTime(value: string): { time: string; ampm: string } {
@@ -709,6 +729,7 @@ export class HomeComponent implements OnInit {
     this.updateCountdown(date);
     this.tickPrayerAnnounce(date.getTime());
     this.updateNightMode(date);
+    this.updatePrayerBan(date);
   }
 
   private updateClockFromDate(date: Date): void {
@@ -762,6 +783,61 @@ export class HomeComponent implements OnInit {
       return;
     }
     this.sunriseCountdown = this.formatHoursMinutes(targetSunrise - now.getTime());
+  }
+
+  /**
+   * Three classical windows when voluntary prayer is prohibited:
+   * sunrise→+15m, Dhuhr−10m→Dhuhr, Maghrib−15m→Maghrib.
+   */
+  private updatePrayerBan(now: Date): void {
+    if (this.settings.prayerBanAlert === false) {
+      this.prayerBanActive = false;
+      this.prayerBanUntilLabel = '';
+      return;
+    }
+
+    const nowMs = now.getTime();
+    const sunrise = this.sunriseAtMs;
+    const dhuhr = this.prayerInstants.dhuhr ?? null;
+    const maghrib = this.prayerInstants.maghrib ?? null;
+
+    if (sunrise != null) {
+      const end = sunrise + this.sunriseBanMs;
+      if (nowMs >= sunrise && nowMs < end) {
+        this.prayerBanActive = true;
+        this.prayerBanUntilLabel = `UNTIL ${this.formatClockLabel(end)}`;
+        return;
+      }
+    }
+
+    if (dhuhr != null) {
+      const start = dhuhr - this.zawalBeforeDhuhrMs;
+      if (nowMs >= start && nowMs < dhuhr) {
+        this.prayerBanActive = true;
+        this.prayerBanUntilLabel = 'UNTIL DHUHR';
+        return;
+      }
+    }
+
+    if (maghrib != null) {
+      const start = maghrib - this.maghribBanMs;
+      if (nowMs >= start && nowMs < maghrib) {
+        this.prayerBanActive = true;
+        this.prayerBanUntilLabel = 'UNTIL MAGHRIB';
+        return;
+      }
+    }
+
+    this.prayerBanActive = false;
+    this.prayerBanUntilLabel = '';
+  }
+
+  private formatClockLabel(atMs: number): string {
+    const parts = this.timeFormatter.formatToParts(new Date(atMs));
+    const hour = parts.find((p) => p.type === 'hour')?.value ?? '';
+    const minute = parts.find((p) => p.type === 'minute')?.value ?? '';
+    const dayPeriod = (parts.find((p) => p.type === 'dayPeriod')?.value ?? '').toUpperCase();
+    return `${hour}:${minute} ${dayPeriod}`.trim();
   }
 
   /** Next sunrise epoch for Sleep mode (today before dawn, otherwise tomorrow). */
