@@ -693,16 +693,16 @@ app-home.sleep-mode .bedroomFact {
 }
 
 app-home.sleep-mode .bedroomFactLabel {
-  font-size: clamp(18px, min(2.3vw, 3.3vh), 34px);
+  font-size: clamp(26px, min(3.4vw, 4.6vh), 52px);
   font-weight: 700;
-  letter-spacing: 0.14em;
-  opacity: 0.72;
+  letter-spacing: 0.12em;
+  opacity: 0.78;
 }
 
 app-home.sleep-mode .bedroomFactTime {
-  /* Independent Sleep mode countdown / sunrise size. */
+  /* Independent Sleep mode countdown / sunrise size — readable from farther away. */
   font-size: calc(
-    clamp(82px, min(12vw, 17vh), 175px) * var(--scale-sleep-facts, 1)
+    clamp(108px, min(15.5vw, 22vh), 230px) * var(--scale-sleep-facts, 1)
   );
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -718,14 +718,14 @@ app-home.sleep-mode .bedroomFactTime--countdown {
 
 app-home.sleep-mode .bedroomFactTime--ban {
   font-size: calc(
-    clamp(36px, min(5.5vw, 8vh), 72px) * var(--scale-sleep-facts, 1)
+    clamp(42px, min(6.5vw, 9.5vh), 88px) * var(--scale-sleep-facts, 1)
   );
   letter-spacing: 0.08em;
   animation: prayerBanPulse 1.8s ease-in-out infinite;
 }
 
 app-home.sleep-mode .bedroomFact--ban .bedroomFactLabel {
-  font-size: clamp(28px, min(4.2vw, 5.5vh), 56px);
+  font-size: clamp(34px, min(5vw, 6.5vh), 68px);
   letter-spacing: 0.12em;
   animation: prayerBanPulse 1.8s ease-in-out infinite;
 }
@@ -739,8 +739,8 @@ app-home.sleep-mode .bedroomFact--ban .bedroomFactLabel {
 
 app-home.sleep-mode .bedroomFactTime .ampm {
   display: inline-block;
-  margin-left: 0.2em;
-  font-size: 0.34em;
+  margin-left: 0.18em;
+  font-size: 0.38em;
   line-height: 1;
   letter-spacing: 0.02em;
   opacity: 0.85;
