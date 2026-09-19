@@ -29,7 +29,6 @@ describe('HomeComponent', () => {
     prayerPanelScale: { names: 1, times: 1, labels: 1 },
     dayClockColor: 'black',
     nightClockColor: 'amber',
-    sleepClockColor: 'red',
     dayBackground: 'white',
     nightBackground: 'black',
     colorRotation: 'off',

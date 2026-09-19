@@ -110,7 +110,7 @@ export class HomeComponent implements OnInit {
   }
   /**
    * Dark chrome for the sparse layout / night grid.
-   * Always-simple stays light from sunrise→sunset, then uses night/sleep colors.
+   * Always-simple stays light from sunrise→sunset, then uses night colors.
    * Classic Sleep-only overnight is always dark while active.
    */
   get simpleLayoutUsesDarkTheme(): boolean {
@@ -140,9 +140,6 @@ export class HomeComponent implements OnInit {
   @HostBinding('class.clock-led')
   get clockLed(): boolean {
     if (!this.simpleLayoutUsesDarkTheme) return false;
-    if (this.sleepModeActive) {
-      return this.settings.sleepClockColor === 'led-red';
-    }
     return this.settings.nightClockColor === 'led-red';
   }
   /** User-controlled size multipliers for the clock panel (from settings). */
@@ -205,15 +202,14 @@ export class HomeComponent implements OnInit {
   get scalePrayerLabel(): string {
     return String(this.settings.prayerPanelScale?.labels ?? 1);
   }
-  /** Chosen clock color for the current day / night / sleep layout. */
+  /** Chosen clock color for the current day / night / simple layout. */
   @HostBinding('style.--clock-color')
   get clockColor(): string {
     if (this.sleepModeActive) {
-      if (this.simpleLayoutUsesDarkTheme) {
-        return this.settingsService.clockColorHex(true, this.displayHour, true);
-      }
-      // Always-simple daytime: use the day color palette (black, navy, …).
-      return this.settingsService.clockColorHex(false, this.displayHour, false);
+      return this.settingsService.clockColorHex(
+        this.simpleLayoutUsesDarkTheme,
+        this.displayHour
+      );
     }
     return this.settingsService.clockColorHex(this.nightActive, this.displayHour);
   }
@@ -224,16 +220,16 @@ export class HomeComponent implements OnInit {
   }
 
   /**
-   * Time color on dark navy cells. Night/sleep use the same accent; day uses a
+   * Time color on dark navy cells. Night uses the night accent; day uses a
    * light mix so dark colors stay readable (white when the day color is black).
    */
   @HostBinding('style.--clock-on-dark')
   get clockOnDark(): string {
     if (this.sleepModeActive) {
-      if (this.simpleLayoutUsesDarkTheme) {
-        return this.settingsService.clockOnDarkHex(true, this.displayHour, true);
-      }
-      return this.settingsService.clockOnDarkHex(false, this.displayHour, false);
+      return this.settingsService.clockOnDarkHex(
+        this.simpleLayoutUsesDarkTheme,
+        this.displayHour
+      );
     }
     return this.settingsService.clockOnDarkHex(this.nightActive, this.displayHour);
   }

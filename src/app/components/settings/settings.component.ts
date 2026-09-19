@@ -202,34 +202,6 @@ export class SettingsComponent implements OnInit {
     { value: 'deep-plum', label: 'Deep plum' },
   ];
 
-  readonly sleepClockColorOptions: Array<{ value: NightClockColor; label: string }> = [
-    { value: 'red', label: 'Red (default — softer for bedroom)' },
-    { value: 'amber', label: 'Amber' },
-    { value: 'soft-gold', label: 'Soft gold' },
-    { value: 'lemon', label: 'Lemon' },
-    { value: 'orange', label: 'Orange' },
-    { value: 'peach', label: 'Peach' },
-    { value: 'coral', label: 'Coral' },
-    { value: 'led-red', label: 'LED red (alarm clock, easy from a distance)' },
-    { value: 'crimson', label: 'Crimson' },
-    { value: 'rose', label: 'Rose' },
-    { value: 'pink', label: 'Pink' },
-    { value: 'hot-pink', label: 'Hot pink (bright)' },
-    { value: 'lilac', label: 'Lilac' },
-    { value: 'lavender', label: 'Lavender' },
-    { value: 'purple', label: 'Purple' },
-    { value: 'mint', label: 'Mint' },
-    { value: 'seafoam', label: 'Seafoam' },
-    { value: 'green', label: 'Green' },
-    { value: 'emerald', label: 'Emerald' },
-    { value: 'teal', label: 'Teal' },
-    { value: 'sky-blue', label: 'Sky blue' },
-    { value: 'ice-blue', label: 'Ice blue' },
-    { value: 'navy-blue', label: 'Navy blue' },
-    { value: 'warm-white', label: 'Warm white' },
-    { value: 'dim-white', label: 'Dim white' },
-  ];
-
   readonly cities = CITIES;
   readonly otherCityId = OTHER_CITY_ID;
   readonly deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -254,7 +226,6 @@ export class SettingsComponent implements OnInit {
   prayerPanelScale: PrayerPanelScale = { ...DEFAULT_PRAYER_PANEL_SCALE };
   dayClockColor: DayClockColor = 'black';
   nightClockColor: NightClockColor = 'amber';
-  sleepClockColor: NightClockColor = 'red';
   dayBackground: DayBackground = 'white';
   nightBackground: NightBackground = 'black';
   colorRotation: ColorRotation = 'off';
@@ -288,7 +259,6 @@ export class SettingsComponent implements OnInit {
     this.prayerPanelScale = { ...(s.prayerPanelScale ?? DEFAULT_PRAYER_PANEL_SCALE) };
     this.dayClockColor = s.dayClockColor ?? 'black';
     this.nightClockColor = s.nightClockColor ?? 'amber';
-    this.sleepClockColor = s.sleepClockColor ?? 'red';
     this.dayBackground = s.dayBackground ?? 'white';
     this.nightBackground = s.nightBackground ?? 'black';
     this.colorRotation = s.colorRotation ?? 'off';
@@ -510,7 +480,6 @@ export class SettingsComponent implements OnInit {
       prayerPanelScale: { ...this.prayerPanelScale },
       dayClockColor: this.dayClockColor,
       nightClockColor: this.nightClockColor,
-      sleepClockColor: this.sleepClockColor,
       dayBackground: this.dayBackground,
       nightBackground: this.nightBackground,
       colorRotation: this.colorRotation,

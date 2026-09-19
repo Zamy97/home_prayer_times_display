@@ -494,10 +494,8 @@ export type PrayerSettings = {
   prayerPanelScale: PrayerPanelScale;
   /** Clock digit color used in the light (day) layout */
   dayClockColor: DayClockColor;
-  /** Clock / accent color used in the dark (night) layout */
+  /** Clock / accent for night layout, Sleep overnight, and Always-simple after sunset. */
   nightClockColor: NightClockColor;
-  /** Clock / accent color used only in Sleep mode (same palette as night). */
-  sleepClockColor: NightClockColor;
   /** Board background for day / Always-simple daytime. */
   dayBackground: DayBackground;
   /** Board background for night / Sleep / Always after sunset. */
@@ -526,8 +524,6 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   prayerPanelScale: { ...DEFAULT_PRAYER_PANEL_SCALE },
   dayClockColor: 'black',
   nightClockColor: 'amber',
-  // Softer than night amber — better default for a dark bedroom.
-  sleepClockColor: 'red',
   dayBackground: 'white',
   nightBackground: 'black',
   colorRotation: 'off',
@@ -708,17 +704,9 @@ export class SettingsService {
     return DAY_BACKGROUND_HEX[s.dayBackground] ?? DAY_BACKGROUND_HEX.white;
   }
 
-  /** Hex color for the clock in the current (or given) day/night/sleep state. */
-  clockColorHex(
-    night = this.isNightActive(),
-    hour = new Date().getHours(),
-    sleep = false
-  ): string {
+  /** Hex color for the clock in the current (or given) day/night state. */
+  clockColorHex(night = this.isNightActive(), hour = new Date().getHours()): string {
     const s = this.getSettings();
-    // Sleep mode uses its own palette pick and stays stable (no hourly rotation).
-    if (sleep) {
-      return NIGHT_CLOCK_COLOR_HEX[s.sleepClockColor] ?? NIGHT_CLOCK_COLOR_HEX.red;
-    }
     if (s.colorRotation === 'hourly') {
       const key = this.rotatedClockColorKey(night, hour);
       if (night) {
@@ -733,15 +721,11 @@ export class SettingsService {
   }
 
   /**
-   * Time color on dark navy cells. Night/sleep use the same accent; day uses a
+   * Time color on dark navy cells. Night uses the night accent; day uses a
    * light mix so dark colors stay readable (white when the day color is black).
    */
-  clockOnDarkHex(
-    night = this.isNightActive(),
-    hour = new Date().getHours(),
-    sleep = false
-  ): string {
-    if (sleep || night) return this.clockColorHex(true, hour, sleep);
+  clockOnDarkHex(night = this.isNightActive(), hour = new Date().getHours()): string {
+    if (night) return this.clockColorHex(true, hour);
     const key = this.activeDayColorKey(hour);
     if (key === 'black') return '#ffffff';
     return `color-mix(in srgb, ${this.clockColorHex(false, hour)} 42%, #fff)`;
@@ -816,9 +800,6 @@ export class SettingsService {
       nightClockColor: isNightClockColor(parsed.nightClockColor)
         ? parsed.nightClockColor
         : DEFAULT_SETTINGS.nightClockColor,
-      sleepClockColor: isNightClockColor(parsed.sleepClockColor)
-        ? parsed.sleepClockColor
-        : DEFAULT_SETTINGS.sleepClockColor,
       dayBackground: isDayBackground(parsed.dayBackground)
         ? parsed.dayBackground
         : DEFAULT_SETTINGS.dayBackground,
