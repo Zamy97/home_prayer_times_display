@@ -474,10 +474,6 @@ html.night app-settings .displayGroupTitle {
   color: #f2a95a;
 }
 
-html.night app-settings .displayGroupHint {
-  color: rgba(212, 180, 140, 0.72);
-}
-
 html.night app-settings .footer {
   background: linear-gradient(180deg, #100c08 0%, #000 100%);
   border-top-color: rgba(214, 143, 71, 0.2);
