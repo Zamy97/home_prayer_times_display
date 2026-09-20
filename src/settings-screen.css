@@ -186,14 +186,15 @@ app-settings .displayGroup--sizes {
 app-settings .sizingBtnRow {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+  gap: 8px;
 }
 
 app-settings .sizingBtn {
   width: 100%;
   justify-content: center;
-  font-size: 0.78rem;
-  padding: 6px 8px;
+  font-size: 0.9rem;
+  padding: 11px 12px;
+  min-height: 44px;
 }
 
 app-settings .page--sizing .main,
@@ -527,22 +528,23 @@ app-settings .footer {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 8px;
-  padding: 8px clamp(14px, 2.5vw, 28px);
+  gap: 10px;
+  padding: 10px clamp(14px, 2.5vw, 28px);
   background: linear-gradient(180deg, #f5f3f1 0%, #ebe8e5 100%);
   border-top: 1px solid rgba(7, 35, 60, 0.1);
   flex-shrink: 0;
 }
 
 app-settings .btn {
-  padding: 7px 16px;
+  padding: 11px 22px;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(7, 35, 60, 0.22);
   background: #fff;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text);
+  min-height: 44px;
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
 }
 
@@ -575,7 +577,7 @@ app-settings .btn.primary {
   background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
   border-color: var(--navy);
   color: #fff;
-  min-width: 140px;
+  min-width: 168px;
   box-shadow: 0 4px 14px rgba(7, 35, 60, 0.28);
 }
 
