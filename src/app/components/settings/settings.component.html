@@ -484,6 +484,14 @@
   }
 
   <footer class="footer">
+    <button
+      class="btn secondary"
+      type="button"
+      title="Stop the full-screen kiosk so you can use the Pi desktop Wi-Fi menu. Run start-kiosk.sh or reboot to return."
+      (click)="exitToDesktop()"
+    >
+      Exit to desktop
+    </button>
     <button class="btn secondary" type="button" (click)="reloadDisplay()">
       Reload display
     </button>

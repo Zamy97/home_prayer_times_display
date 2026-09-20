@@ -76,7 +76,7 @@ else
 fi
 npm run kiosk:build
 
-chmod +x "$SCRIPT_DIR/start-kiosk.sh" "$SCRIPT_DIR/serve.py"
+chmod +x "$SCRIPT_DIR/start-kiosk.sh" "$SCRIPT_DIR/stop-kiosk.sh" "$SCRIPT_DIR/serve.py"
 mkdir -p "$AUTOSTART_DIR"
 
 cat >"$DESKTOP_FILE" <<EOF
@@ -89,12 +89,30 @@ Terminal=false
 X-GNOME-Autostart-enabled=true
 EOF
 
+# Easy click target on the desktop for stopping the kiosk (Wi-Fi setup).
+APPS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+mkdir -p "$APPS_DIR"
+cat >"$APPS_DIR/prayer-times-kiosk-stop.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Stop Prayer Times Kiosk
+Comment=Close kiosk so you can use Wi-Fi / desktop
+Exec="$SCRIPT_DIR/stop-kiosk.sh"
+Terminal=true
+Categories=Utility;
+EOF
+if [[ -d "$HOME/Desktop" ]]; then
+  cp "$APPS_DIR/prayer-times-kiosk-stop.desktop" "$HOME/Desktop/Stop Prayer Times Kiosk.desktop"
+  chmod +x "$HOME/Desktop/Stop Prayer Times Kiosk.desktop" 2>/dev/null || true
+fi
+
 install_labwc_autostart
 
 echo
 echo "Pi kiosk installed."
 echo "Desktop autostart: $DESKTOP_FILE"
 echo "It will start automatically after the next desktop login/reboot."
+echo "To leave kiosk for Wi-Fi: Settings → Exit to desktop, or: $SCRIPT_DIR/stop-kiosk.sh"
 
 if has_graphical_session; then
   echo "Desktop session detected — starting kiosk now..."

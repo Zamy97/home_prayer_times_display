@@ -446,6 +446,15 @@ export class SettingsComponent implements OnInit {
     window.location.assign('/');
   }
 
+  /** Offline Pi kiosk: leave Chromium so the desktop Wi-Fi menu is reachable. */
+  exitToDesktop(): void {
+    fetch('/__stop-kiosk')
+      .catch(() => undefined)
+      .finally(() => {
+        // Give the stop script a moment; window may close when Chromium exits.
+      });
+  }
+
   save(): void {
     let coords: PrayerSettings['coords'];
     let timezone = this.timezone;

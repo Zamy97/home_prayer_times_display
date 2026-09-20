@@ -6,7 +6,9 @@ PROJECT_DIR="$(cd -- "$SCRIPT_DIR/../.." && pwd)"
 DIST_DIR="$PROJECT_DIR/dist/home-prayer-times-display/browser"
 PORT="${PRAYER_KIOSK_PORT:-4173}"
 URL="http://127.0.0.1:$PORT/"
-PROFILE_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/prayer-times-kiosk/chromium"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/prayer-times-kiosk"
+PROFILE_DIR="$CONFIG_DIR/chromium"
+PAUSE_FILE="$CONFIG_DIR/paused"
 
 find_chromium() {
   local candidate
@@ -61,9 +63,13 @@ Fix:
   2. Reboot so the desktop starts, then the autostart entry can open Chromium
   3. Or on the Pi desktop itself (not SSH), run: scripts/pi-kiosk/start-kiosk.sh
 
-To stop a failed loop: pkill -f start-kiosk.sh ; pkill -f chromium
+To stop a failed loop: scripts/pi-kiosk/stop-kiosk.sh
 EOF
   exit 1
+}
+
+is_paused() {
+  [[ -f "$PAUSE_FILE" ]]
 }
 
 CHROMIUM="$(find_chromium || true)"
@@ -73,6 +79,9 @@ if [[ -z "$CHROMIUM" ]]; then
 fi
 
 ensure_graphical_env
+
+# Starting the kiosk clears a previous "stop" so reboot/autostart works again.
+rm -f "$PAUSE_FILE"
 
 if [[ ! -f "$DIST_DIR/index.html" ]]; then
   echo "Offline build missing; building it now..."
@@ -121,8 +130,13 @@ else:
     raise SystemExit("Local kiosk server did not start")
 PY
 
-# Restart Chromium if it ever crashes or is accidentally closed.
+# Restart Chromium after crashes — but honor stop-kiosk.sh (pause file).
 while true; do
+  if is_paused; then
+    echo "Kiosk paused ($PAUSE_FILE). Exiting so the desktop stays free."
+    exit 0
+  fi
+
   "$CHROMIUM" \
     --kiosk "$URL" \
     --app="$URL" \
@@ -134,6 +148,26 @@ while true; do
     --disable-translate \
     --overscroll-history-navigation=0 \
     --autoplay-policy=no-user-gesture-required \
-    "${OZONE_ARGS[@]}" || true
+    "${OZONE_ARGS[@]}" &
+  CHROMIUM_PID=$!
+
+  # While Chromium runs, watch for stop-kiosk (pause file).
+  while kill -0 "$CHROMIUM_PID" 2>/dev/null; do
+    if is_paused; then
+      kill "$CHROMIUM_PID" 2>/dev/null || true
+      wait "$CHROMIUM_PID" 2>/dev/null || true
+      echo "Kiosk stopped for desktop / Wi-Fi access."
+      exit 0
+    fi
+    sleep 0.4
+  done
+  wait "$CHROMIUM_PID" 2>/dev/null || true
+
+  if is_paused; then
+    echo "Kiosk paused. Exiting."
+    exit 0
+  fi
+
+  # Accidental close (Ctrl+W / Alt+F4): reopen after a short delay.
   sleep 3
 done

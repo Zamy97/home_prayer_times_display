@@ -145,11 +145,13 @@ Log file:
 tail -f ~/prayer-times-kiosk.log
 ```
 
-To stop a failed SSH start loop:
+To stop a failed SSH start loop (or leave kiosk for Wi‑Fi):
 
 ```bash
-pkill -f start-kiosk.sh ; pkill -f 'chromium|chromium-browser' || true
+~/home_prayer_times_display/scripts/pi-kiosk/stop-kiosk.sh
 ```
+
+Or in the app: hold top-left → Settings → **Exit to desktop**.
 
 #### B1.4 Configure the house in Settings
 
@@ -164,12 +166,14 @@ sudo reboot
 
 #### B1.5 Optional: take offline
 
-After settings are saved (mouse stays visible in kiosk so you can leave Chromium and use the desktop Wi‑Fi menu):
+After settings are saved (mouse stays visible in kiosk):
 
 1. Confirm the display looks correct.
-2. If needed, Alt+F4 (or close Chromium) → Pi desktop Wi‑Fi icon → join/check network, then reopen/reboot the kiosk.
-3. Turn Wi‑Fi off and reboot.
-4. Prayer times, clock, night/sleep modes, and saved settings still work. Weather may show the last cached value or `--`.
+2. To reach Wi‑Fi: Settings → **Exit to desktop** (or run `scripts/pi-kiosk/stop-kiosk.sh`).  
+   Do **not** rely on Ctrl+W / Alt+F4 — the kiosk reopens those automatically.
+3. Use the Pi desktop Wi‑Fi icon, then run `start-kiosk.sh` or reboot.
+4. When ready for offline: turn Wi‑Fi off and reboot.
+5. Prayer times, clock, night/sleep modes, and saved settings still work. Weather may show the last cached value or `--`.
 
 #### B1.6 Uninstall / stop autostart
 
@@ -456,10 +460,11 @@ amixer scontrols
 
 | Problem | What to try |
 | --- | --- |
-| `Missing X server or $DISPLAY` in the log | Installer was run over SSH with no desktop. Enable **Desktop Autologin**, `sudo reboot`. Or pull latest scripts and re-run `./scripts/pi-kiosk/install.sh`. Stop the loop: `pkill -f start-kiosk.sh` |
+| `Missing X server or $DISPLAY` in the log | Installer was run over SSH with no desktop. Enable **Desktop Autologin**, `sudo reboot`. Or pull latest scripts and re-run `./scripts/pi-kiosk/install.sh`. Stop the loop: `scripts/pi-kiosk/stop-kiosk.sh` |
 | Black screen / no kiosk after reboot | Confirm **Desktop Autologin**; check `~/.config/autostart/…desktop` and `~/.config/labwc/autostart`; `tail ~/prayer-times-kiosk.log` |
 | Browser opens then closes | Run `start-kiosk.sh` **from the Pi desktop** (not plain SSH) and read errors; ensure Chromium is installed |
-| Need Wi‑Fi / desktop while kiosk is open | Mouse stays visible — Alt+F4 to leave Chromium, use the desktop Wi‑Fi icon, then reboot (or run `start-kiosk.sh` again) |
+| Ctrl+W / Alt+F4 reopens the browser | Expected — the kiosk auto-restarts. Use Settings → **Exit to desktop** or `scripts/pi-kiosk/stop-kiosk.sh` |
+| Need Wi‑Fi / desktop while kiosk is open | Settings → **Exit to desktop**, then use the Wi‑Fi icon; reboot or run `start-kiosk.sh` to return |
 | Screen goes dark | `raspi-config` → Screen Blanking → No |
 | Wrong prayer times | Match lat/lng/method/Asr in display Settings; for adhan re-run `updateAzaanTimers.py` with the same values |
 | No adhan sound | Check speaker output device; `mpv` a test file; run `./playAzaan.sh` manually; confirm `crontab -l` |
