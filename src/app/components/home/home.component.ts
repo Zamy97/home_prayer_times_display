@@ -886,7 +886,8 @@ export class HomeComponent implements OnInit {
 
   /**
    * Always-simple cards: left = next event, right = the one after.
-   * Sequence: Fajr → Dhuhr → Asr → Sunset → Maghrib (if distinct) → Isha → tomorrow Fajr.
+   * Sequence: Fajr → Dhuhr → Asr → Sunset → Maghrib (if distinct) → Isha
+   * → tomorrow Fajr → tomorrow Sunrise.
    */
   private updateSimpleLayoutCards(now: Date): void {
     const events = this.buildSimpleLayoutEvents(now);
@@ -945,6 +946,15 @@ export class HomeComponent implements OnInit {
         time: this.tomorrowFajr.time,
         ampm: this.tomorrowFajr.ampm,
         atMs: this.tomorrowFajrAtMs,
+      });
+    }
+    // After tomorrow Fajr, the following card is tomorrow's sunrise (not blank).
+    if (this.tomorrowSunrise && this.tomorrowSunriseAtMs != null) {
+      events.push({
+        label: 'SUNRISE',
+        time: this.tomorrowSunrise.time,
+        ampm: this.tomorrowSunrise.ampm,
+        atMs: this.tomorrowSunriseAtMs,
       });
     }
 
