@@ -180,17 +180,68 @@ export class HijriDateService {
       year: 'numeric',
     });
     const parts = formatter.formatToParts(date);
-    const monthName = (parts.find((p) => p.type === 'month')?.value ?? '').replace(/[-']/g, ' ');
+    const rawMonth = parts.find((p) => p.type === 'month')?.value ?? '';
+    const monthName = this.normalizeIntlMonthName(rawMonth);
     const day = Number(parts.find((p) => p.type === 'day')?.value ?? 0);
     const year = Number(parts.find((p) => p.type === 'year')?.value ?? 0);
+    const monthIndex = CHC_HIJRI_MONTHS.findIndex((m) => m === monthName) + 1;
     return {
       day,
-      monthIndex: 0,
+      monthIndex,
       monthName,
       year,
       label: `${monthName.toUpperCase()} ${day}`.trim(),
       source: 'intl',
     };
+  }
+
+  /**
+   * Intl islamic months often look like "Rabiʻ II" / "Rab. II". Prefer the same
+   * full CHC-style names we use when the moonsighting calendar is available,
+   * so offline / no-Wi‑Fi still reads clearly.
+   */
+  private normalizeIntlMonthName(raw: string): string {
+    const key = raw
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[ʼ'`ʻ]/g, '')
+      .replace(/\./g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+
+    const aliases: Record<string, (typeof CHC_HIJRI_MONTHS)[number]> = {
+      muharram: 'Muharram',
+      safar: 'Safar',
+      'rabi i': 'Rabi al-Awwal',
+      'rabi 1': 'Rabi al-Awwal',
+      'rabi al awwal': 'Rabi al-Awwal',
+      'rab i': 'Rabi al-Awwal',
+      'rabi ii': 'Rabi al-Thani',
+      'rabi 2': 'Rabi al-Thani',
+      'rabi al thani': 'Rabi al-Thani',
+      'rab ii': 'Rabi al-Thani',
+      'jumada i': 'Jumada al-Ula',
+      'jumada 1': 'Jumada al-Ula',
+      'jumada al ula': 'Jumada al-Ula',
+      'jumada ii': 'Jumada al-Akhirah',
+      'jumada 2': 'Jumada al-Akhirah',
+      'jumada al akhirah': 'Jumada al-Akhirah',
+      rajab: 'Rajab',
+      shaban: "Sha'ban",
+      "sha'ban": "Sha'ban",
+      ramadan: 'Ramadan',
+      shawwal: 'Shawwal',
+      "dhul qidah": "Dhul Qi'dah",
+      "dhu al qidah": "Dhul Qi'dah",
+      "dhuʻl-qiʻdah": "Dhul Qi'dah",
+      "dhul hijjah": 'Dhul Hijjah',
+      "dhu al hijjah": 'Dhul Hijjah',
+    };
+
+    const mapped = aliases[key];
+    if (mapped) return mapped;
+    return raw.replace(/[-']/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
   private parseYmd(raw: string): { y: number; m: number; d: number } | null {
