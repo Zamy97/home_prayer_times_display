@@ -132,12 +132,21 @@ This will:
 - Install missing packages (`python3`, `nodejs`/`npm`, Chromium, `unclutter`) if needed
 - `npm install` / `npm ci` and build the production app
 - Create `~/.config/autostart/prayer-times-kiosk.desktop`
-- Start the kiosk now
+- Also append to `~/.config/labwc/autostart` (Bookworm/Trixie Wayland desktop)
+- Start the kiosk **only if** a desktop session is already available
+
+If you ran the installer over **SSH**, Chromium cannot open yet (no `$DISPLAY` / Wayland). That is expected. Enable **Desktop Autologin**, reboot, and the kiosk starts on the attached screen.
 
 Log file:
 
 ```bash
 tail -f ~/prayer-times-kiosk.log
+```
+
+To stop a failed SSH start loop:
+
+```bash
+pkill -f start-kiosk.sh ; pkill -f 'chromium|chromium-browser' || true
 ```
 
 #### B1.4 Configure the house in Settings
@@ -447,8 +456,9 @@ amixer scontrols
 
 | Problem | What to try |
 | --- | --- |
-| Black screen / no kiosk after reboot | Confirm **Desktop Autologin**; check `~/.config/autostart/…desktop`; `tail ~/prayer-times-kiosk.log` |
-| Browser opens then closes | Run `start-kiosk.sh` in a terminal and read errors; ensure Chromium is installed |
+| `Missing X server or $DISPLAY` in the log | Installer was run over SSH with no desktop. Enable **Desktop Autologin**, `sudo reboot`. Or pull latest scripts and re-run `./scripts/pi-kiosk/install.sh`. Stop the loop: `pkill -f start-kiosk.sh` |
+| Black screen / no kiosk after reboot | Confirm **Desktop Autologin**; check `~/.config/autostart/…desktop` and `~/.config/labwc/autostart`; `tail ~/prayer-times-kiosk.log` |
+| Browser opens then closes | Run `start-kiosk.sh` **from the Pi desktop** (not plain SSH) and read errors; ensure Chromium is installed |
 | Cursor stuck on screen | Install `unclutter`; or move mouse off the visible area |
 | Screen goes dark | `raspi-config` → Screen Blanking → No |
 | Wrong prayer times | Match lat/lng/method/Asr in display Settings; for adhan re-run `updateAzaanTimers.py` with the same values |

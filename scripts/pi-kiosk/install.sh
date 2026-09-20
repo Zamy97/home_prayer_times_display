@@ -5,6 +5,9 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd -- "$SCRIPT_DIR/../.." && pwd)"
 AUTOSTART_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/autostart"
 DESKTOP_FILE="$AUTOSTART_DIR/prayer-times-kiosk.desktop"
+LABWC_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/labwc"
+LABWC_AUTOSTART="$LABWC_DIR/autostart"
+LOG_FILE="$HOME/prayer-times-kiosk.log"
 
 if [[ "$(uname -s)" != "Linux" ]]; then
   echo "This installer must be run on the Raspberry Pi." >&2
@@ -33,6 +36,37 @@ install_missing_packages() {
   fi
 }
 
+has_graphical_session() {
+  local runtime
+  runtime="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+  [[ -n "${DISPLAY:-}" || -n "${WAYLAND_DISPLAY:-}" ]] && return 0
+  [[ -S "$runtime/wayland-0" || -S "$runtime/wayland-1" || -S /tmp/.X11-unix/X0 ]]
+}
+
+install_labwc_autostart() {
+  # Bookworm/Trixie desktop defaults to labwc (Wayland). .desktop autostart
+  # often works, but labwc's own autostart is the reliable fallback.
+  mkdir -p "$LABWC_DIR"
+  if [[ -f "$LABWC_AUTOSTART" ]] && grep -qF 'start-kiosk.sh' "$LABWC_AUTOSTART"; then
+    return 0
+  fi
+  if [[ ! -f "$LABWC_AUTOSTART" ]]; then
+    if [[ -f /etc/xdg/labwc/autostart ]]; then
+      cp /etc/xdg/labwc/autostart "$LABWC_AUTOSTART"
+    else
+      printf '%s\n' '#!/bin/sh' >"$LABWC_AUTOSTART"
+    fi
+  fi
+  {
+    echo ""
+    echo "# prayer-times-kiosk — offline local display"
+    echo "sleep 3"
+    echo "\"$SCRIPT_DIR/start-kiosk.sh\" >>\"$LOG_FILE\" 2>&1 &"
+  } >>"$LABWC_AUTOSTART"
+  chmod +x "$LABWC_AUTOSTART"
+  echo "Also added labwc autostart: $LABWC_AUTOSTART"
+}
+
 install_missing_packages
 
 cd "$PROJECT_DIR"
@@ -56,9 +90,29 @@ Terminal=false
 X-GNOME-Autostart-enabled=true
 EOF
 
+install_labwc_autostart
+
 echo
 echo "Pi kiosk installed."
+echo "Desktop autostart: $DESKTOP_FILE"
 echo "It will start automatically after the next desktop login/reboot."
-echo "Starting it now..."
-nohup "$SCRIPT_DIR/start-kiosk.sh" >"$HOME/prayer-times-kiosk.log" 2>&1 &
-echo "Log: $HOME/prayer-times-kiosk.log"
+
+if has_graphical_session; then
+  echo "Desktop session detected — starting kiosk now..."
+  nohup "$SCRIPT_DIR/start-kiosk.sh" >"$LOG_FILE" 2>&1 &
+  echo "Log: $LOG_FILE"
+else
+  cat <<EOF
+No desktop session in this terminal (common when installing over SSH).
+Chromium cannot open without the Pi desktop / Wayland / X11.
+
+Next steps:
+  1. sudo raspi-config → System Options → Auto Login → Desktop Autologin
+  2. sudo reboot
+  3. After reboot the kiosk should open on the attached screen
+  4. Check: tail -f $LOG_FILE
+
+To stop a failed SSH start loop now:
+  pkill -f start-kiosk.sh ; pkill -f 'chromium|chromium-browser' || true
+EOF
+fi

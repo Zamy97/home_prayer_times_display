@@ -168,7 +168,7 @@ chmod +x scripts/pi-kiosk/*.sh scripts/pi-kiosk/serve.py
 ./scripts/pi-kiosk/install.sh
 ```
 
-The installer installs missing packages, builds the app, and adds a desktop autostart entry. Chromium opens `http://127.0.0.1:4173/` in kiosk mode.
+The installer installs missing packages, builds the app, and adds desktop + labwc autostart. Chromium opens `http://127.0.0.1:4173/` in kiosk mode after a **desktop** login (if you installed over SSH, reboot with Desktop Autologin enabled — Chromium cannot start without a display).
 
 Dedicated Chromium profile: `~/.config/prayer-times-kiosk/chromium` (settings persist across reboots).
 
