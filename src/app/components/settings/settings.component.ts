@@ -84,6 +84,21 @@ export class SettingsComponent implements OnInit {
     { value: 'always', label: 'Always — simple layout all day' },
   ];
 
+  /** Full prayer grid is used (always, or daytime when Sleep-only). */
+  get showFullBoardControls(): boolean {
+    return this.sleepMode !== 'always';
+  }
+
+  /** Simple / Sleep layout is used at least part of the day. */
+  get showSimpleControls(): boolean {
+    return this.sleepMode !== 'off';
+  }
+
+  /** Hourly cycle sits on Simple colors only when Always-simple hides the full board group. */
+  get showHourlyOnSimple(): boolean {
+    return this.sleepMode === 'always';
+  }
+
   readonly colorRotationOptions: Array<{ value: ColorRotation; label: string }> = [
     { value: 'off', label: 'Off — keep chosen colors' },
     { value: 'hourly', label: 'Every hour — cycle through colors' },

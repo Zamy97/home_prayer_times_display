@@ -196,7 +196,8 @@ app-settings .lookRow {
   align-items: end;
 }
 
-app-settings .displayGroup--full .lookRow:last-child {
+app-settings .displayGroup--full .lookRow--with-hourly,
+app-settings .displayGroup--simple .lookRow--with-hourly {
   grid-template-columns: 44px repeat(3, minmax(0, 1fr));
 }
 
@@ -211,6 +212,10 @@ app-settings .lookRowLabel {
 
 app-settings .displayGroup--sizes {
   grid-column: 1 / -1;
+}
+
+app-settings .sizingBtnRow--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 app-settings .sizingBtnRow {
@@ -656,11 +661,12 @@ app-settings .btn.primary:hover:not(:disabled) {
   }
 
   app-settings .lookRow,
-  app-settings .displayGroup--full .lookRow:last-child {
+  app-settings .displayGroup--full .lookRow--with-hourly,
+  app-settings .displayGroup--simple .lookRow--with-hourly {
     grid-template-columns: 40px repeat(2, minmax(0, 1fr));
   }
 
-  app-settings .displayGroup--full .lookRow:last-child .field:last-child {
+  app-settings .lookRow--with-hourly .field:last-child {
     grid-column: 2 / -1;
   }
 
