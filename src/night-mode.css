@@ -470,8 +470,8 @@ html.night app-settings .displayGroup {
   border-color: rgba(214, 143, 71, 0.16);
 }
 
-html.night app-settings .displayGroupTitle {
-  color: #f2a95a;
+html.night app-settings .lookRowLabel {
+  color: rgba(212, 180, 140, 0.72);
 }
 
 html.night app-settings .footer {

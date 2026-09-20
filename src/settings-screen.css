@@ -179,6 +179,36 @@ app-settings .displayGrid--3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+app-settings .displayGroup--look {
+  grid-column: 1 / -1;
+}
+
+app-settings .lookRows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+app-settings .lookRow {
+  display: grid;
+  grid-template-columns: 44px repeat(2, minmax(0, 1fr));
+  gap: 6px 8px;
+  align-items: end;
+}
+
+app-settings .displayGroup--full .lookRow:last-child {
+  grid-template-columns: 44px repeat(3, minmax(0, 1fr));
+}
+
+app-settings .lookRowLabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-bottom: 6px;
+}
+
 app-settings .displayGroup--sizes {
   grid-column: 1 / -1;
 }
@@ -623,6 +653,15 @@ app-settings .btn.primary:hover:not(:disabled) {
   app-settings .displayGrid--3,
   app-settings .sizingBtnRow {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  app-settings .lookRow,
+  app-settings .displayGroup--full .lookRow:last-child {
+    grid-template-columns: 40px repeat(2, minmax(0, 1fr));
+  }
+
+  app-settings .displayGroup--full .lookRow:last-child .field:last-child {
+    grid-column: 2 / -1;
   }
 
   app-settings .sizingStudio--preview-left {

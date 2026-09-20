@@ -187,83 +187,136 @@
           </div>
         </div>
 
-        <div class="displayGroup">
+        <div class="displayGroup displayGroup--look displayGroup--full">
           <h3
             class="displayGroupTitle"
-            title="Full board daytime, and Simple layout while the sun is up (Always)."
+            title="Only the normal full prayer-grid layout (not Simple / Sleep)."
           >
-            Day look
+            Full board colors
           </h3>
-          <div class="displayGrid displayGrid--2">
-            <label class="field">
-              <span class="label">Background</span>
-              <select
-                class="input"
-                [(ngModel)]="dayBackground"
-                name="dayBackground"
-                title="Board background for daytime on the full layout, and for Always-simple until sunset."
-              >
-                <option *ngFor="let c of dayBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
-              </select>
-            </label>
-
-            <label class="field">
-              <span class="label">Clock color</span>
-              <select
-                class="input"
-                [(ngModel)]="dayClockColor"
-                name="dayClockColor"
-                title="Clock and prayer times in daytime on the full layout, and Always-simple from sunrise until sunset."
-              >
-                <option *ngFor="let c of dayClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
-              </select>
-            </label>
+          <div class="lookRows">
+            <div class="lookRow">
+              <span class="lookRowLabel">Day</span>
+              <label class="field">
+                <span class="label">Background</span>
+                <select
+                  class="input"
+                  [(ngModel)]="dayBackground"
+                  name="dayBackground"
+                  title="Full board background in daytime."
+                >
+                  <option *ngFor="let c of dayBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="label">Clock color</span>
+                <select
+                  class="input"
+                  [(ngModel)]="dayClockColor"
+                  name="dayClockColor"
+                  title="Full board clock and prayer times in daytime."
+                >
+                  <option *ngFor="let c of dayClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+                </select>
+              </label>
+            </div>
+            <div class="lookRow">
+              <span class="lookRowLabel">Night</span>
+              <label class="field">
+                <span class="label">Background</span>
+                <select
+                  class="input"
+                  [(ngModel)]="nightBackground"
+                  name="nightBackground"
+                  title="Full board background when Night mode is on."
+                >
+                  <option *ngFor="let c of nightBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="label">Clock color</span>
+                <select
+                  class="input"
+                  [(ngModel)]="nightClockColor"
+                  name="nightClockColor"
+                  title="Full board clock and prayer times when Night mode is on."
+                >
+                  <option *ngFor="let c of nightClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="label">Hourly cycle</span>
+                <select
+                  class="input"
+                  [(ngModel)]="colorRotation"
+                  name="colorRotation"
+                  title="Cycles colors every hour. Uses the active layout’s day/night palette."
+                >
+                  <option *ngFor="let option of colorRotationOptions" [ngValue]="option.value">{{ option.label }}</option>
+                </select>
+              </label>
+            </div>
           </div>
         </div>
 
-        <div class="displayGroup">
+        <div class="displayGroup displayGroup--look displayGroup--simple">
           <h3
             class="displayGroupTitle"
-            title="Full board when Night mode is on, Sleep overnight, and Always-simple after sunset."
+            title="Only Simple layout / Sleep / Always-simple — does not change the full prayer grid."
           >
-            Night look
+            Simple / Sleep colors
           </h3>
-          <div class="displayGrid displayGrid--3">
-            <label class="field">
-              <span class="label">Background</span>
-              <select
-                class="input"
-                [(ngModel)]="nightBackground"
-                name="nightBackground"
-                title="Board background for night on the full layout, Sleep overnight, and Always-simple after sunset."
-              >
-                <option *ngFor="let c of nightBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
-              </select>
-            </label>
-
-            <label class="field">
-              <span class="label">Clock color</span>
-              <select
-                class="input"
-                [(ngModel)]="nightClockColor"
-                name="nightClockColor"
-                title="Clock and prayer times for night on the full layout, Sleep overnight, and Always-simple after sunset."
-              >
-                <option *ngFor="let c of nightClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
-              </select>
-            </label>
-
-            <label class="field">
-              <span class="label">Hourly cycle</span>
-              <select
-                class="input"
-                [(ngModel)]="colorRotation"
-                name="colorRotation"
-                title="Cycles through the color palette every hour. Uses day colors by day and night colors at night."
-              >
-                <option *ngFor="let option of colorRotationOptions" [ngValue]="option.value">{{ option.label }}</option>
-              </select>
-            </label>
+          <div class="lookRows">
+            <div class="lookRow">
+              <span class="lookRowLabel">Day</span>
+              <label class="field">
+                <span class="label">Background</span>
+                <select
+                  class="input"
+                  [(ngModel)]="simpleDayBackground"
+                  name="simpleDayBackground"
+                  title="Simple / Always-simple board background while the sun is up."
+                >
+                  <option *ngFor="let c of dayBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="label">Clock color</span>
+                <select
+                  class="input"
+                  [(ngModel)]="simpleDayClockColor"
+                  name="simpleDayClockColor"
+                  title="Simple / Always-simple clock color while the sun is up."
+                >
+                  <option *ngFor="let c of dayClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+                </select>
+              </label>
+            </div>
+            <div class="lookRow">
+              <span class="lookRowLabel">Night</span>
+              <label class="field">
+                <span class="label">Background</span>
+                <select
+                  class="input"
+                  [(ngModel)]="simpleNightBackground"
+                  name="simpleNightBackground"
+                  title="Simple / Sleep overnight board background after sunset."
+                >
+                  <option *ngFor="let c of nightBackgroundOptions" [ngValue]="c.value">{{ c.label }}</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="label">Clock color</span>
+                <select
+                  class="input"
+                  [(ngModel)]="simpleNightClockColor"
+                  name="simpleNightClockColor"
+                  title="Simple / Sleep overnight clock color after sunset."
+                >
+                  <option *ngFor="let c of nightClockColorOptions" [ngValue]="c.value">{{ c.label }}</option>
+                </select>
+              </label>
+            </div>
           </div>
         </div>
 
@@ -273,13 +326,13 @@
           </h3>
           <div class="sizingBtnRow">
             <button class="btn secondary sizingBtn" type="button" (click)="openClockSizingStudio()">
-              Clock panel
+              Full clock panel
             </button>
             <button class="btn secondary sizingBtn" type="button" (click)="openSleepSizingStudio()">
               Simple / Sleep
             </button>
             <button class="btn secondary sizingBtn" type="button" (click)="openPrayerSizingStudio()">
-              Prayer panel
+              Full prayer panel
             </button>
           </div>
         </div>

@@ -497,14 +497,22 @@ export type PrayerSettings = {
   clockPanelScale: ClockPanelScale;
   /** Prayer-grid typography multipliers (names, times, column labels). */
   prayerPanelScale: PrayerPanelScale;
-  /** Clock digit color used in the light (day) layout */
+  /** Full-board clock digit color in the light (day) layout. */
   dayClockColor: DayClockColor;
-  /** Clock / accent for night layout, Sleep overnight, and Always-simple after sunset. */
+  /** Full-board clock / accent when Night mode is on. */
   nightClockColor: NightClockColor;
-  /** Board background for day / Always-simple daytime. */
+  /** Full-board background in daytime. */
   dayBackground: DayBackground;
-  /** Board background for night / Sleep / Always after sunset. */
+  /** Full-board background when Night mode is on. */
   nightBackground: NightBackground;
+  /** Simple / Sleep / Always-simple clock color while the sun is up. */
+  simpleDayClockColor: DayClockColor;
+  /** Simple / Sleep / Always-simple clock color after sunset / overnight. */
+  simpleNightClockColor: NightClockColor;
+  /** Simple / Sleep board background while the sun is up. */
+  simpleDayBackground: DayBackground;
+  /** Simple / Sleep board background after sunset / overnight. */
+  simpleNightBackground: NightBackground;
   /** Cycle accent colors every hour (day palette by day, night palette at night). */
   colorRotation: ColorRotation;
   /** id from cities list, or empty string when using "Other" / manual coords */
@@ -531,6 +539,10 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   nightClockColor: 'amber',
   dayBackground: 'white',
   nightBackground: 'black',
+  simpleDayClockColor: 'black',
+  simpleNightClockColor: 'amber',
+  simpleDayBackground: 'white',
+  simpleNightBackground: 'black',
   colorRotation: 'off',
 };
 
@@ -700,55 +712,84 @@ export class SettingsService {
     return hour >= 20 || hour < 6;
   }
 
-  /** Hex board background for the current light/dark chrome. */
-  boardBackgroundHex(dark: boolean): string {
+  /** Hex board background. `simple` uses Simple/Sleep palette; otherwise full board. */
+  boardBackgroundHex(dark: boolean, simple = false): string {
     const s = this.getSettings();
+    if (simple) {
+      if (dark) {
+        return NIGHT_BACKGROUND_HEX[s.simpleNightBackground] ?? NIGHT_BACKGROUND_HEX.black;
+      }
+      return DAY_BACKGROUND_HEX[s.simpleDayBackground] ?? DAY_BACKGROUND_HEX.white;
+    }
     if (dark) {
       return NIGHT_BACKGROUND_HEX[s.nightBackground] ?? NIGHT_BACKGROUND_HEX.black;
     }
     return DAY_BACKGROUND_HEX[s.dayBackground] ?? DAY_BACKGROUND_HEX.white;
   }
 
-  /** Hex color for the clock in the current (or given) day/night state. */
-  clockColorHex(night = this.isNightActive(), hour = new Date().getHours()): string {
+  /**
+   * Hex color for the clock.
+   * `simple` uses Simple/Sleep day/night colors; otherwise the full-board colors.
+   */
+  clockColorHex(
+    night = this.isNightActive(),
+    hour = new Date().getHours(),
+    simple = false
+  ): string {
     const s = this.getSettings();
+    const dayKey = simple ? s.simpleDayClockColor : s.dayClockColor;
+    const nightKey = simple ? s.simpleNightClockColor : s.nightClockColor;
     if (s.colorRotation === 'hourly') {
-      const key = this.rotatedClockColorKey(night, hour);
+      const key = this.rotatedClockColorKey(night, hour, simple);
       if (night) {
         return NIGHT_CLOCK_COLOR_HEX[key as NightClockColor] ?? NIGHT_CLOCK_COLOR_HEX.amber;
       }
       return DAY_CLOCK_COLOR_HEX[key as DayClockColor] ?? DAY_CLOCK_COLOR_HEX.black;
     }
     if (night) {
-      return NIGHT_CLOCK_COLOR_HEX[s.nightClockColor] ?? NIGHT_CLOCK_COLOR_HEX.amber;
+      return NIGHT_CLOCK_COLOR_HEX[nightKey] ?? NIGHT_CLOCK_COLOR_HEX.amber;
     }
-    return DAY_CLOCK_COLOR_HEX[s.dayClockColor] ?? DAY_CLOCK_COLOR_HEX.black;
+    return DAY_CLOCK_COLOR_HEX[dayKey] ?? DAY_CLOCK_COLOR_HEX.black;
   }
 
   /**
    * Time color on dark navy cells. Night uses the night accent; day uses a
    * light mix so dark colors stay readable (white when the day color is black).
    */
-  clockOnDarkHex(night = this.isNightActive(), hour = new Date().getHours()): string {
-    if (night) return this.clockColorHex(true, hour);
-    const key = this.activeDayColorKey(hour);
+  clockOnDarkHex(
+    night = this.isNightActive(),
+    hour = new Date().getHours(),
+    simple = false
+  ): string {
+    if (night) return this.clockColorHex(true, hour, simple);
+    const key = this.activeDayColorKey(hour, simple);
     if (key === 'black') return '#ffffff';
-    return `color-mix(in srgb, ${this.clockColorHex(false, hour)} 42%, #fff)`;
+    return `color-mix(in srgb, ${this.clockColorHex(false, hour, simple)} 42%, #fff)`;
   }
 
   /** Day palette key currently in effect (respects hourly rotation when enabled). */
-  private activeDayColorKey(hour: number): DayClockColor {
+  private activeDayColorKey(hour: number, simple = false): DayClockColor {
     const s = this.getSettings();
     if (s.colorRotation === 'hourly') {
-      return this.rotatedClockColorKey(false, hour) as DayClockColor;
+      return this.rotatedClockColorKey(false, hour, simple) as DayClockColor;
     }
-    return s.dayClockColor ?? 'black';
+    return (simple ? s.simpleDayClockColor : s.dayClockColor) ?? 'black';
   }
 
-  private rotatedClockColorKey(night: boolean, hour: number): DayClockColor | NightClockColor {
+  private rotatedClockColorKey(
+    night: boolean,
+    hour: number,
+    simple = false
+  ): DayClockColor | NightClockColor {
     const s = this.getSettings();
     const keys = night ? NIGHT_CLOCK_COLOR_VALUES : DAY_CLOCK_COLOR_VALUES;
-    const baseKey = night ? s.nightClockColor : s.dayClockColor;
+    const baseKey = night
+      ? simple
+        ? s.simpleNightClockColor
+        : s.nightClockColor
+      : simple
+        ? s.simpleDayClockColor
+        : s.dayClockColor;
     const baseIndex = keys.indexOf(baseKey as DayClockColor & NightClockColor);
     const normalizedHour = ((hour % 24) + 24) % 24;
     const index = baseIndex >= 0 ? (baseIndex + normalizedHour) % keys.length : normalizedHour % keys.length;
@@ -811,6 +852,27 @@ export class SettingsService {
       nightBackground: isNightBackground(parsed.nightBackground)
         ? parsed.nightBackground
         : DEFAULT_SETTINGS.nightBackground,
+      // New Simple/Sleep palettes: fall back to the matching full-board choice.
+      simpleDayClockColor: isDayClockColor(parsed.simpleDayClockColor)
+        ? parsed.simpleDayClockColor
+        : isDayClockColor(parsed.dayClockColor)
+          ? parsed.dayClockColor
+          : DEFAULT_SETTINGS.simpleDayClockColor,
+      simpleNightClockColor: isNightClockColor(parsed.simpleNightClockColor)
+        ? parsed.simpleNightClockColor
+        : isNightClockColor(parsed.nightClockColor)
+          ? parsed.nightClockColor
+          : DEFAULT_SETTINGS.simpleNightClockColor,
+      simpleDayBackground: isDayBackground(parsed.simpleDayBackground)
+        ? parsed.simpleDayBackground
+        : isDayBackground(parsed.dayBackground)
+          ? parsed.dayBackground
+          : DEFAULT_SETTINGS.simpleDayBackground,
+      simpleNightBackground: isNightBackground(parsed.simpleNightBackground)
+        ? parsed.simpleNightBackground
+        : isNightBackground(parsed.nightBackground)
+          ? parsed.nightBackground
+          : DEFAULT_SETTINGS.simpleNightBackground,
       colorRotation: isColorRotation(parsed.colorRotation)
         ? parsed.colorRotation
         : DEFAULT_SETTINGS.colorRotation,

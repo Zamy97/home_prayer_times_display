@@ -140,6 +140,9 @@ export class HomeComponent implements OnInit {
   @HostBinding('class.clock-led')
   get clockLed(): boolean {
     if (!this.simpleLayoutUsesDarkTheme) return false;
+    if (this.sleepModeActive) {
+      return this.settings.simpleNightClockColor === 'led-red';
+    }
     return this.settings.nightClockColor === 'led-red';
   }
   /** User-controlled size multipliers for the clock panel (from settings). */
@@ -207,21 +210,25 @@ export class HomeComponent implements OnInit {
   get scalePrayerLabel(): string {
     return String(this.settings.prayerPanelScale?.labels ?? 1);
   }
-  /** Chosen clock color for the current day / night / simple layout. */
+  /** Chosen clock color for the current full-board or Simple/Sleep layout. */
   @HostBinding('style.--clock-color')
   get clockColor(): string {
     if (this.sleepModeActive) {
       return this.settingsService.clockColorHex(
         this.simpleLayoutUsesDarkTheme,
-        this.displayHour
+        this.displayHour,
+        true
       );
     }
-    return this.settingsService.clockColorHex(this.nightActive, this.displayHour);
+    return this.settingsService.clockColorHex(this.nightActive, this.displayHour, false);
   }
 
   @HostBinding('style.--board-bg')
   get boardBackground(): string {
-    return this.settingsService.boardBackgroundHex(this.simpleLayoutUsesDarkTheme);
+    return this.settingsService.boardBackgroundHex(
+      this.simpleLayoutUsesDarkTheme,
+      this.sleepModeActive
+    );
   }
 
   /**
@@ -233,10 +240,11 @@ export class HomeComponent implements OnInit {
     if (this.sleepModeActive) {
       return this.settingsService.clockOnDarkHex(
         this.simpleLayoutUsesDarkTheme,
-        this.displayHour
+        this.displayHour,
+        true
       );
     }
-    return this.settingsService.clockOnDarkHex(this.nightActive, this.displayHour);
+    return this.settingsService.clockOnDarkHex(this.nightActive, this.displayHour, false);
   }
   /** Current temperature in °F; null only if never fetched successfully */
   currentTempF: number | null = null;

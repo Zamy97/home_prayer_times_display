@@ -229,6 +229,10 @@ export class SettingsComponent implements OnInit {
   nightClockColor: NightClockColor = 'amber';
   dayBackground: DayBackground = 'white';
   nightBackground: NightBackground = 'black';
+  simpleDayClockColor: DayClockColor = 'black';
+  simpleNightClockColor: NightClockColor = 'amber';
+  simpleDayBackground: DayBackground = 'white';
+  simpleNightBackground: NightBackground = 'black';
   colorRotation: ColorRotation = 'off';
   sizingStudio: SizingStudio | null = null;
 
@@ -262,6 +266,10 @@ export class SettingsComponent implements OnInit {
     this.nightClockColor = s.nightClockColor ?? 'amber';
     this.dayBackground = s.dayBackground ?? 'white';
     this.nightBackground = s.nightBackground ?? 'black';
+    this.simpleDayClockColor = s.simpleDayClockColor ?? s.dayClockColor ?? 'black';
+    this.simpleNightClockColor = s.simpleNightClockColor ?? s.nightClockColor ?? 'amber';
+    this.simpleDayBackground = s.simpleDayBackground ?? s.dayBackground ?? 'white';
+    this.simpleNightBackground = s.simpleNightBackground ?? s.nightBackground ?? 'black';
     this.colorRotation = s.colorRotation ?? 'off';
     const savedCityId = s.cityId ?? OTHER_CITY_ID;
     const city = savedCityId !== OTHER_CITY_ID ? CITIES.find((c) => c.id === savedCityId) : null;
@@ -492,6 +500,10 @@ export class SettingsComponent implements OnInit {
       nightClockColor: this.nightClockColor,
       dayBackground: this.dayBackground,
       nightBackground: this.nightBackground,
+      simpleDayClockColor: this.simpleDayClockColor,
+      simpleNightClockColor: this.simpleNightClockColor,
+      simpleDayBackground: this.simpleDayBackground,
+      simpleNightBackground: this.simpleNightBackground,
       colorRotation: this.colorRotation,
       cityId,
     };
