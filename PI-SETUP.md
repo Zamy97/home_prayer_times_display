@@ -75,7 +75,7 @@ These match the usual kiosk prep from the [Raspberry Pi kiosk tutorial](https://
 ### A4. Install base tools
 
 ```bash
-sudo apt install -y git chromium unclutter mpv
+sudo apt install -y git chromium mpv
 ```
 
 On some images the browser package is `chromium-browser` instead of `chromium`:
@@ -129,11 +129,13 @@ chmod +x scripts/pi-kiosk/*.sh scripts/pi-kiosk/serve.py
 
 This will:
 
-- Install missing packages (`python3`, `nodejs`/`npm`, Chromium, `unclutter`) if needed
+- Install missing packages (`python3`, `nodejs`/`npm`, Chromium) if needed
 - `npm install` / `npm ci` and build the production app
 - Create `~/.config/autostart/prayer-times-kiosk.desktop`
 - Also append to `~/.config/labwc/autostart` (Bookworm/Trixie Wayland desktop)
 - Start the kiosk **only if** a desktop session is already available
+
+The mouse cursor stays visible so you can open Settings, leave the kiosk, or join Wi‑Fi before taking the Pi offline.
 
 If you ran the installer over **SSH**, Chromium cannot open yet (no `$DISPLAY` / Wayland). That is expected. Enable **Desktop Autologin**, reboot, and the kiosk starts on the attached screen.
 
@@ -162,11 +164,12 @@ sudo reboot
 
 #### B1.5 Optional: take offline
 
-After settings are saved:
+After settings are saved (mouse stays visible in kiosk so you can leave Chromium and use the desktop Wi‑Fi menu):
 
 1. Confirm the display looks correct.
-2. Turn Wi‑Fi off and reboot.
-3. Prayer times, clock, night/sleep modes, and saved settings still work. Weather may show the last cached value or `--`.
+2. If needed, Alt+F4 (or close Chromium) → Pi desktop Wi‑Fi icon → join/check network, then reopen/reboot the kiosk.
+3. Turn Wi‑Fi off and reboot.
+4. Prayer times, clock, night/sleep modes, and saved settings still work. Weather may show the last cached value or `--`.
 
 #### B1.6 Uninstall / stop autostart
 
@@ -206,9 +209,6 @@ if command -v chromium >/dev/null 2>&1; then
 else
   CHROMIUM=chromium-browser
 fi
-
-# Hide mouse after idle (X11; ignored harmlessly on some Wayland setups)
-command -v unclutter >/dev/null 2>&1 && unclutter -idle 1 -root >/dev/null 2>&1 &
 
 # Restart browser if it crashes
 while true; do
@@ -459,7 +459,7 @@ amixer scontrols
 | `Missing X server or $DISPLAY` in the log | Installer was run over SSH with no desktop. Enable **Desktop Autologin**, `sudo reboot`. Or pull latest scripts and re-run `./scripts/pi-kiosk/install.sh`. Stop the loop: `pkill -f start-kiosk.sh` |
 | Black screen / no kiosk after reboot | Confirm **Desktop Autologin**; check `~/.config/autostart/…desktop` and `~/.config/labwc/autostart`; `tail ~/prayer-times-kiosk.log` |
 | Browser opens then closes | Run `start-kiosk.sh` **from the Pi desktop** (not plain SSH) and read errors; ensure Chromium is installed |
-| Cursor stuck on screen | Install `unclutter`; or move mouse off the visible area |
+| Need Wi‑Fi / desktop while kiosk is open | Mouse stays visible — Alt+F4 to leave Chromium, use the desktop Wi‑Fi icon, then reboot (or run `start-kiosk.sh` again) |
 | Screen goes dark | `raspi-config` → Screen Blanking → No |
 | Wrong prayer times | Match lat/lng/method/Asr in display Settings; for adhan re-run `updateAzaanTimers.py` with the same values |
 | No adhan sound | Check speaker output device; `mpv` a test file; run `./playAzaan.sh` manually; confirm `crontab -l` |

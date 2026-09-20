@@ -96,20 +96,11 @@ command -v xset >/dev/null 2>&1 && {
   xset -dpms 2>/dev/null || true
 }
 
-# Hide the pointer after a short idle period when available (X11).
-if command -v unclutter >/dev/null 2>&1; then
-  unclutter -idle 1 -root >/dev/null 2>&1 &
-  UNCLUTTER_PID=$!
-else
-  UNCLUTTER_PID=""
-fi
-
 python3 "$SCRIPT_DIR/serve.py" --directory "$DIST_DIR" --port "$PORT" &
 SERVER_PID=$!
 
 cleanup() {
   kill "$SERVER_PID" 2>/dev/null || true
-  [[ -n "$UNCLUTTER_PID" ]] && kill "$UNCLUTTER_PID" 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
 

@@ -18,7 +18,6 @@ install_missing_packages() {
   local packages=()
   command -v python3 >/dev/null 2>&1 || packages+=(python3)
   command -v npm >/dev/null 2>&1 || packages+=(nodejs npm)
-  command -v unclutter >/dev/null 2>&1 || packages+=(unclutter)
 
   if ! command -v chromium-browser >/dev/null 2>&1 &&
      ! command -v chromium >/dev/null 2>&1; then
