@@ -893,9 +893,12 @@ export class HomeComponent implements OnInit {
   }
 
   /**
-   * Always-simple cards: left = next event, right = the one after.
-   * Sequence: Fajr → Dhuhr → Asr → Sunset → Maghrib (if distinct) → Isha
+   * Always-simple cards: left = current/next anchor, right = the one after.
+   * Sequence: Fajr → Sunrise → Dhuhr → Asr → Sunset → Maghrib (if distinct) → Isha
    * → tomorrow Fajr → tomorrow Sunrise.
+   *
+   * FAJR + SUNRISE stay paired until sunrise has passed (Fajr is not replaced by
+   * Sunrise on the left once Fajr starts).
    */
   private updateSimpleLayoutCards(now: Date): void {
     const events = this.buildSimpleLayoutEvents(now);
@@ -904,6 +907,17 @@ export class HomeComponent implements OnInit {
     if (index < 0) {
       index = Math.max(0, events.length - 2);
     }
+
+    // While sunrise is still upcoming and the previous card is Fajr, keep
+    // FAJR | SUNRISE until sunrise time — do not promote sunrise to the left.
+    if (
+      index > 0 &&
+      events[index]?.label === 'SUNRISE' &&
+      events[index - 1]?.label === 'FAJR'
+    ) {
+      index = index - 1;
+    }
+
     const left = events[index] ?? null;
     const right = events[index + 1] ?? null;
     this.simpleLeft = left
@@ -931,6 +945,7 @@ export class HomeComponent implements OnInit {
     };
 
     push('FAJR', this.times?.fajr, this.prayerInstants.fajr);
+    push('SUNRISE', this.sunrise, this.sunriseAtMs);
     push('DHUHR', this.times?.dhuhr, this.prayerInstants.dhuhr);
     push('ASR', this.times?.asr, this.prayerInstants.asr);
     push('SUNSET', this.sunset, this.sunsetAtMs);
@@ -956,7 +971,6 @@ export class HomeComponent implements OnInit {
         atMs: this.tomorrowFajrAtMs,
       });
     }
-    // After tomorrow Fajr, the following card is tomorrow's sunrise (not blank).
     if (this.tomorrowSunrise && this.tomorrowSunriseAtMs != null) {
       events.push({
         label: 'SUNRISE',
