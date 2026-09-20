@@ -3,8 +3,12 @@ set -euo pipefail
 
 AUTOSTART_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/autostart/prayer-times-kiosk.desktop"
 LABWC_AUTOSTART="${XDG_CONFIG_HOME:-$HOME/.config}/labwc/autostart"
+STOP_DESKTOP="${XDG_DATA_HOME:-$HOME/.local/share}/applications/prayer-times-kiosk-stop.desktop"
+PAUSE_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/prayer-times-kiosk/paused"
 
-rm -f "$AUTOSTART_FILE"
+rm -f "$AUTOSTART_FILE" "$STOP_DESKTOP"
+rm -f "$HOME/Desktop/Stop Prayer Times Kiosk.desktop"
+rm -f "$PAUSE_FILE"
 
 if [[ -f "$LABWC_AUTOSTART" ]] && grep -qF 'start-kiosk.sh' "$LABWC_AUTOSTART"; then
   # Drop the block we appended (comment + sleep + start line).
