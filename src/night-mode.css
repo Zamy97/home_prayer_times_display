@@ -33,7 +33,7 @@ app-home.night .jumuBlock {
   display: none;
 }
 
-/* Prohibited-prayer alert: keep the same far-readable red in night mode. */
+/* Prohibited-prayer alert: same hard white ↔ red flash in night mode. */
 app-home.night .prayerBan {
   background: #c62828;
   color: #fff;
@@ -41,8 +41,8 @@ app-home.night .prayerBan {
 }
 
 app-home.night .prayerBanUntil {
-  color: #fff;
-  opacity: 0.95;
+  color: inherit;
+  opacity: 1;
 }
 
 /* Warm, low-glow seam instead of the bright navy divider */
@@ -596,7 +596,7 @@ app-home.sleep-mode:not(.night) .bedroomFactTime .ampm {
 
 app-home.sleep-mode:not(.night) .bedroomFact--ban .bedroomFactLabel,
 app-home.sleep-mode:not(.night) .bedroomFactTime--ban {
-  color: #fff;
+  color: inherit;
 }
 
 @keyframes sleep-mode-enter {
@@ -684,12 +684,12 @@ app-home.sleep-mode .bedroomFact--ban {
   border-color: #b71c1c;
   background: #c62828;
   color: #fff;
-  animation: prayerBanPulse 1.8s ease-in-out infinite;
+  animation: prayerBanPulse 1s linear infinite;
 }
 
 app-home.sleep-mode .bedroomFact--ban .bedroomFactLabel,
 app-home.sleep-mode .bedroomFactTime--ban {
-  color: #fff;
+  color: inherit;
   opacity: 1;
 }
 

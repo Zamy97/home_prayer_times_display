@@ -846,7 +846,7 @@ app-home .countdownTime {
 }
 
 /* Prohibited-prayer alert — replaces countdown + Jumu'ah while active.
-   Solid red so it reads clearly from across the room. */
+   Hard white ↔ red flash so it reads from across the room. */
 app-home .prayerBan {
   flex: 0 0 auto;
   display: flex;
@@ -863,7 +863,7 @@ app-home .prayerBan {
   border-top: none;
   background: #c62828;
   color: #fff;
-  animation: prayerBanPulse 1.8s ease-in-out infinite;
+  animation: prayerBanPulse 1s linear infinite;
 }
 
 app-home .prayerBanTitle {
@@ -882,16 +882,19 @@ app-home .prayerBanUntil {
   letter-spacing: 0.14em;
   line-height: 1.1;
   text-transform: uppercase;
-  opacity: 0.95;
+  opacity: 1;
 }
 
 @keyframes prayerBanPulse {
   0%,
-  100% {
+  49.999% {
     background-color: #c62828;
+    color: #fff;
   }
-  50% {
-    background-color: #e53935;
+  50%,
+  100% {
+    background-color: #fff;
+    color: #c62828;
   }
 }
 
@@ -899,6 +902,7 @@ app-home .prayerBanUntil {
   app-home .prayerBan {
     animation: none;
     background: #c62828;
+    color: #fff;
   }
 }
 
