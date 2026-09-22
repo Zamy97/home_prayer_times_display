@@ -33,15 +33,16 @@ app-home.night .jumuBlock {
   display: none;
 }
 
-/* Prohibited-prayer alert keeps amber night styling (still shows when Jumu'ah is hidden). */
+/* Prohibited-prayer alert: keep the same far-readable red in night mode. */
 app-home.night .prayerBan {
-  border-top-color: var(--line);
-  color: var(--amber-bright, var(--amber));
+  background: #c62828;
+  color: #fff;
+  border-top: none;
 }
 
 app-home.night .prayerBanUntil {
-  color: var(--amber);
-  opacity: 0.88;
+  color: #fff;
+  opacity: 0.95;
 }
 
 /* Warm, low-glow seam instead of the bright navy divider */
@@ -595,7 +596,7 @@ app-home.sleep-mode:not(.night) .bedroomFactTime .ampm {
 
 app-home.sleep-mode:not(.night) .bedroomFact--ban .bedroomFactLabel,
 app-home.sleep-mode:not(.night) .bedroomFactTime--ban {
-  color: var(--clock-color, #111);
+  color: #fff;
 }
 
 @keyframes sleep-mode-enter {
@@ -679,6 +680,19 @@ app-home.sleep-mode .bedroomFacts--ban {
   grid-template-columns: minmax(0, 1fr);
 }
 
+app-home.sleep-mode .bedroomFact--ban {
+  border-color: #b71c1c;
+  background: #c62828;
+  color: #fff;
+  animation: prayerBanPulse 1.8s ease-in-out infinite;
+}
+
+app-home.sleep-mode .bedroomFact--ban .bedroomFactLabel,
+app-home.sleep-mode .bedroomFactTime--ban {
+  color: #fff;
+  opacity: 1;
+}
+
 app-home.sleep-mode .bedroomFact {
   display: grid;
   min-width: 0;
@@ -724,19 +738,17 @@ app-home.sleep-mode .bedroomFactTime--ban {
     clamp(36px, min(5.5vw, 8vh), 72px) * var(--scale-sleep-facts, 1)
   );
   letter-spacing: 0.08em;
-  animation: prayerBanPulse 1.8s ease-in-out infinite;
 }
 
 app-home.sleep-mode .bedroomFact--ban .bedroomFactLabel {
   font-size: clamp(28px, min(4.2vw, 5.5vh), 56px);
   letter-spacing: 0.12em;
-  animation: prayerBanPulse 1.8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  app-home.sleep-mode .bedroomFactTime--ban,
-  app-home.sleep-mode .bedroomFact--ban .bedroomFactLabel {
+  app-home.sleep-mode .bedroomFact--ban {
     animation: none;
+    background: #c62828;
   }
 }
 

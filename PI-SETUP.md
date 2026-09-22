@@ -174,6 +174,7 @@ After settings are saved (mouse stays visible in kiosk):
 3. Use the Pi desktop Wi‑Fi icon, then run `start-kiosk.sh` or reboot.
 4. When ready for offline: turn Wi‑Fi off and reboot.
 5. Prayer times, clock, night/sleep modes, and saved settings still work. Weather may show the last cached value or `--`.
+6. Hijri date uses the same Central Hilal Committee calendar as online. The local kiosk server keeps calling `/api/hijri` (cache: `~/.config/prayer-times-kiosk/hijri-calendar.json`); the app also keeps a browser copy. Offline keeps the last good CHC day/name; when the network returns it refreshes again.
 
 #### B1.6 Uninstall / stop autostart
 
@@ -181,6 +182,14 @@ After settings are saved (mouse stays visible in kiosk):
 cd ~/home_prayer_times_display
 ./scripts/pi-kiosk/uninstall.sh
 ```
+
+This removes desktop/labwc autostart and stops `serve.py` + Chromium. The local server only runs while the B1 kiosk is active (on desktop login); it is not a separate always-on system service.
+
+#### B1.7 Switch to online (B2) later
+
+1. Run `./scripts/pi-kiosk/uninstall.sh` so the local kiosk no longer autostarts.
+2. Follow **B2** below (Chromium opens the Vercel URL).
+3. Keep Wi‑Fi on. Reconfigure Settings once — B2 uses a different Chromium profile, so house settings do not carry over automatically.
 
 ---
 

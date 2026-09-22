@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map, shareReplay, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 /** CHC / moonsighting Hijri calendar for one year. */
@@ -44,7 +44,13 @@ type ChcHijriDatesPayload = {
 };
 
 const STORAGE_KEY = 'chcHijriCalendar';
-const CACHE_MAX_AGE_MS = 6 * 60 * 60 * 1000;
+/** How often we try to refresh CHC data when online. */
+const SOFT_REFRESH_MS = 6 * 60 * 60 * 1000;
+/**
+ * Keep using a cached CHC calendar for formatting even after soft refresh fails
+ * (offline kiosk). Only fall back to Intl when we have never successfully loaded CHC.
+ */
+const HARD_STALE_MS = 45 * 24 * 60 * 60 * 1000;
 
 /** Month names used by Central Hilal Committee announcements / homepage. */
 export const CHC_HIJRI_MONTHS = [
@@ -67,54 +73,91 @@ export class HijriDateService {
   private readonly http = inject(HttpClient);
   private calendar: ChcHijriCalendar | null = this.readCache();
   private load$?: Observable<ChcHijriCalendar | null>;
+  /** Throttle soft-refresh attempts when offline so we don't hammer the network. */
+  private lastAttemptAt = 0;
 
   /** Ensure CHC calendar is loaded (cached). Safe to call repeatedly. */
   ensureCalendar(): Observable<ChcHijriCalendar | null> {
-    if (this.calendar && !this.isStale()) {
+    if (this.calendar && !this.needsSoftRefresh()) {
       return of(this.calendar);
     }
-    if (this.isStale()) {
+    if (this.needsSoftRefresh()) {
       this.load$ = undefined;
     }
     if (!this.load$) {
+      this.lastAttemptAt = Date.now();
       this.load$ = this.fetchCalendar().pipe(
         tap((cal) => {
-          this.calendar = cal;
-          if (cal) this.writeCache(cal);
+          if (cal) {
+            this.calendar = cal;
+            this.writeCache(cal);
+          }
+          // Keep prior CHC calendar when refresh fails (offline / flaky Wi‑Fi).
         }),
+        map((cal) => cal ?? this.calendar),
         shareReplay({ bufferSize: 1, refCount: false })
       );
     }
     return this.load$;
   }
 
-  /** Drop cache and refetch from CHC / proxy. */
+  /**
+   * Soft refresh: try CHC / proxy again without wiping the last good calendar.
+   * Used on date change so offline still shows moonsighting day/name, while still
+   * attempting the API whenever connectivity may be available.
+   */
   refresh(): Observable<ChcHijriCalendar | null> {
     this.load$ = undefined;
-    this.calendar = null;
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // ignore
-    }
-    return this.ensureCalendar();
+    this.lastAttemptAt = Date.now();
+    this.load$ = this.fetchCalendar().pipe(
+      tap((cal) => {
+        if (cal) {
+          this.calendar = cal;
+          this.writeCache(cal);
+        }
+      }),
+      map((cal) => cal ?? this.calendar),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+    return this.load$;
   }
 
   /** Format Hijri label for a civil date; prefers CHC moonsighting calendar. */
   formatForDate(date: Date): HijriDateInfo {
-    const fromChc = this.formatFromCalendar(date, this.calendar);
+    const usable = this.calendarForFormat();
+    const fromChc = this.formatFromCalendar(date, usable);
     if (fromChc) return fromChc;
     return this.formatFromIntl(date);
   }
 
-  private fetchCalendar(): Observable<ChcHijriCalendar | null> {
-    const request$ = environment.production
-      ? this.http.get<HijriApiResponse>('/api/hijri').pipe(map((res) => this.fromProxy(res)))
-      : this.http
-          .get<ChcHijriDatesPayload>('https://hilalcommittee.org/api/HijriDates')
-          .pipe(map((res) => this.fromChcApi(res)));
+  private calendarForFormat(): ChcHijriCalendar | null {
+    if (!this.calendar) return null;
+    if (this.isHardStale()) return null;
+    return this.calendar;
+  }
 
-    return request$.pipe(catchError(() => of(this.calendar)));
+  private fetchCalendar(): Observable<ChcHijriCalendar | null> {
+    if (environment.production) {
+      // Kiosk serve.py and Vercel both expose /api/hijri; still try CHC direct if proxy is down.
+      return this.http.get<HijriApiResponse>('/api/hijri').pipe(
+        map((res) => this.fromProxy(res)),
+        switchMap((fromProxy) => {
+          if (fromProxy) return of(fromProxy);
+          return this.fetchChcDirect();
+        }),
+        catchError(() => this.fetchChcDirect())
+      );
+    }
+    return this.fetchChcDirect();
+  }
+
+  private fetchChcDirect(): Observable<ChcHijriCalendar | null> {
+    return this.http
+      .get<ChcHijriDatesPayload>('https://hilalcommittee.org/api/HijriDates')
+      .pipe(
+        map((res) => this.fromChcApi(res)),
+        catchError(() => of(null))
+      );
   }
 
   private fromProxy(res: HijriApiResponse): ChcHijriCalendar | null {
@@ -204,7 +247,7 @@ export class HijriDateService {
     const key = raw
       .normalize('NFKD')
       .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[ʼ'`ʻ]/g, '')
+      .replace(/[ʼ'`ʻʹʺ]/g, '')
       .replace(/\./g, '')
       .replace(/\s+/g, ' ')
       .trim()
@@ -216,15 +259,20 @@ export class HijriDateService {
       'rabi i': 'Rabi al-Awwal',
       'rabi 1': 'Rabi al-Awwal',
       'rabi al awwal': 'Rabi al-Awwal',
+      'rabi al-awwal': 'Rabi al-Awwal',
       'rab i': 'Rabi al-Awwal',
       'rabi ii': 'Rabi al-Thani',
+      'rabi ll': 'Rabi al-Thani',
       'rabi 2': 'Rabi al-Thani',
       'rabi al thani': 'Rabi al-Thani',
+      'rabi al-thani': 'Rabi al-Thani',
       'rab ii': 'Rabi al-Thani',
+      'rab ll': 'Rabi al-Thani',
       'jumada i': 'Jumada al-Ula',
       'jumada 1': 'Jumada al-Ula',
       'jumada al ula': 'Jumada al-Ula',
       'jumada ii': 'Jumada al-Akhirah',
+      'jumada ll': 'Jumada al-Akhirah',
       'jumada 2': 'Jumada al-Akhirah',
       'jumada al akhirah': 'Jumada al-Akhirah',
       rajab: 'Rajab',
@@ -234,7 +282,6 @@ export class HijriDateService {
       shawwal: 'Shawwal',
       "dhul qidah": "Dhul Qi'dah",
       "dhu al qidah": "Dhul Qi'dah",
-      "dhuʻl-qiʻdah": "Dhul Qi'dah",
       "dhul hijjah": 'Dhul Hijjah',
       "dhu al hijjah": 'Dhul Hijjah',
     };
@@ -254,16 +301,30 @@ export class HijriDateService {
     return Date.UTC(parts.y, parts.m - 1, parts.d) / 86400000;
   }
 
-  private isStale(): boolean {
+  private cacheFetchedAt(): number | null {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return true;
-      const parsed = JSON.parse(raw) as { fetchedAt?: number; calendar?: ChcHijriCalendar };
-      if (!parsed.fetchedAt || !parsed.calendar) return true;
-      return Date.now() - parsed.fetchedAt > CACHE_MAX_AGE_MS;
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as { fetchedAt?: number };
+      return typeof parsed.fetchedAt === 'number' ? parsed.fetchedAt : null;
     } catch {
-      return true;
+      return null;
     }
+  }
+
+  private needsSoftRefresh(): boolean {
+    if (!this.calendar) return true;
+    const at = this.cacheFetchedAt();
+    if (at == null) return true;
+    if (Date.now() - at <= SOFT_REFRESH_MS) return false;
+    // After soft age, retry at most once per soft interval (covers offline).
+    return Date.now() - this.lastAttemptAt >= SOFT_REFRESH_MS;
+  }
+
+  private isHardStale(): boolean {
+    const at = this.cacheFetchedAt();
+    if (at == null) return false;
+    return Date.now() - at > HARD_STALE_MS;
   }
 
   private readCache(): ChcHijriCalendar | null {

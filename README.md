@@ -170,17 +170,27 @@ chmod +x scripts/pi-kiosk/*.sh scripts/pi-kiosk/serve.py
 
 The installer installs missing packages, builds the app, and adds desktop + labwc autostart. Chromium opens `http://127.0.0.1:4173/` in kiosk mode after a **desktop** login (if you installed over SSH, reboot with Desktop Autologin enabled — Chromium cannot start without a display).
 
+That local Python server (`serve.py` on port 4173) starts with the kiosk on desktop login and stops when you exit/uninstall the kiosk — it is not a separate always-on system service.
+
 Dedicated Chromium profile: `~/.config/prayer-times-kiosk/chromium` (settings persist across reboots).
 
 Before taking the Pi offline: hold the **top-left** corner ~1.8s → Settings → set the house city/coords → Save → reboot once with Wi‑Fi off to confirm.
 
-To remove autostart:
+To remove autostart (and stop the local server from coming back):
 
 ```bash
 ./scripts/pi-kiosk/uninstall.sh
 ```
 
-Live hosted URL (online kiosk option): https://home-prayer-times-display.vercel.app
+### Switch offline → online later
+
+If you later want the Pi to open the hosted site instead of the local build:
+
+1. Run `./scripts/pi-kiosk/uninstall.sh` (stops autostart + `serve.py`).
+2. Follow **B2** in [PI-SETUP.md](./PI-SETUP.md) — Chromium kiosk to `https://home-prayer-times-display.vercel.app`.
+3. Keep Wi‑Fi on and re-enter Settings once (online uses a different Chromium profile).
+
+Live hosted URL: https://home-prayer-times-display.vercel.app
 
 ---
 
