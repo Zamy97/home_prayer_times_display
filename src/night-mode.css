@@ -684,7 +684,7 @@ app-home.sleep-mode .bedroomFact--ban {
   border-color: #b71c1c;
   background: #c62828;
   color: #fff;
-  animation: prayerBanPulse 1s linear infinite;
+  animation: prayerBanPulse 2s ease-in-out infinite;
 }
 
 app-home.sleep-mode .bedroomFact--ban .bedroomFactLabel,
