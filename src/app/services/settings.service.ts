@@ -258,6 +258,7 @@ function resolvePrayerPanelScale(parsed: {
 /** Clock digit color on the light (day) layout */
 export type DayClockColor =
   | 'black'
+  | 'led-red'
   | 'navy'
   | 'charcoal'
   | 'slate'
@@ -314,6 +315,7 @@ export type NightClockColor =
 /** Light board / panel background (day + Always-simple daytime). */
 export type DayBackground =
   | 'white'
+  | 'black'
   | 'soft-white'
   | 'warm-cream'
   | 'cool-gray'
@@ -339,6 +341,7 @@ export type NightBackground =
 
 export const DAY_CLOCK_COLOR_HEX: Record<DayClockColor, string> = {
   black: '#111111',
+  'led-red': '#ff2a2a',
   navy: '#07233c',
   charcoal: '#3a3a3a',
   slate: '#334155',
@@ -395,6 +398,7 @@ export const NIGHT_CLOCK_COLOR_HEX: Record<NightClockColor, string> = {
 
 export const DAY_BACKGROUND_HEX: Record<DayBackground, string> = {
   white: '#ffffff',
+  black: '#000000',
   'soft-white': '#f6f6f3',
   'warm-cream': '#f3ebe0',
   'cool-gray': '#e8ecef',

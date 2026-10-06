@@ -577,8 +577,8 @@ app-home.sleep-mode:not(.night) .bedroomClock {
 }
 
 app-home.sleep-mode:not(.night) .bedroomFact {
-  border-color: color-mix(in srgb, var(--clock-color, #111) 18%, transparent);
-  background: color-mix(in srgb, var(--clock-color, #111) 6%, #fff);
+  border-color: color-mix(in srgb, var(--clock-color, #111) 22%, transparent);
+  background: color-mix(in srgb, var(--clock-color, #111) 10%, var(--board-bg, #fff));
 }
 
 app-home.sleep-mode:not(.night) .bedroomFactLabel {

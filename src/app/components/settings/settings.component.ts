@@ -138,6 +138,7 @@ export class SettingsComponent implements OnInit {
 
   readonly dayClockColorOptions: Array<{ value: DayClockColor; label: string }> = [
     { value: 'black', label: 'Black' },
+    { value: 'led-red', label: 'LED red (alarm clock, easy from a distance)' },
     { value: 'navy', label: 'Navy' },
     { value: 'charcoal', label: 'Charcoal' },
     { value: 'slate', label: 'Slate' },
@@ -166,6 +167,7 @@ export class SettingsComponent implements OnInit {
 
   readonly dayBackgroundOptions: Array<{ value: DayBackground; label: string }> = [
     { value: 'white', label: 'White' },
+    { value: 'black', label: 'Black' },
     { value: 'soft-white', label: 'Soft white' },
     { value: 'warm-cream', label: 'Warm cream' },
     { value: 'cool-gray', label: 'Cool gray' },

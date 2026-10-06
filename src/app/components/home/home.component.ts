@@ -139,11 +139,14 @@ export class HomeComponent implements OnInit {
   /** Bright alarm-clock LED red: extra glow so it reads from across the room. */
   @HostBinding('class.clock-led')
   get clockLed(): boolean {
-    if (!this.simpleLayoutUsesDarkTheme) return false;
     if (this.sleepModeActive) {
-      return this.settings.simpleNightClockColor === 'led-red';
+      const key = this.simpleLayoutUsesDarkTheme
+        ? this.settings.simpleNightClockColor
+        : this.settings.simpleDayClockColor;
+      return key === 'led-red';
     }
-    return this.settings.nightClockColor === 'led-red';
+    if (this.nightActive) return this.settings.nightClockColor === 'led-red';
+    return this.settings.dayClockColor === 'led-red';
   }
   /** User-controlled size multipliers for the clock panel (from settings). */
   @HostBinding('style.--scale-date')
