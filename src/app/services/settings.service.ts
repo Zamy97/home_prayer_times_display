@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { PrayTimeMethod } from '../lib/praytime';
+import { MosqueIqamahSource, isMosqueIqamahSource } from './mosque-iqamah.service';
+
+export type { MosqueIqamahSource };
 
 export type AsrMethod = 'Standard' | 'Hanafi';
 
@@ -66,6 +69,20 @@ export const CLOCK_PANEL_SCALE_STEP = 0.02;
 export const PANEL_SCALE_MIN = CLOCK_PANEL_SCALE_MIN;
 export const PANEL_SCALE_MAX = CLOCK_PANEL_SCALE_MAX;
 export const PANEL_SCALE_STEP = CLOCK_PANEL_SCALE_STEP;
+
+/**
+ * Extra board width given to the prayer grid, in percentage points.
+ * Positive slides the grid toward the clock so a mosque-iqamah column can fit.
+ */
+export const PRAYER_PANEL_SHIFT_MIN = -20;
+export const PRAYER_PANEL_SHIFT_MAX = 40;
+export const DEFAULT_PRAYER_PANEL_SHIFT = 0;
+
+export function normalizePrayerPanelShift(value: unknown): number {
+  const n = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(n)) return DEFAULT_PRAYER_PANEL_SHIFT;
+  return Math.min(PRAYER_PANEL_SHIFT_MAX, Math.max(PRAYER_PANEL_SHIFT_MIN, Math.round(n)));
+}
 
 export const DEFAULT_CLOCK_PANEL_SCALE: ClockPanelScale = {
   date: 1,
@@ -479,6 +496,11 @@ export type PrayerSettings = {
   timezone: string; // IANA tz (e.g. America/Toronto)
   /** true = clock/date panel on left, false = on right */
   panelLeft: boolean;
+  /**
+   * Extra percentage of the board given to the prayer grid (taken from the clock).
+   * 0 keeps the two-column split; positive makes room for mosque iqamah.
+   */
+  prayerPanelShift: number;
   /** When to switch to the dark night layout. Default off so existing kiosks stay light until chosen. */
   nightMode: NightMode;
   /**
@@ -519,6 +541,11 @@ export type PrayerSettings = {
   simpleNightBackground: NightBackground;
   /** Cycle accent colors every hour (day palette by day, night palette at night). */
   colorRotation: ColorRotation;
+  /**
+   * Overlay a mosque's posted iqamah under each calculated start time.
+   * Home adhan stays from PrayTime; 'off' hides the second line.
+   */
+  mosqueIqamahSource: MosqueIqamahSource;
   /** id from cities list, or empty string when using "Other" / manual coords */
   cityId?: string;
 };
@@ -532,6 +559,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   ishaAngle: 'method',
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   panelLeft: true,
+  prayerPanelShift: DEFAULT_PRAYER_PANEL_SHIFT,
   nightMode: 'off',
   sleepMode: 'off',
   prayerBanAlert: true,
@@ -548,6 +576,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   simpleDayBackground: 'white',
   simpleNightBackground: 'black',
   colorRotation: 'off',
+  mosqueIqamahSource: 'off',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -629,6 +658,15 @@ export class SettingsService {
     const next = {
       ...this.getSettings(),
       prayerPanelScale: normalizePrayerPanelScale(scale),
+    };
+    this.saveSettings(next);
+  }
+
+  /** Live preview for sliding the prayer grid left/right. */
+  previewPrayerPanelShift(shift: number): void {
+    const next = {
+      ...this.getSettings(),
+      prayerPanelShift: normalizePrayerPanelShift(shift),
     };
     this.saveSettings(next);
   }
@@ -831,6 +869,7 @@ export class SettingsService {
       ishaAngle: isIshaAngleOption(parsed.ishaAngle) ? parsed.ishaAngle : DEFAULT_SETTINGS.ishaAngle,
       timezone: parsed.timezone ?? DEFAULT_SETTINGS.timezone,
       panelLeft: parsed.panelLeft ?? DEFAULT_SETTINGS.panelLeft,
+      prayerPanelShift: normalizePrayerPanelShift(parsed.prayerPanelShift),
       nightMode:
         parsed.nightMode === 'off' || parsed.nightMode === 'on' || parsed.nightMode === 'auto'
           ? parsed.nightMode
@@ -880,6 +919,9 @@ export class SettingsService {
       colorRotation: isColorRotation(parsed.colorRotation)
         ? parsed.colorRotation
         : DEFAULT_SETTINGS.colorRotation,
+      mosqueIqamahSource: isMosqueIqamahSource(parsed.mosqueIqamahSource)
+        ? parsed.mosqueIqamahSource
+        : DEFAULT_SETTINGS.mosqueIqamahSource,
       cityId: typeof parsed.cityId === 'string' ? parsed.cityId : undefined,
     };
   }

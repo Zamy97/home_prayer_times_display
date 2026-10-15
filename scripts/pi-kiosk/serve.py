@@ -7,16 +7,21 @@ import argparse
 import calendar as calmod
 import json
 import os
+import re
 import subprocess
 import time
 import urllib.error
 import urllib.request
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 CHC_HIJRI_URL = "https://hilalcommittee.org/api/HijriDates"
 HIJRI_CACHE_MAX_AGE_S = 6 * 60 * 60
+MOSQUE_IQAMAH_API_BASE = os.environ.get(
+    "MOSQUE_IQAMAH_API_BASE", "https://mosque-iqamah-api.onrender.com"
+).rstrip("/")
+MOSQUE_SLUG_RE = re.compile(r"^[a-z0-9-]{1,40}$")
 MONTH_NAMES = [
     "Muharram",
     "Safar",
@@ -162,6 +167,40 @@ def _fetch_chc_calendar(timeout_s: float = 8.0) -> dict:
         return json.loads(resp.read().decode("utf-8"))
 
 
+def build_mosque_iqamah_response(query: dict[str, list[str]]) -> tuple[int, bytes]:
+    """Proxy mosque list or a mosque's iqamah times from the Render API."""
+    slug = (query.get("slug") or [""])[0].strip().lower()
+    date = (query.get("date") or [""])[0].strip()
+    if not slug:
+        url = f"{MOSQUE_IQAMAH_API_BASE}/api/mosques"
+        req = urllib.request.Request(
+            url,
+            headers={"Accept": "application/json", "User-Agent": "HomePrayerTimesKiosk/1.0"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=12.0) as resp:
+                return 200, resp.read()
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError):
+            return 502, json.dumps({"error": "Mosque list unavailable"}).encode()
+    if not MOSQUE_SLUG_RE.match(slug):
+        return 400, json.dumps({"error": "Unknown mosque slug"}).encode()
+    if date and (len(date) != 10 or date[4] != "-" or date[7] != "-"):
+        return 400, json.dumps({"error": "date must be YYYY-MM-DD"}).encode()
+    params = "days=0"
+    if date:
+        params += f"&date={date}"
+    url = f"{MOSQUE_IQAMAH_API_BASE}/api/mosques/{slug}/times?{params}"
+    req = urllib.request.Request(
+        url,
+        headers={"Accept": "application/json", "User-Agent": "HomePrayerTimesKiosk/1.0"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=12.0) as resp:
+            return 200, resp.read()
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError):
+        return 502, json.dumps({"error": "Mosque times unavailable"}).encode()
+
+
 def build_hijri_response() -> tuple[int, dict]:
     """Match online /api/hijri: prefer live CHC, else disk cache, else 503."""
     cached, fetched_at = _read_hijri_disk_cache()
@@ -187,6 +226,21 @@ class KioskHandler(SimpleHTTPRequestHandler):
         if path.startswith("/api/weather"):
             payload = json.dumps({"error": "Weather unavailable offline"}).encode()
             self.send_response(503)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+            return
+
+        if path == "/api/mosques" or path.startswith("/api/mosque-iqamah") or path.startswith("/api/mosques/"):
+            query = parse_qs(urlsplit(self.path).query)
+            if path.startswith("/api/mosques/"):
+                parts = [p for p in path.split("/") if p]
+                # ['api', 'mosques', '{slug}', 'times']
+                if len(parts) >= 3:
+                    query.setdefault("slug", [parts[2]])
+            status, payload = build_mosque_iqamah_response(query)
+            self.send_response(status)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(payload)))
             self.end_headers()

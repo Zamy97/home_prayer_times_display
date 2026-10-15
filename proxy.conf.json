@@ -1,0 +1,7 @@
+{
+  "/api/mosques": {
+    "target": "https://mosque-iqamah-api.onrender.com",
+    "secure": true,
+    "changeOrigin": true
+  }
+}

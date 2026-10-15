@@ -10,6 +10,11 @@ app-home {
   --scale-prayer-name: 1;
   --scale-prayer-time: 1;
   --scale-prayer-label: 1;
+  /* Extra % of the board given to the prayer grid (from settings). */
+  --prayer-shift: 0%;
+  --prayer-share: 38.75%;
+  --iqamah-boost: 0%;
+  --night-clock-boost: 0%;
   /* Clock size: lower divisor → larger digits when scale > 1 */
   --clock-w-div: calc(2.95 / var(--scale-clock-double, 1));
   --clock-w-div-single: calc(2.55 / var(--scale-clock, 1));

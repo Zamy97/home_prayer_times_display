@@ -235,13 +235,12 @@ app-home.night .sunBar .sunTime .ampm {
    digits grow into the empty space above/below.
    --------------------------------------------------------------------- */
 
-/* Give the clock/date panel a little extra width, but keep the prayer
-   column wide enough that times like "10:04 PM" never clip. */
-app-home.night .content.panel-left {
-  grid-template-columns: 1.5fr 0.98fr;
+/* Night: a little extra clock width, unless mosque iqamah needs the room. */
+app-home.night .content {
+  --night-clock-boost: 3%;
 }
-app-home.night .content:not(.panel-left) {
-  grid-template-columns: 0.98fr 1.5fr;
+app-home.night .content.has-iqamah-col {
+  --night-clock-boost: 0%;
 }
 
 /* Trim the horizontal breathing room around the clock so the digits fill

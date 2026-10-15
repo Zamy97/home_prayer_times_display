@@ -206,8 +206,14 @@ app-home .geoPromptSmall a {
 
 app-home .content {
   display: grid;
-  /* Slightly narrower prayer column → wider clock panel (prayer .time font-size unchanged) */
-  grid-template-columns: 0.93fr 1.47fr;
+  /* Prayer share starts ~39%; --prayer-shift slides it toward the clock. */
+  --prayer-col: clamp(
+    32%,
+    calc(var(--prayer-share) + var(--iqamah-boost) + var(--prayer-shift) - var(--night-clock-boost)),
+    72%
+  );
+  --clock-col: calc(100% - var(--prayer-col));
+  grid-template-columns: minmax(0, var(--prayer-col)) minmax(0, var(--clock-col));
   gap: 0;
   flex: 1;
   min-height: 0;
@@ -230,7 +236,12 @@ app-home .content .panel {
 
 /* Toggle: clock panel left, prayer grid right */
 app-home .content.panel-left {
-  grid-template-columns: 1.47fr 0.93fr;
+  grid-template-columns: minmax(0, var(--clock-col)) minmax(0, var(--prayer-col));
+}
+
+/* Mosque iqamah: give the prayer grid more of the board so three columns can sit like two. */
+app-home .content.has-iqamah-col {
+  --iqamah-boost: 18%;
 }
 app-home .content.panel-left .panel {
   order: 0;
@@ -248,6 +259,12 @@ app-home .grid {
   border-left: none;
   /* Navy seam on prayer side — separates grid from beige clock panel */
   border-right: 6px solid var(--navy);
+  container-type: inline-size;
+}
+
+app-home .grid.grid--iqamah {
+  --cell-pad-x: 10px;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.14fr) minmax(0, 1.14fr);
 }
 
 app-home .cell {
@@ -268,6 +285,25 @@ app-home .cell.dark:has(.timeStack) {
 app-home .grid > .cell:nth-child(2n) {
   border-right: none;
   overflow: hidden;
+}
+
+app-home .grid.grid--iqamah > .cell:nth-child(2n) {
+  border-right: 2px solid var(--line);
+  overflow: hidden;
+}
+
+app-home .grid.grid--iqamah > .cell:nth-child(3n) {
+  border-right: none;
+  overflow: hidden;
+}
+
+app-home .cell:has(> .time),
+app-home .cell:has(> .timeStack) {
+  container-type: inline-size;
+}
+
+app-home .grid.grid--iqamah > .cell.is-next:nth-child(2n) {
+  border-right-color: var(--line-dark);
 }
 
 app-home .row-last {
@@ -406,9 +442,26 @@ app-home .time {
   max-width: 100%;
 }
 
-/* Fajr row: slightly smaller so digits fit below the STARTS band. */
+/* Fajr row: slightly smaller so digits fit below the STARTS / IQAMAH band. */
 app-home .timeStack > .time {
   font-size: calc(108px * var(--scale-prayer-time, 1));
+}
+
+app-home .grid.grid--iqamah .prayer {
+  font-size: calc(clamp(22px, 6.4cqi, 40px) * var(--scale-prayer-name, 1));
+}
+
+app-home .grid.grid--iqamah .colLabel {
+  letter-spacing: 0.12em;
+  font-size: calc(clamp(14px, 8cqi, 26px) * var(--scale-prayer-label, 1));
+}
+
+app-home .grid.grid--iqamah .time {
+  font-size: calc(clamp(32px, 26cqi, 88px) * var(--scale-prayer-time, 1));
+}
+
+app-home .grid.grid--iqamah .timeStack > .time {
+  font-size: calc(clamp(28px, 22cqi, 76px) * var(--scale-prayer-time, 1));
 }
 
 /* Chosen color applies to every time numeral, not just the big clock. */
@@ -1105,6 +1158,9 @@ app-home .icon {
   }
   app-home .prayer {
     font-size: calc(48px * var(--scale-prayer-name, 1));
+  }
+  app-home .grid.grid--iqamah .prayer {
+    font-size: calc(clamp(24px, 6.4cqi, 40px) * var(--scale-prayer-name, 1));
   }
   app-home .colLabel {
     font-size: calc(28px * var(--scale-prayer-label, 1));

@@ -108,6 +108,18 @@ app-home.layout-portrait .content > .grid {
   grid-template-rows: repeat(5, minmax(0, 1fr));
 }
 
+app-home.layout-portrait .content > .grid.grid--iqamah {
+  grid-template-columns: 0.72fr 1fr 1fr;
+}
+
+app-home.layout-portrait .grid.grid--iqamah .time {
+  font-size: calc(clamp(26px, 7.2vw, 52px) * var(--scale-prayer-time, 1));
+}
+
+app-home.layout-portrait .grid.grid--iqamah .timeStack > .time {
+  font-size: calc(clamp(22px, 6.2vw, 44px) * var(--scale-prayer-time, 1));
+}
+
 app-home.layout-portrait .prayer {
   font-size: calc(clamp(17px, 4.6vw, 30px) * var(--scale-prayer-name, 1));
 }

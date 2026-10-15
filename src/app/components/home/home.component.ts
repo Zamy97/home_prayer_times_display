@@ -1,13 +1,17 @@
 import { Component, ChangeDetectorRef, DestroyRef, HostBinding, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { interval, startWith, take } from 'rxjs';
+import { interval, startWith, Subject, switchMap, take } from 'rxjs';
 import { PrayerTimesService } from '../../services/prayer-times.service';
 import { PrayTimeTimes } from '../../lib/praytime';
 import { SettingsService } from '../../services/settings.service';
 import { WeatherService } from '../../services/weather.service';
 import { HijriDateService } from '../../services/hijri-date.service';
 import { GeoError, GeolocationService } from '../../services/geolocation.service';
+import {
+  MosqueIqamahService,
+  MosqueIqamahTimes,
+} from '../../services/mosque-iqamah.service';
 
 @Component({
   selector: 'app-home',
@@ -213,6 +217,12 @@ export class HomeComponent implements OnInit {
   get scalePrayerLabel(): string {
     return String(this.settings.prayerPanelScale?.labels ?? 1);
   }
+
+  /** Extra board % given to the prayer grid so mosque iqamah can sit beside start times. */
+  @HostBinding('style.--prayer-shift')
+  get prayerShift(): string {
+    return `${this.settings.prayerPanelShift ?? 0}%`;
+  }
   /** Chosen clock color for the current full-board or Simple/Sleep layout. */
   @HostBinding('style.--clock-color')
   get clockColor(): string {
@@ -270,14 +280,31 @@ export class HomeComponent implements OnInit {
       } & { raw: PrayTimeTimes<string> })
     | null = null;
 
+  /** Mosque iqamah overlay (12-hour), null when the setting is Off or the API has no day. */
+  iqamah: {
+    fajr: { time: string; ampm: string } | null;
+    dhuhr: { time: string; ampm: string } | null;
+    asr: { time: string; ampm: string } | null;
+    maghrib: { time: string; ampm: string } | null;
+    isha: { time: string; ampm: string } | null;
+  } | null = null;
+  /** Third prayer-grid column is showing mosque iqamah times. */
+  get showIqamahColumn(): boolean {
+    return this.iqamah != null;
+  }
+  /** Short masjid name for the iqamah column header (e.g. IONA). */
+  iqamahColumnLabel = 'IQAMAH';
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly prayerTimes = inject(PrayerTimesService);
   private readonly settingsService = inject(SettingsService);
   private readonly weatherService = inject(WeatherService);
   private readonly hijriDate = inject(HijriDateService);
   private readonly geolocation = inject(GeolocationService);
+  private readonly mosqueIqamahService = inject(MosqueIqamahService);
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly mosqueRefresh$ = new Subject<void>();
   settings = this.settingsService.getSettings();
   /** Local hour used for hourly color rotation (updated each tick). */
   displayHour = new Date().getHours();
@@ -383,6 +410,10 @@ export class HomeComponent implements OnInit {
           this.fetchTemperature(true);
         }
 
+        if (prev.mosqueIqamahSource !== s.mosqueIqamahSource) {
+          this.mosqueRefresh$.next();
+        }
+
         this.updateNightMode(new Date());
         this.updateScreenLayout();
         this.cdr.detectChanges();
@@ -424,6 +455,16 @@ export class HomeComponent implements OnInit {
       if (this.skyTransitionTimer) clearTimeout(this.skyTransitionTimer);
       document.documentElement.classList.remove('theme-ready');
     });
+
+    this.mosqueRefresh$
+      .pipe(
+        startWith(undefined),
+        switchMap(() =>
+          this.mosqueIqamahService.loadToday(this.settings.mosqueIqamahSource ?? 'off')
+        ),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((times) => this.applyMosqueTimes(times));
 
     this.loadFromCache();
     this.loadPrayerTimes();
@@ -589,6 +630,7 @@ export class HomeComponent implements OnInit {
       this.updateDateLabels(new Date());
     }
     this.loadPrayerTimes();
+    this.mosqueRefresh$.next();
   }
 
   private loadFromCache(): void {
@@ -650,6 +692,24 @@ export class HomeComponent implements OnInit {
     this.updateNextPrayer(today);
     this.updateNightMode(today);
     this.updatePrayerBan(today);
+  }
+
+  private applyMosqueTimes(times: MosqueIqamahTimes | null): void {
+    if (!times) {
+      this.iqamah = null;
+      this.iqamahColumnLabel = 'IQAMAH';
+      this.cdr.detectChanges();
+      return;
+    }
+    this.iqamahColumnLabel = this.mosqueIqamahService.columnLabel(times.name, times.slug);
+    this.iqamah = {
+      fajr: this.mosqueIqamahService.formatIqamah(times.fajr),
+      dhuhr: this.mosqueIqamahService.formatIqamah(times.dhuhr),
+      asr: this.mosqueIqamahService.formatIqamah(times.asr),
+      maghrib: this.mosqueIqamahService.formatIqamah(times.maghrib),
+      isha: this.mosqueIqamahService.formatIqamah(times.isha),
+    };
+    this.cdr.detectChanges();
   }
 
   private splitTime(value: string): { time: string; ampm: string } {

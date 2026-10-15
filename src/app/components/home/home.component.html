@@ -81,7 +81,12 @@
   </div>
   }
 
-  <section class="content" [class.panel-left]="panelLeft" [class.content--sleep]="sleepModeActive">
+  <section
+    class="content"
+    [class.panel-left]="panelLeft"
+    [class.content--sleep]="sleepModeActive"
+    [class.has-iqamah-col]="showIqamahColumn"
+  >
     @if (sleepModeActive) {
       <div class="sleepMode" aria-label="Sleep mode display">
         <div
@@ -149,7 +154,7 @@
         </div>
       </div>
     } @else {
-    <div class="grid" aria-label="Prayer times grid">
+    <div class="grid" [class.grid--iqamah]="showIqamahColumn" aria-label="Prayer times grid">
       <!-- Row 1 (FAJR) -->
       <div
         class="cell dark prayer"
@@ -174,6 +179,18 @@
           </div>
         </div>
       </div>
+      @if (showIqamahColumn) {
+        <div class="cell dark iqamah-cell" [class.is-next]="nextPrayerKey === 'fajr'" [class.is-now]="announcingPrayer === 'fajr'">
+          <div class="timeStack">
+            <div class="startsBand">
+              <div class="colLabel">{{ iqamahColumnLabel }}</div>
+            </div>
+            <div class="time">
+              {{ iqamah?.fajr?.time ?? '-----' }}<span class="ampm">{{ iqamah?.fajr?.ampm }}</span>
+            </div>
+          </div>
+        </div>
+      }
 
       <!-- Row 2 (DHUHR) -->
       <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'dhuhr'" [class.is-now]="announcingPrayer === 'dhuhr'">DHUHR</div>
@@ -182,6 +199,13 @@
           {{ times?.dhuhr?.time ?? '-----' }}<span class="ampm">{{ times?.dhuhr?.ampm }}</span>
         </div>
       </div>
+      @if (showIqamahColumn) {
+        <div class="cell dark iqamah-cell" [class.is-next]="nextPrayerKey === 'dhuhr'" [class.is-now]="announcingPrayer === 'dhuhr'">
+          <div class="time">
+            {{ iqamah?.dhuhr?.time ?? '-----' }}<span class="ampm">{{ iqamah?.dhuhr?.ampm }}</span>
+          </div>
+        </div>
+      }
 
       <!-- Row 3 (ASR) -->
       <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'asr'" [class.is-now]="announcingPrayer === 'asr'">ASR</div>
@@ -190,6 +214,13 @@
           {{ times?.asr?.time ?? '-----' }}<span class="ampm">{{ times?.asr?.ampm }}</span>
         </div>
       </div>
+      @if (showIqamahColumn) {
+        <div class="cell dark iqamah-cell" [class.is-next]="nextPrayerKey === 'asr'" [class.is-now]="announcingPrayer === 'asr'">
+          <div class="time">
+            {{ iqamah?.asr?.time ?? '-----' }}<span class="ampm">{{ iqamah?.asr?.ampm }}</span>
+          </div>
+        </div>
+      }
 
       <!-- Row 4 (MAGHRIB) -->
       <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'maghrib'" [class.is-now]="announcingPrayer === 'maghrib'">MAGHRIB</div>
@@ -199,6 +230,13 @@
           <span class="ampm">{{ times?.maghrib?.ampm }}</span>
         </div>
       </div>
+      @if (showIqamahColumn) {
+        <div class="cell dark iqamah-cell" [class.is-next]="nextPrayerKey === 'maghrib'" [class.is-now]="announcingPrayer === 'maghrib'">
+          <div class="time">
+            {{ iqamah?.maghrib?.time ?? '-----' }}<span class="ampm">{{ iqamah?.maghrib?.ampm }}</span>
+          </div>
+        </div>
+      }
 
       <!-- Row 5 (ISHA) -->
       <div
@@ -213,6 +251,17 @@
           {{ times?.isha?.time ?? '-----' }}<span class="ampm">{{ times?.isha?.ampm }}</span>
         </div>
       </div>
+      @if (showIqamahColumn) {
+        <div
+          class="cell dark iqamah-cell row-last"
+          [class.is-next]="nextPrayerKey === 'isha'"
+          [class.is-now]="announcingPrayer === 'isha'"
+        >
+          <div class="time">
+            {{ iqamah?.isha?.time ?? '-----' }}<span class="ampm">{{ iqamah?.isha?.ampm }}</span>
+          </div>
+        </div>
+      }
     </div>
 
     <!-- Right panel (current time + date) -->

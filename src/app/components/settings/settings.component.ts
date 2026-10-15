@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core'
 import { PrayTimeMethod } from '../../lib/praytime';
 import { CITIES, OTHER_CITY_ID } from '../../data/cities';
 import { GeoError, GeolocationService } from '../../services/geolocation.service';
+import { MosqueIqamahService } from '../../services/mosque-iqamah.service';
 import {
   AsrMethod,
   ClockPanelScale,
@@ -15,11 +16,15 @@ import {
   IshaAngleOption,
   NightClockColor,
   NightBackground,
+  MosqueIqamahSource,
   NightMode,
   SleepModeOption,
   PANEL_SCALE_MAX,
   PANEL_SCALE_MIN,
   PANEL_SCALE_STEP,
+  PRAYER_PANEL_SHIFT_MAX,
+  DEFAULT_PRAYER_PANEL_SHIFT,
+  normalizePrayerPanelShift,
   PrayerPanelScale,
   PrayerSettings,
   ScreenLayout,
@@ -37,6 +42,7 @@ type SizingStudio = 'clock' | 'prayer' | 'sleep';
 export class SettingsComponent implements OnInit {
   private readonly settingsService = inject(SettingsService);
   private readonly geolocation = inject(GeolocationService);
+  private readonly mosqueIqamahService = inject(MosqueIqamahService);
 
   /** 'loading' while requesting, null when idle, message when error */
   geoStatus: 'loading' | null | string = null;
@@ -57,6 +63,11 @@ export class SettingsComponent implements OnInit {
   readonly asrOptions: Array<{ value: AsrMethod; label: string }> = [
     { value: 'Hanafi', label: 'Hanafi' },
     { value: 'Standard', label: 'Standard' },
+  ];
+
+  mosqueIqamahOptions: Array<{ value: MosqueIqamahSource; label: string }> = [
+    { value: 'off', label: 'Off' },
+    { value: 'iona', label: 'IONA Masjid (Warren)' },
   ];
 
   readonly fajrAngleOptions: Array<{ value: FajrAngleOption; label: string }> = [
@@ -228,6 +239,7 @@ export class SettingsComponent implements OnInit {
   selectedCityId: string = OTHER_CITY_ID;
   method: PrayTimeMethod = 'ISNA';
   asr: AsrMethod = 'Hanafi';
+  mosqueIqamahSource: MosqueIqamahSource = 'off';
   fajrAngle: FajrAngleOption = 'method';
   ishaAngle: IshaAngleOption = 'method';
   timezone = this.deviceTimezone;
@@ -235,6 +247,10 @@ export class SettingsComponent implements OnInit {
   lng = '';
   /** true = clock/date panel on left */
   panelLeft = true;
+  /** Extra % of the board given to the prayer grid. */
+  prayerPanelShift = DEFAULT_PRAYER_PANEL_SHIFT;
+  readonly prayerShiftSliderMin = -PRAYER_PANEL_SHIFT_MAX;
+  readonly prayerShiftSliderMax = PRAYER_PANEL_SHIFT_MAX;
   nightMode: NightMode = 'off';
   sleepMode: SleepModeOption = 'off';
   prayerBanAlert = true;
@@ -266,12 +282,15 @@ export class SettingsComponent implements OnInit {
     const s = this.settingsService.getSettings();
     this.method = s.method;
     this.asr = s.asr;
+    this.mosqueIqamahSource = s.mosqueIqamahSource ?? 'off';
+    this.loadMosqueOptions();
     this.fajrAngle = s.fajrAngle ?? 'method';
     this.ishaAngle = s.ishaAngle ?? 'method';
     this.timezone = s.timezone;
     this.lat = s.coords?.lat?.toString() ?? '';
     this.lng = s.coords?.lng?.toString() ?? '';
     this.panelLeft = s.panelLeft ?? true;
+    this.prayerPanelShift = normalizePrayerPanelShift(s.prayerPanelShift);
     this.nightMode = s.nightMode ?? 'off';
     this.sleepMode = s.sleepMode ?? 'off';
     this.prayerBanAlert = s.prayerBanAlert !== false;
@@ -403,7 +422,30 @@ export class SettingsComponent implements OnInit {
 
   resetPrayerPanelScale(): void {
     this.prayerPanelScale = { ...DEFAULT_PRAYER_PANEL_SCALE };
+    this.prayerPanelShift = DEFAULT_PRAYER_PANEL_SHIFT;
     this.pushPrayerScalePreview();
+    this.pushPrayerShiftPreview();
+  }
+
+  /**
+   * Slider is Left → Right on the board. When the clock is on the left,
+   * dragging left widens the prayer grid (it slides toward the clock).
+   */
+  get prayerShiftSlider(): number {
+    return this.panelLeft ? -this.prayerPanelShift : this.prayerPanelShift;
+  }
+
+  onPrayerShiftSlider(raw: number | string): void {
+    const n = Number(raw);
+    if (!Number.isFinite(n)) return;
+    const towardClock = this.panelLeft ? -n : n;
+    this.prayerPanelShift = normalizePrayerPanelShift(towardClock);
+    this.pushPrayerShiftPreview();
+  }
+
+  resetPrayerPanelShift(): void {
+    this.prayerPanelShift = DEFAULT_PRAYER_PANEL_SHIFT;
+    this.pushPrayerShiftPreview();
   }
 
   resetSleepModeScale(): void {
@@ -462,6 +504,11 @@ export class SettingsComponent implements OnInit {
     this.syncPreviewFrames();
   }
 
+  private pushPrayerShiftPreview(): void {
+    this.settingsService.previewPrayerPanelShift(this.prayerPanelShift);
+    this.syncPreviewFrames();
+  }
+
   private pushSleepScalePreview(): void {
     this.settingsService.previewSleepModeScale(this.sleepModeScale);
     this.syncPreviewFrames();
@@ -502,10 +549,12 @@ export class SettingsComponent implements OnInit {
       coords,
       method: this.method,
       asr: this.asr,
+      mosqueIqamahSource: this.mosqueIqamahSource,
       fajrAngle: this.fajrAngle,
       ishaAngle: this.ishaAngle,
       timezone,
       panelLeft: this.panelLeft,
+      prayerPanelShift: normalizePrayerPanelShift(this.prayerPanelShift),
       nightMode: this.nightMode,
       sleepMode: this.sleepMode,
       prayerBanAlert: this.prayerBanAlert,
@@ -526,6 +575,28 @@ export class SettingsComponent implements OnInit {
     };
     this.settingsService.saveSettings(next);
     window.location.assign('/');
+  }
+
+  private loadMosqueOptions(): void {
+    this.mosqueIqamahService.listMosques().subscribe((mosques) => {
+      const options: Array<{ value: MosqueIqamahSource; label: string }> = [
+        { value: 'off', label: 'Off' },
+        ...mosques.map((mosque) => ({
+          value: mosque.slug,
+          label: this.mosqueIqamahService.mosqueOptionLabel(mosque),
+        })),
+      ];
+      if (
+        this.mosqueIqamahSource !== 'off' &&
+        !options.some((option) => option.value === this.mosqueIqamahSource)
+      ) {
+        options.splice(1, 0, {
+          value: this.mosqueIqamahSource,
+          label: this.mosqueIqamahSource,
+        });
+      }
+      this.mosqueIqamahOptions = options;
+    });
   }
 
   private parseCoords(): PrayerSettings['coords'] {

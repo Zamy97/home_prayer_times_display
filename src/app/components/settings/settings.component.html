@@ -105,6 +105,18 @@
             <option *ngFor="let a of asrOptions" [ngValue]="a.value">{{ a.label }}</option>
           </select>
         </label>
+
+        <label class="field">
+          <span class="label">Mosque iqamah</span>
+          <select
+            class="input"
+            [(ngModel)]="mosqueIqamahSource"
+            name="mosqueIqamahSource"
+            title="Choose which masjid's posted iqamah to show in the third column. Home adhan times stay as calculated. Off hides the column."
+          >
+            <option *ngFor="let option of mosqueIqamahOptions" [ngValue]="option.value">{{ option.label }}</option>
+          </select>
+        </label>
       </div>
     </section>
 
@@ -513,7 +525,7 @@
             <div>
               <h2 id="prayerSizingStudioTitle" class="sizingStudioTitle">Prayer panel sizing</h2>
               <p class="sizingStudioHint">
-                Prayer times grows the digits inside each row — cell borders stay put. 60–250%.
+                Slide the prayer grid left or right so mosque iqamah fits. Times grow inside each row — 60–250%.
               </p>
             </div>
             <div class="sizingStudioPrayerDockActions">
@@ -526,6 +538,29 @@
             </div>
           </div>
           <div class="sizingStudioPrayerSliders">
+            <label class="scaleField scaleField--dock shiftField">
+              <span class="scaleFieldTop">
+                <span class="label">Shift left / right</span>
+                <button class="btn secondary btn--compact" type="button" (click)="resetPrayerPanelShift()">
+                  Center
+                </button>
+              </span>
+              <div class="shiftSliderRow">
+                <span class="shiftEnd" aria-hidden="true">Left</span>
+                <input
+                  class="scaleSlider shiftSlider"
+                  type="range"
+                  [min]="prayerShiftSliderMin"
+                  [max]="prayerShiftSliderMax"
+                  step="1"
+                  [ngModel]="prayerShiftSlider"
+                  (ngModelChange)="onPrayerShiftSlider($event)"
+                  name="prayer-panel-shift-studio"
+                  aria-label="Shift prayer panel left or right"
+                />
+                <span class="shiftEnd" aria-hidden="true">Right</span>
+              </div>
+            </label>
             @for (item of prayerPanelScaleOptions; track item.key) {
               <label class="scaleField scaleField--dock">
                 <span class="scaleFieldTop">

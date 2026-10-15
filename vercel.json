@@ -4,6 +4,14 @@
   "outputDirectory": "dist/home-prayer-times-display/browser",
   "rewrites": [
     {
+      "source": "/api/mosques",
+      "destination": "/api/mosque-iqamah"
+    },
+    {
+      "source": "/api/mosques/:slug/times",
+      "destination": "/api/mosque-iqamah?slug=:slug"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
