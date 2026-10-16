@@ -39,7 +39,7 @@ type MosqueTimesResponse = {
   };
 };
 
-const TIMES_CACHE_KEY = 'mosqueIqamah.v2';
+const TIMES_CACHE_KEY = 'mosqueIqamah.v3';
 const TIMES_CACHE_KEY_V1 = 'mosqueIqamah.v1';
 const LIST_CACHE_KEY = 'mosqueList.v3';
 const FALLBACK_MOSQUES: MosqueOption[] = [
@@ -50,9 +50,14 @@ const FALLBACK_MOSQUES: MosqueOption[] = [
   { slug: 'taqwa', name: 'Masjid Al-Taqwa', city: 'Warren', state: 'MI', address: '27130 Campbell Rd' },
   { slug: 'fath', name: 'Masjid Al Fath', city: 'Warren', state: 'MI', address: '24703 Ryan Rd' },
 ];
-/** Posted Furqaan Maghrib iqamah is “10 minutes after sunset”, not a clock time. */
+/** Posted Furqaan Maghrib iqamah is “10 minutes after sunset”, not a clock time.
+ *  AthanPlus monthly sheets print Sunset; iqamah is sunset + 5. */
 const MAGHRIB_IQAMAH_AFTER_SUNSET_MIN: Record<string, number> = {
   furqaan: 10,
+  'darul-uloom': 5,
+  mii: 5,
+  taqwa: 5,
+  fath: 5,
 };
 /** Render free-tier cold start is often 30–50s; keep trying while yesterday stays on screen. */
 const FETCH_RETRY_COUNT = 4;
@@ -212,9 +217,29 @@ export class MosqueIqamahService {
       fajr: today.fajr?.iqamah ?? undefined,
       dhuhr: today.dhuhr?.iqamah ?? undefined,
       asr: today.asr?.iqamah ?? undefined,
-      maghrib: today.maghrib?.iqamah ?? undefined,
+      maghrib: this.maghribIqamah(source, today.maghrib),
       isha: today.isha?.iqamah ?? undefined,
     };
+  }
+
+  private maghribIqamah(source: string, pair?: TimePair): string | undefined {
+    const extra = MAGHRIB_IQAMAH_AFTER_SUNSET_MIN[source];
+    if (extra != null && pair?.adhan) {
+      return this.addMinutes(pair.adhan, extra);
+    }
+    return pair?.iqamah ?? undefined;
+  }
+
+  private addMinutes(value: string, minutes: number): string | undefined {
+    const [hRaw, mRaw] = value.split(':');
+    const hour = Number(hRaw);
+    const minute = Number(mRaw);
+    if (!Number.isFinite(hour) || !Number.isFinite(minute)) return undefined;
+    const total = hour * 60 + minute + minutes;
+    const wrapped = ((total % 1440) + 1440) % 1440;
+    const hh = String(Math.floor(wrapped / 60)).padStart(2, '0');
+    const mm = String(wrapped % 60).padStart(2, '0');
+    return `${hh}:${mm}`;
   }
 
   /** Keep known masjids visible if a stale CDN/API list only has IONA + Furqaan. */

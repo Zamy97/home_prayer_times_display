@@ -9,6 +9,7 @@ describe('MosqueIqamahService', () => {
   beforeEach(() => {
     localStorage.removeItem('mosqueIqamah.v1');
     localStorage.removeItem('mosqueIqamah.v2');
+    localStorage.removeItem('mosqueIqamah.v3');
     localStorage.removeItem('mosqueList.v1');
     localStorage.removeItem('mosqueList.v2');
     localStorage.removeItem('mosqueList.v3');
@@ -23,6 +24,7 @@ describe('MosqueIqamahService', () => {
     http.verify();
     localStorage.removeItem('mosqueIqamah.v1');
     localStorage.removeItem('mosqueIqamah.v2');
+    localStorage.removeItem('mosqueIqamah.v3');
     localStorage.removeItem('mosqueList.v1');
     localStorage.removeItem('mosqueList.v2');
     localStorage.removeItem('mosqueList.v3');
@@ -126,6 +128,25 @@ describe('MosqueIqamahService', () => {
     ]);
   });
 
+  it('uses AthanPlus Maghrib adhan plus 5 minutes even if stored iqamah is sunset', () => {
+    let result: unknown;
+    service.loadToday('mii', '2026-10-16').subscribe((times) => {
+      result = times;
+    });
+    http.expectOne('/api/mosques/mii/times?date=2026-10-16&days=0').flush({
+      mosque: { slug: 'mii', name: 'Michigan Islamic Institute' },
+      today: {
+        date: '2026-10-16',
+        maghrib: { adhan: '18:48', iqamah: '18:48' },
+      },
+    });
+    expect(result).toEqual(jasmine.objectContaining({ maghrib: '18:53' }));
+    http.expectOne('/api/mosques/mii/times?date=2026-10-17&days=0').flush({
+      mosque: { slug: 'mii', name: 'Michigan Islamic Institute' },
+      today: { date: '2026-10-17' },
+    });
+  });
+
   it('maps IONA today iqamah from the mosque API', () => {
     let result: unknown;
     service.loadToday('iona', '2026-10-14').subscribe((times) => {
@@ -162,7 +183,7 @@ describe('MosqueIqamahService', () => {
 
   it('shows yesterday immediately, then swaps in today and saves tomorrow', () => {
     localStorage.setItem(
-      'mosqueIqamah.v2',
+      'mosqueIqamah.v3',
       JSON.stringify({
         slug: 'iona',
         days: {
@@ -194,7 +215,7 @@ describe('MosqueIqamahService', () => {
 
   it('uses a prefetched next day as soon as the date rolls over', () => {
     localStorage.setItem(
-      'mosqueIqamah.v2',
+      'mosqueIqamah.v3',
       JSON.stringify({
         slug: 'iona',
         days: {

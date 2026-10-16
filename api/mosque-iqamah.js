@@ -81,5 +81,9 @@ module.exports = async function handler(req, res) {
 
   const params = new URLSearchParams({ days: '0' });
   if (date) params.set('date', date);
-  return proxyJson(res, `${apiBase()}/api/mosques/${encodeURIComponent(slug)}/times?${params}`);
+  return proxyJson(
+    res,
+    `${apiBase()}/api/mosques/${encodeURIComponent(slug)}/times?${params}`,
+    0
+  );
 };
