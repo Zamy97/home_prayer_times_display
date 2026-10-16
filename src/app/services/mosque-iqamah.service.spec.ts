@@ -10,6 +10,7 @@ describe('MosqueIqamahService', () => {
     localStorage.removeItem('mosqueIqamah.v1');
     localStorage.removeItem('mosqueIqamah.v2');
     localStorage.removeItem('mosqueList.v1');
+    localStorage.removeItem('mosqueList.v2');
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
     });
@@ -22,6 +23,7 @@ describe('MosqueIqamahService', () => {
     localStorage.removeItem('mosqueIqamah.v1');
     localStorage.removeItem('mosqueIqamah.v2');
     localStorage.removeItem('mosqueList.v1');
+    localStorage.removeItem('mosqueList.v2');
   });
 
   it('formats 24-hour iqamah as 12-hour split time', () => {
@@ -57,6 +59,21 @@ describe('MosqueIqamahService', () => {
     let result: unknown = 'unset';
     service.loadToday('off').subscribe((times) => (result = times));
     expect(result).toBeNull();
+  });
+
+  it('labels dropdown options with city, state, and street', () => {
+    expect(
+      service.mosqueOptionLabel({
+        slug: 'iona',
+        name: 'IONA Masjid',
+        city: 'Warren',
+        state: 'MI',
+        address: '28630 Ryan Rd',
+      })
+    ).toBe('IONA Masjid, Warren, MI — 28630 Ryan Rd');
+    expect(
+      service.mosqueOptionLabel({ slug: 'iona', name: 'IONA Masjid', city: 'Warren', state: 'MI' })
+    ).toBe('IONA Masjid, Warren, MI');
   });
 
   it('shortens mosque names for the iqamah column header', () => {

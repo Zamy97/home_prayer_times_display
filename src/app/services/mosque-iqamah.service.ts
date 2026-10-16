@@ -11,6 +11,7 @@ export type MosqueOption = {
   name: string;
   city?: string;
   state?: string;
+  address?: string;
 };
 
 export type MosqueIqamahTimes = {
@@ -40,10 +41,14 @@ type MosqueTimesResponse = {
 
 const TIMES_CACHE_KEY = 'mosqueIqamah.v2';
 const TIMES_CACHE_KEY_V1 = 'mosqueIqamah.v1';
-const LIST_CACHE_KEY = 'mosqueList.v1';
+const LIST_CACHE_KEY = 'mosqueList.v2';
 const FALLBACK_MOSQUES: MosqueOption[] = [
-  { slug: 'iona', name: 'IONA Masjid', city: 'Warren', state: 'MI' },
-  { slug: 'furqaan', name: 'Masjid Al-Furqaan', city: 'Warren', state: 'MI' },
+  { slug: 'iona', name: 'IONA Masjid', city: 'Warren', state: 'MI', address: '28630 Ryan Rd' },
+  { slug: 'furqaan', name: 'Masjid Al-Furqaan', city: 'Warren', state: 'MI', address: '27643 Schoenherr Rd' },
+  { slug: 'darul-uloom', name: 'Darul Uloom Michigan', city: 'Warren', state: 'MI', address: '2446 12 Mile Rd' },
+  { slug: 'mii', name: 'Michigan Islamic Institute', city: 'Warren', state: 'MI', address: '28111 Imperial Dr' },
+  { slug: 'taqwa', name: 'Masjid Al-Taqwa', city: 'Warren', state: 'MI', address: '27130 Campbell Rd' },
+  { slug: 'fath', name: 'Masjid Al Fath', city: 'Warren', state: 'MI', address: '24703 Ryan Rd' },
 ];
 /** Posted Furqaan Maghrib iqamah is “10 minutes after sunset”, not a clock time. */
 const MAGHRIB_IQAMAH_AFTER_SUNSET_MIN: Record<string, number> = {
@@ -79,7 +84,7 @@ export class MosqueIqamahService {
       }),
       catchError(() => of(cached.length ? cached : FALLBACK_MOSQUES))
     );
-    return cached.length ? remote$.pipe(startWith(cached)) : remote$;
+    return remote$.pipe(startWith(cached.length ? cached : FALLBACK_MOSQUES));
   }
 
   loadToday(source: MosqueIqamahSource, date = this.todayKey()): Observable<MosqueIqamahTimes | null> {
@@ -147,7 +152,11 @@ export class MosqueIqamahService {
   }
 
   mosqueOptionLabel(mosque: MosqueOption): string {
-    if (mosque.city) return `${mosque.name} (${mosque.city})`;
+    const place = [mosque.city, mosque.state].filter((part) => !!part?.trim()).join(', ');
+    const street = mosque.address?.trim();
+    if (place && street) return `${mosque.name}, ${place} — ${street}`;
+    if (place) return `${mosque.name}, ${place}`;
+    if (street) return `${mosque.name} — ${street}`;
     return mosque.name;
   }
 
@@ -212,12 +221,13 @@ export class MosqueIqamahService {
     if (!Array.isArray(rows)) return [];
     return rows
       .filter((row) => isMosqueSlug(row?.slug) && typeof row?.name === 'string' && row.name.trim())
-      .map((row) => ({
-        slug: row.slug,
-        name: row.name.trim(),
-        city: typeof row.city === 'string' ? row.city : undefined,
-        state: typeof row.state === 'string' ? row.state : undefined,
-      }));
+      .map((row) => {
+        const mosque: MosqueOption = { slug: row.slug, name: row.name.trim() };
+        if (typeof row.city === 'string' && row.city.trim()) mosque.city = row.city.trim();
+        if (typeof row.state === 'string' && row.state.trim()) mosque.state = row.state.trim();
+        if (typeof row.address === 'string' && row.address.trim()) mosque.address = row.address.trim();
+        return mosque;
+      });
   }
 
   private readListCache(): MosqueOption[] {

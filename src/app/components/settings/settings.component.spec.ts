@@ -23,8 +23,12 @@ describe('SettingsComponent', () => {
                 { slug: 'iona', name: 'IONA Masjid', city: 'Warren', state: 'MI' },
                 { slug: 'madania', name: 'Madania Masjid', city: 'Warren', state: 'MI' },
               ]),
-            mosqueOptionLabel: (mosque: { name: string; city?: string }) =>
-              mosque.city ? `${mosque.name} (${mosque.city})` : mosque.name,
+            mosqueOptionLabel: (mosque: { name: string; city?: string; state?: string; address?: string }) => {
+              const place = [mosque.city, mosque.state].filter(Boolean).join(', ');
+              return mosque.address
+                ? `${mosque.name}, ${place} — ${mosque.address}`
+                : `${mosque.name}, ${place}`;
+            },
           },
         },
       ],
@@ -52,8 +56,8 @@ describe('SettingsComponent', () => {
       'iona',
       'madania',
     ]);
-    expect(component.mosqueIqamahOptions[1].label).toBe('IONA Masjid (Warren)');
-    expect(component.mosqueIqamahOptions[2].label).toBe('Madania Masjid (Warren)');
+    expect(component.mosqueIqamahOptions[1].label).toBe('IONA Masjid, Warren, MI');
+    expect(component.mosqueIqamahOptions[2].label).toBe('Madania Masjid, Warren, MI');
   });
 });
 

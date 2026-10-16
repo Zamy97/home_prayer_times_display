@@ -67,7 +67,7 @@ export class SettingsComponent implements OnInit {
 
   mosqueIqamahOptions: Array<{ value: MosqueIqamahSource; label: string }> = [
     { value: 'off', label: 'Off' },
-    { value: 'iona', label: 'IONA Masjid (Warren)' },
+    { value: 'iona', label: 'IONA Masjid, Warren, MI — 28630 Ryan Rd' },
   ];
 
   readonly fajrAngleOptions: Array<{ value: FajrAngleOption; label: string }> = [
