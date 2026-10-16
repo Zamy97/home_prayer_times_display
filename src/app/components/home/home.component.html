@@ -175,7 +175,9 @@
             <div class="colLabel">STARTS</div>
           </div>
           <div class="time">
-            {{ times?.fajr?.time ?? '-----' }}<span class="ampm">{{ times?.fajr?.ampm }}</span>
+            <span class="timeCluster"
+              >{{ times?.fajr?.time ?? '-----' }}<span class="ampm">{{ times?.fajr?.ampm }}</span></span
+            >
           </div>
         </div>
       </div>
@@ -186,7 +188,9 @@
               <div class="colLabel">{{ iqamahColumnLabel }}</div>
             </div>
             <div class="time">
-              {{ iqamah?.fajr?.time ?? '-----' }}<span class="ampm">{{ iqamah?.fajr?.ampm }}</span>
+              <span class="timeCluster"
+                >{{ iqamah?.fajr?.time ?? '-----' }}<span class="ampm">{{ iqamah?.fajr?.ampm }}</span></span
+              >
             </div>
           </div>
         </div>
@@ -196,13 +200,17 @@
       <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'dhuhr'" [class.is-now]="announcingPrayer === 'dhuhr'">DHUHR</div>
       <div class="cell dark" [class.is-next]="nextPrayerKey === 'dhuhr'" [class.is-now]="announcingPrayer === 'dhuhr'">
         <div class="time">
-          {{ times?.dhuhr?.time ?? '-----' }}<span class="ampm">{{ times?.dhuhr?.ampm }}</span>
+          <span class="timeCluster"
+            >{{ times?.dhuhr?.time ?? '-----' }}<span class="ampm">{{ times?.dhuhr?.ampm }}</span></span
+          >
         </div>
       </div>
       @if (showIqamahColumn) {
         <div class="cell dark iqamah-cell" [class.is-next]="nextPrayerKey === 'dhuhr'" [class.is-now]="announcingPrayer === 'dhuhr'">
           <div class="time">
-            {{ iqamah?.dhuhr?.time ?? '-----' }}<span class="ampm">{{ iqamah?.dhuhr?.ampm }}</span>
+            <span class="timeCluster"
+              >{{ iqamah?.dhuhr?.time ?? '-----' }}<span class="ampm">{{ iqamah?.dhuhr?.ampm }}</span></span
+            >
           </div>
         </div>
       }
@@ -211,13 +219,17 @@
       <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'asr'" [class.is-now]="announcingPrayer === 'asr'">ASR</div>
       <div class="cell dark" [class.is-next]="nextPrayerKey === 'asr'" [class.is-now]="announcingPrayer === 'asr'">
         <div class="time">
-          {{ times?.asr?.time ?? '-----' }}<span class="ampm">{{ times?.asr?.ampm }}</span>
+          <span class="timeCluster"
+            >{{ times?.asr?.time ?? '-----' }}<span class="ampm">{{ times?.asr?.ampm }}</span></span
+          >
         </div>
       </div>
       @if (showIqamahColumn) {
         <div class="cell dark iqamah-cell" [class.is-next]="nextPrayerKey === 'asr'" [class.is-now]="announcingPrayer === 'asr'">
           <div class="time">
-            {{ iqamah?.asr?.time ?? '-----' }}<span class="ampm">{{ iqamah?.asr?.ampm }}</span>
+            <span class="timeCluster"
+              >{{ iqamah?.asr?.time ?? '-----' }}<span class="ampm">{{ iqamah?.asr?.ampm }}</span></span
+            >
           </div>
         </div>
       }
@@ -226,14 +238,17 @@
       <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'maghrib'" [class.is-now]="announcingPrayer === 'maghrib'">MAGHRIB</div>
       <div class="cell dark" [class.is-next]="nextPrayerKey === 'maghrib'" [class.is-now]="announcingPrayer === 'maghrib'">
         <div class="time">
-          {{ times?.maghrib?.time ?? '-----' }}
-          <span class="ampm">{{ times?.maghrib?.ampm }}</span>
+          <span class="timeCluster"
+            >{{ times?.maghrib?.time ?? '-----' }}<span class="ampm">{{ times?.maghrib?.ampm }}</span></span
+          >
         </div>
       </div>
       @if (showIqamahColumn) {
         <div class="cell dark iqamah-cell" [class.is-next]="nextPrayerKey === 'maghrib'" [class.is-now]="announcingPrayer === 'maghrib'">
           <div class="time">
-            {{ iqamah?.maghrib?.time ?? '-----' }}<span class="ampm">{{ iqamah?.maghrib?.ampm }}</span>
+            <span class="timeCluster"
+              >{{ iqamah?.maghrib?.time ?? '-----' }}<span class="ampm">{{ iqamah?.maghrib?.ampm }}</span></span
+            >
           </div>
         </div>
       }
@@ -248,7 +263,9 @@
       </div>
       <div class="cell dark row-last" [class.is-next]="nextPrayerKey === 'isha'" [class.is-now]="announcingPrayer === 'isha'">
         <div class="time">
-          {{ times?.isha?.time ?? '-----' }}<span class="ampm">{{ times?.isha?.ampm }}</span>
+          <span class="timeCluster"
+            >{{ times?.isha?.time ?? '-----' }}<span class="ampm">{{ times?.isha?.ampm }}</span></span
+          >
         </div>
       </div>
       @if (showIqamahColumn) {
@@ -258,7 +275,9 @@
           [class.is-now]="announcingPrayer === 'isha'"
         >
           <div class="time">
-            {{ iqamah?.isha?.time ?? '-----' }}<span class="ampm">{{ iqamah?.isha?.ampm }}</span>
+            <span class="timeCluster"
+              >{{ iqamah?.isha?.time ?? '-----' }}<span class="ampm">{{ iqamah?.isha?.ampm }}</span></span
+            >
           </div>
         </div>
       }

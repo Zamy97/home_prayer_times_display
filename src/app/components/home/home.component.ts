@@ -280,6 +280,8 @@ export class HomeComponent implements OnInit {
       } & { raw: PrayTimeTimes<string> })
     | null = null;
 
+  private mosqueTimes: MosqueIqamahTimes | null = null;
+
   /** Mosque iqamah overlay (12-hour), null when the setting is Off or the API has no day. */
   iqamah: {
     fajr: { time: string; ampm: string } | null;
@@ -692,9 +694,16 @@ export class HomeComponent implements OnInit {
     this.updateNextPrayer(today);
     this.updateNightMode(today);
     this.updatePrayerBan(today);
+    this.renderIqamah();
   }
 
   private applyMosqueTimes(times: MosqueIqamahTimes | null): void {
+    this.mosqueTimes = times;
+    this.renderIqamah();
+  }
+
+  private renderIqamah(): void {
+    const times = this.mosqueTimes;
     if (!times) {
       this.iqamah = null;
       this.iqamahColumnLabel = 'IQAMAH';
@@ -706,7 +715,11 @@ export class HomeComponent implements OnInit {
       fajr: this.mosqueIqamahService.formatIqamah(times.fajr),
       dhuhr: this.mosqueIqamahService.formatIqamah(times.dhuhr),
       asr: this.mosqueIqamahService.formatIqamah(times.asr),
-      maghrib: this.mosqueIqamahService.formatIqamah(times.maghrib),
+      maghrib: this.mosqueIqamahService.resolveMaghribIqamah(
+        times.slug,
+        times.maghrib,
+        this.sunsetAtMs
+      ),
       isha: this.mosqueIqamahService.formatIqamah(times.isha),
     };
     this.cdr.detectChanges();

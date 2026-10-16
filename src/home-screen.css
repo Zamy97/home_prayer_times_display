@@ -424,12 +424,28 @@ app-home .cell.dark:not(.is-next) .startsBand {
   background: transparent;
 }
 
-/* Dhuhr–Isha time cells: vertically center digits in the row */
-app-home .grid > .cell:nth-child(2n) > .time {
+/* Center the time cluster in every start/iqamah cell (2-col and 3-col). */
+app-home .cell > .time {
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
+}
+
+/* AM/PM sits at the top of the digits on every prayer row. */
+app-home .timeCluster {
+  display: inline-flex;
+  align-items: flex-start;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+app-home .timeCluster .ampm {
+  font-size: 0.28em;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  margin-left: 0.12em;
+  margin-top: 0.14em;
 }
 
 app-home .time {

@@ -141,6 +141,27 @@ describe('HomeComponent', () => {
               const hour12 = hour24 % 12 || 12;
               return { time: `${hour12}:${String(minute).padStart(2, '0')}`, ampm };
             },
+            resolveMaghribIqamah: (
+              slug: string,
+              posted?: string | null,
+              sunsetAtMs?: number | null
+            ) => {
+              if (posted) {
+                const [hRaw, mRaw] = posted.split(':');
+                const hour24 = Number(hRaw);
+                const minute = Number(mRaw);
+                const ampm = hour24 >= 12 ? 'PM' : 'AM';
+                const hour12 = hour24 % 12 || 12;
+                return { time: `${hour12}:${String(minute).padStart(2, '0')}`, ampm };
+              }
+              if (slug !== 'furqaan' || sunsetAtMs == null) return null;
+              const at = new Date(sunsetAtMs + 10 * 60_000);
+              const hour24 = at.getHours();
+              const minute = at.getMinutes();
+              const ampm = hour24 >= 12 ? 'PM' : 'AM';
+              const hour12 = hour24 % 12 || 12;
+              return { time: `${hour12}:${String(minute).padStart(2, '0')}`, ampm };
+            },
           },
         },
         { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map, startWith, tap } from 'rxjs/operators';
+import { EMPTY, Observable, Subscription, of, timer } from 'rxjs';
+import { catchError, map, retry, startWith, tap } from 'rxjs/operators';
 
 /** 'off' hides the column; any other value is a mosque slug from the API. */
 export type MosqueIqamahSource = 'off' | string;
@@ -38,11 +38,24 @@ type MosqueTimesResponse = {
   };
 };
 
-const TIMES_CACHE_KEY = 'mosqueIqamah.v1';
+const TIMES_CACHE_KEY = 'mosqueIqamah.v2';
+const TIMES_CACHE_KEY_V1 = 'mosqueIqamah.v1';
 const LIST_CACHE_KEY = 'mosqueList.v1';
 const FALLBACK_MOSQUES: MosqueOption[] = [
   { slug: 'iona', name: 'IONA Masjid', city: 'Warren', state: 'MI' },
+  { slug: 'furqaan', name: 'Masjid Al-Furqaan', city: 'Warren', state: 'MI' },
 ];
+/** Posted Furqaan Maghrib iqamah is “10 minutes after sunset”, not a clock time. */
+const MAGHRIB_IQAMAH_AFTER_SUNSET_MIN: Record<string, number> = {
+  furqaan: 10,
+};
+/** Render free-tier cold start is often 30–50s; keep trying while yesterday stays on screen. */
+const FETCH_RETRY_COUNT = 4;
+
+type StoredDays = {
+  slug: string;
+  days: Record<string, MosqueIqamahTimes>;
+};
 
 export function isMosqueSlug(value: unknown): value is string {
   return typeof value === 'string' && /^[a-z0-9-]{1,40}$/.test(value);
@@ -55,6 +68,7 @@ export function isMosqueIqamahSource(value: unknown): value is MosqueIqamahSourc
 @Injectable({ providedIn: 'root' })
 export class MosqueIqamahService {
   private readonly http = inject(HttpClient);
+  private prefetchSub: Subscription | null = null;
 
   listMosques(): Observable<MosqueOption[]> {
     const cached = this.readListCache();
@@ -70,18 +84,22 @@ export class MosqueIqamahService {
 
   loadToday(source: MosqueIqamahSource, date = this.todayKey()): Observable<MosqueIqamahTimes | null> {
     if (source === 'off' || !isMosqueSlug(source)) return of(null);
-    const cached = this.readTimesCache(source, date);
-    const url =
-      `/api/mosques/${encodeURIComponent(source)}/times` +
-      `?date=${encodeURIComponent(date)}&days=0`;
-    const remote$ = this.http.get<MosqueTimesResponse>(url).pipe(
-      map((res) => this.fromResponse(source, res)),
-      tap((times) => {
-        if (times) this.writeTimesCache(source, times);
+    const exact = this.readDay(source, date);
+    const stale = exact ?? this.readLatestDay(source);
+    const remote$ = this.fetchDay(source, date).pipe(
+      retry({
+        count: FETCH_RETRY_COUNT,
+        delay: (_err, retryCount) => timer(Math.min(4000 * 2 ** (retryCount - 1), 40000)),
       }),
-      catchError(() => of(cached))
+      tap((times) => {
+        if (!times) return;
+        this.writeDay(source, times);
+        this.prefetchNextDay(source, times.date);
+      }),
+      map((times) => times ?? stale ?? null),
+      catchError(() => (stale ? EMPTY : of(null)))
     );
-    return cached ? remote$.pipe(startWith(cached)) : remote$;
+    return stale ? remote$.pipe(startWith(stale)) : remote$;
   }
 
   formatIqamah(value?: string | null): { time: string; ampm: string } | null {
@@ -93,6 +111,29 @@ export class MosqueIqamahService {
     const ampm = hour24 >= 12 ? 'PM' : 'AM';
     const hour12 = hour24 % 12 || 12;
     return { time: `${hour12}:${String(minute).padStart(2, '0')}`, ampm };
+  }
+
+  /**
+   * Use the posted Maghrib iqamah when the mosque publishes one.
+   * Furqaan does not — their sheet is sunset + 10 minutes.
+   */
+  resolveMaghribIqamah(
+    slug: string | undefined,
+    posted?: string | null,
+    sunsetAtMs?: number | null
+  ): { time: string; ampm: string } | null {
+    const fromSheet = this.formatIqamah(posted);
+    if (fromSheet) return fromSheet;
+    const minutes = slug ? MAGHRIB_IQAMAH_AFTER_SUNSET_MIN[slug] : undefined;
+    if (minutes == null || sunsetAtMs == null || !Number.isFinite(sunsetAtMs)) return null;
+    return this.formatIqamahFromMs(sunsetAtMs + minutes * 60_000);
+  }
+
+  private formatIqamahFromMs(ms: number): { time: string; ampm: string } | null {
+    const at = new Date(ms);
+    const hh = String(at.getHours()).padStart(2, '0');
+    const mm = String(at.getMinutes()).padStart(2, '0');
+    return this.formatIqamah(`${hh}:${mm}`);
   }
 
   /** Short kiosk label for the iqamah column header (fits like STARTS). */
@@ -115,6 +156,38 @@ export class MosqueIqamahService {
     const m = String(date.getMonth() + 1).padStart(2, '0');
     const d = String(date.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
+  }
+
+  private shiftDateKey(date: string, days: number): string {
+    const [y, m, d] = date.split('-').map(Number);
+    const next = new Date(y, m - 1, d);
+    next.setDate(next.getDate() + days);
+    return this.todayKey(next);
+  }
+
+  private fetchDay(source: string, date: string): Observable<MosqueIqamahTimes | null> {
+    const url =
+      `/api/mosques/${encodeURIComponent(source)}/times` +
+      `?date=${encodeURIComponent(date)}&days=0`;
+    return this.http.get<MosqueTimesResponse>(url).pipe(map((res) => this.fromResponse(source, res)));
+  }
+
+  private prefetchNextDay(source: string, todayDate: string): void {
+    const nextDate = this.shiftDateKey(todayDate, 1);
+    if (this.readDay(source, nextDate)) return;
+    this.prefetchSub?.unsubscribe();
+    this.prefetchSub = this.fetchDay(source, nextDate)
+      .pipe(
+        retry({
+          count: 2,
+          delay: () => timer(10000),
+        }),
+        tap((times) => {
+          if (times) this.writeDay(source, times);
+        }),
+        catchError(() => EMPTY)
+      )
+      .subscribe();
   }
 
   private fromResponse(
@@ -165,21 +238,59 @@ export class MosqueIqamahService {
     }
   }
 
-  private readTimesCache(source: MosqueIqamahSource, date: string): MosqueIqamahTimes | null {
+  private readDay(source: string, date: string): MosqueIqamahTimes | null {
+    const store = this.readStore();
+    if (store?.slug !== source) return null;
+    return store.days[date] ?? null;
+  }
+
+  private readLatestDay(source: string): MosqueIqamahTimes | null {
+    const store = this.readStore();
+    if (store?.slug !== source) return null;
+    const dates = Object.keys(store.days).sort();
+    const latest = dates[dates.length - 1];
+    return latest ? store.days[latest] : null;
+  }
+
+  private writeDay(source: string, times: MosqueIqamahTimes): void {
+    const prev = this.readStore();
+    const days = prev?.slug === source ? { ...prev.days } : {};
+    days[times.date] = { ...times, slug: source };
+    const keep = new Set([
+      this.shiftDateKey(times.date, -1),
+      times.date,
+      this.shiftDateKey(times.date, 1),
+    ]);
+    for (const key of Object.keys(days)) {
+      if (!keep.has(key)) delete days[key];
+    }
+    this.writeStore({ slug: source, days });
+  }
+
+  private readStore(): StoredDays | null {
     try {
       const raw = localStorage.getItem(TIMES_CACHE_KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw) as MosqueIqamahTimes;
-      if (parsed.slug !== source || parsed.date !== date) return null;
-      return parsed;
+      if (raw) {
+        const parsed = JSON.parse(raw) as StoredDays;
+        if (isMosqueSlug(parsed?.slug) && parsed.days && typeof parsed.days === 'object') {
+          return parsed;
+        }
+      }
+      const legacy = localStorage.getItem(TIMES_CACHE_KEY_V1);
+      if (!legacy) return null;
+      const old = JSON.parse(legacy) as MosqueIqamahTimes;
+      if (!isMosqueSlug(old?.slug) || typeof old.date !== 'string') return null;
+      const migrated: StoredDays = { slug: old.slug, days: { [old.date]: old } };
+      this.writeStore(migrated);
+      return migrated;
     } catch {
       return null;
     }
   }
 
-  private writeTimesCache(source: MosqueIqamahSource, times: MosqueIqamahTimes): void {
+  private writeStore(store: StoredDays): void {
     try {
-      localStorage.setItem(TIMES_CACHE_KEY, JSON.stringify({ ...times, slug: source }));
+      localStorage.setItem(TIMES_CACHE_KEY, JSON.stringify(store));
     } catch {
       // ignore quota / private mode
     }
