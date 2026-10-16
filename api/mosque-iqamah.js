@@ -67,8 +67,7 @@ module.exports = async function handler(req, res) {
   const date = String(req.query.date || '').trim();
 
   if (!slug) {
-    // Roster changes when mosques are ingested; do not pin a 1-hour CDN copy.
-    return proxyJson(res, `${apiBase()}/api/mosques`, 0);
+    return proxyJson(res, `${apiBase()}/api/mosques`, Math.min(cacheSeconds(), 300));
   }
   if (!SLUG_RE.test(slug)) {
     res.statusCode = 400;
@@ -81,9 +80,5 @@ module.exports = async function handler(req, res) {
 
   const params = new URLSearchParams({ days: '0' });
   if (date) params.set('date', date);
-  return proxyJson(
-    res,
-    `${apiBase()}/api/mosques/${encodeURIComponent(slug)}/times?${params}`,
-    0
-  );
+  return proxyJson(res, `${apiBase()}/api/mosques/${encodeURIComponent(slug)}/times?${params}`);
 };

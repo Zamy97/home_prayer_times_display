@@ -41,6 +41,7 @@ type MosqueTimesResponse = {
 
 const TIMES_CACHE_KEY = 'mosqueIqamah.v3';
 const TIMES_CACHE_KEY_V1 = 'mosqueIqamah.v1';
+const TIMES_CACHE_KEY_V2 = 'mosqueIqamah.v2';
 const LIST_CACHE_KEY = 'mosqueList.v3';
 const FALLBACK_MOSQUES: MosqueOption[] = [
   { slug: 'iona', name: 'IONA Masjid', city: 'Warren', state: 'MI', address: '28630 Ryan Rd' },
@@ -107,7 +108,7 @@ export class MosqueIqamahService {
         this.prefetchNextDay(source, times.date);
       }),
       map((times) => times ?? stale ?? null),
-      catchError(() => (stale ? EMPTY : of(null)))
+      catchError(() => (stale ? of(stale) : EMPTY))
     );
     return stale ? remote$.pipe(startWith(stale)) : remote$;
   }
@@ -335,6 +336,13 @@ export class MosqueIqamahService {
       const raw = localStorage.getItem(TIMES_CACHE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as StoredDays;
+        if (isMosqueSlug(parsed?.slug) && parsed.days && typeof parsed.days === 'object') {
+          return parsed;
+        }
+      }
+      const previous = localStorage.getItem(TIMES_CACHE_KEY_V2);
+      if (previous) {
+        const parsed = JSON.parse(previous) as StoredDays;
         if (isMosqueSlug(parsed?.slug) && parsed.days && typeof parsed.days === 'object') {
           return parsed;
         }

@@ -433,7 +433,10 @@ export class HomeComponent implements OnInit {
     // 3) Recompute when the day changes (robust for 24/7 screens)
     interval(5 * 60 * 1000)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.refreshIfDateChanged());
+      .subscribe(() => {
+        this.refreshIfDateChanged();
+        this.mosqueRefresh$.next();
+      });
 
     // 4) Also refresh when tab becomes visible or focused (covers sleep/DST/throttling)
     const onVisibility = () => {
