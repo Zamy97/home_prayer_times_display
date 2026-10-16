@@ -23,15 +23,19 @@ function isYmd(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ''));
 }
 
-function setOkCache(res) {
-  const s = cacheSeconds();
+function setOkCache(res, seconds = cacheSeconds()) {
+  const s = Math.max(0, seconds);
+  if (s === 0) {
+    res.setHeader('Cache-Control', 'no-store');
+    return;
+  }
   res.setHeader(
     'Cache-Control',
     `public, s-maxage=${s}, stale-while-revalidate=${Math.min(s, 600)}`
   );
 }
 
-async function proxyJson(res, url) {
+async function proxyJson(res, url, cacheTtlSeconds) {
   try {
     const upstream = await fetch(url, { headers: { Accept: 'application/json' } });
     const body = await upstream.text();
@@ -40,7 +44,7 @@ async function proxyJson(res, url) {
       res.statusCode = upstream.status === 404 ? 404 : 502;
       return res.end(JSON.stringify({ error: 'Mosque times unavailable' }));
     }
-    setOkCache(res);
+    setOkCache(res, cacheTtlSeconds);
     res.statusCode = 200;
     return res.end(body);
   } catch {
@@ -63,7 +67,8 @@ module.exports = async function handler(req, res) {
   const date = String(req.query.date || '').trim();
 
   if (!slug) {
-    return proxyJson(res, `${apiBase()}/api/mosques`);
+    // Roster changes when mosques are ingested; do not pin a 1-hour CDN copy.
+    return proxyJson(res, `${apiBase()}/api/mosques`, 0);
   }
   if (!SLUG_RE.test(slug)) {
     res.statusCode = 400;

@@ -11,6 +11,7 @@ describe('MosqueIqamahService', () => {
     localStorage.removeItem('mosqueIqamah.v2');
     localStorage.removeItem('mosqueList.v1');
     localStorage.removeItem('mosqueList.v2');
+    localStorage.removeItem('mosqueList.v3');
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
     });
@@ -24,6 +25,7 @@ describe('MosqueIqamahService', () => {
     localStorage.removeItem('mosqueIqamah.v2');
     localStorage.removeItem('mosqueList.v1');
     localStorage.removeItem('mosqueList.v2');
+    localStorage.removeItem('mosqueList.v3');
   });
 
   it('formats 24-hour iqamah as 12-hour split time', () => {
@@ -91,9 +93,36 @@ describe('MosqueIqamahService', () => {
       { slug: 'iona', name: 'IONA Masjid', city: 'Warren', state: 'MI' },
       { slug: 'madania', name: 'Madania Masjid', city: 'Warren', state: 'MI' },
     ]);
-    expect(result).toEqual([
+    const listed = result as Array<{ slug: string; name: string; city?: string; state?: string; address?: string }>;
+    expect(listed.map((mosque) => mosque.slug)).toEqual([
+      'iona',
+      'furqaan',
+      'darul-uloom',
+      'mii',
+      'taqwa',
+      'fath',
+      'madania',
+    ]);
+    expect(listed[0].address).toBe('28630 Ryan Rd');
+    expect(listed[6]).toEqual({ slug: 'madania', name: 'Madania Masjid', city: 'Warren', state: 'MI' });
+  });
+
+  it('keeps known masjids when the API list is a stale two-mosque roster', () => {
+    let result: unknown;
+    service.listMosques().subscribe((mosques) => {
+      result = mosques;
+    });
+    http.expectOne('/api/mosques').flush([
       { slug: 'iona', name: 'IONA Masjid', city: 'Warren', state: 'MI' },
-      { slug: 'madania', name: 'Madania Masjid', city: 'Warren', state: 'MI' },
+      { slug: 'furqaan', name: 'Masjid Al-Furqaan', city: 'Warren', state: 'MI' },
+    ]);
+    expect((result as Array<{ slug: string }>).map((mosque) => mosque.slug)).toEqual([
+      'iona',
+      'furqaan',
+      'darul-uloom',
+      'mii',
+      'taqwa',
+      'fath',
     ]);
   });
 

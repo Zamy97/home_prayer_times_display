@@ -41,7 +41,7 @@ type MosqueTimesResponse = {
 
 const TIMES_CACHE_KEY = 'mosqueIqamah.v2';
 const TIMES_CACHE_KEY_V1 = 'mosqueIqamah.v1';
-const LIST_CACHE_KEY = 'mosqueList.v2';
+const LIST_CACHE_KEY = 'mosqueList.v3';
 const FALLBACK_MOSQUES: MosqueOption[] = [
   { slug: 'iona', name: 'IONA Masjid', city: 'Warren', state: 'MI', address: '28630 Ryan Rd' },
   { slug: 'furqaan', name: 'Masjid Al-Furqaan', city: 'Warren', state: 'MI', address: '27643 Schoenherr Rd' },
@@ -76,15 +76,15 @@ export class MosqueIqamahService {
   private prefetchSub: Subscription | null = null;
 
   listMosques(): Observable<MosqueOption[]> {
-    const cached = this.readListCache();
+    const cached = this.mergeKnownMosques(this.readListCache());
     const remote$ = this.http.get<MosqueOption[]>('/api/mosques').pipe(
-      map((rows) => this.normalizeList(rows)),
+      map((rows) => this.mergeKnownMosques(this.normalizeList(rows))),
       tap((list) => {
         if (list.length) this.writeListCache(list);
       }),
-      catchError(() => of(cached.length ? cached : FALLBACK_MOSQUES))
+      catchError(() => of(cached))
     );
-    return remote$.pipe(startWith(cached.length ? cached : FALLBACK_MOSQUES));
+    return remote$.pipe(startWith(cached));
   }
 
   loadToday(source: MosqueIqamahSource, date = this.todayKey()): Observable<MosqueIqamahTimes | null> {
@@ -214,6 +214,34 @@ export class MosqueIqamahService {
       asr: today.asr?.iqamah ?? undefined,
       maghrib: today.maghrib?.iqamah ?? undefined,
       isha: today.isha?.iqamah ?? undefined,
+    };
+  }
+
+  /** Keep known masjids visible if a stale CDN/API list only has IONA + Furqaan. */
+  private mergeKnownMosques(rows: MosqueOption[]): MosqueOption[] {
+    const bySlug = new Map<string, MosqueOption>();
+    for (const row of rows) {
+      if (row?.slug) bySlug.set(row.slug, row);
+    }
+    const merged: MosqueOption[] = [];
+    for (const known of FALLBACK_MOSQUES) {
+      const remote = bySlug.get(known.slug);
+      merged.push(remote ? this.fillFromKnown(known, remote) : known);
+      bySlug.delete(known.slug);
+    }
+    for (const extra of bySlug.values()) {
+      merged.push(extra);
+    }
+    return merged;
+  }
+
+  private fillFromKnown(known: MosqueOption, remote: MosqueOption): MosqueOption {
+    return {
+      slug: remote.slug,
+      name: remote.name || known.name,
+      city: remote.city || known.city,
+      state: remote.state || known.state,
+      address: remote.address || known.address,
     };
   }
 
