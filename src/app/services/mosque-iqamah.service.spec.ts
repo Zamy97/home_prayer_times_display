@@ -80,8 +80,13 @@ describe('MosqueIqamahService', () => {
     ).toBe('IONA Masjid, Warren, MI');
   });
 
-  it('shortens mosque names for the iqamah column header', () => {
+  it('uses familiar short names on the iqamah column header', () => {
     expect(service.columnLabel('IONA Masjid', 'iona')).toBe('IONA');
+    expect(service.columnLabel('Michigan Islamic Institute', 'mii')).toBe('MII');
+    expect(service.columnLabel('Masjid Al Fath', 'fath')).toBe('AL FATH');
+    expect(service.columnLabel('Darul Uloom Michigan', 'darul-uloom')).toBe('DARUL ULOOM MI');
+    expect(service.columnLabel('Masjid Al-Taqwa', 'taqwa')).toBe('AL TAQWA');
+    expect(service.columnLabel('Masjid Al-Furqaan', 'furqaan')).toBe('AL FURQAAN');
     expect(service.columnLabel('Madania Masjid', 'madania')).toBe('MADANIA');
   });
 

@@ -147,14 +147,26 @@ export class MosqueIqamahService {
     return this.formatIqamah(`${hh}:${mm}`);
   }
 
+  /** Names people actually use on the iqamah column (not just the first word). */
+  private static readonly COLUMN_LABELS: Record<string, string> = {
+    iona: 'IONA',
+    furqaan: 'AL FURQAAN',
+    'darul-uloom': 'DARUL ULOOM MI',
+    mii: 'MII',
+    taqwa: 'AL TAQWA',
+    fath: 'AL FATH',
+  };
+
   /** Short kiosk label for the iqamah column header (fits like STARTS). */
   columnLabel(name?: string, slug?: string): string {
+    const known = slug ? MosqueIqamahService.COLUMN_LABELS[slug] : undefined;
+    if (known) return known;
     const cleaned = (name || '')
-      .replace(/\b(masjid|mosque|islamic center( of)?)\b/gi, ' ')
+      .replace(/\b(masjid|mosque|islamic (center|institute)( of)?)\b/gi, ' ')
+      .replace(/[-_]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
-    const token = cleaned.split(/[\s,/]+/)[0] || slug || 'IQAMAH';
-    return token.replace(/-/g, '').slice(0, 10).toUpperCase();
+    return (cleaned || slug || 'IQAMAH').toUpperCase();
   }
 
   mosqueOptionLabel(mosque: MosqueOption): string {

@@ -468,8 +468,11 @@ app-home .grid.grid--iqamah .prayer {
 }
 
 app-home .grid.grid--iqamah .colLabel {
-  letter-spacing: 0.12em;
-  font-size: calc(clamp(14px, 8cqi, 26px) * var(--scale-prayer-label, 1));
+  letter-spacing: 0.08em;
+  line-height: 1.15;
+  white-space: normal;
+  text-align: center;
+  font-size: calc(clamp(13px, 7cqi, 22px) * var(--scale-prayer-label, 1));
 }
 
 app-home .grid.grid--iqamah .time {
