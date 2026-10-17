@@ -28,6 +28,11 @@ app-home.night {
   --text: var(--amber);
 }
 
+/* Alarm-clock LED red must stay the chosen hex — do not wash it with white. */
+app-home.night.clock-led {
+  --amber-bright: var(--amber);
+}
+
 /* Hide the Jumu'ah block in night mode; the sun bar takes over its space. */
 app-home.night .jumuBlock {
   display: none;
@@ -591,6 +596,14 @@ app-home.sleep-mode:not(.night) .bedroomFactTime {
 
 app-home.sleep-mode:not(.night) .bedroomFactTime .ampm {
   opacity: 0.7;
+}
+
+/* Night Simple uses the same chosen hex as daytime Simple (not --amber-bright). */
+app-home.sleep-mode.night .sleepMode,
+app-home.sleep-mode.night .bedroomClock,
+app-home.sleep-mode.night .bedroomFactLabel,
+app-home.sleep-mode.night .bedroomFactTime {
+  color: var(--clock-color, var(--amber));
 }
 
 app-home.sleep-mode:not(.night) .bedroomFact--ban .bedroomFactLabel,
