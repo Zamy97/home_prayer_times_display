@@ -84,6 +84,7 @@ describe('MosqueIqamahService', () => {
     expect(service.columnLabel('IONA Masjid', 'iona')).toBe('IONA');
     expect(service.columnLabel('Michigan Islamic Institute', 'mii')).toBe('MII');
     expect(service.columnLabel('Masjid Al Fath', 'fath')).toBe('AL FATH');
+    expect(service.columnLabel('MCM Masjid', 'mcm')).toBe('MCM');
     expect(service.columnLabel('Darul Uloom Michigan', 'darul-uloom')).toBe('DARUL ULOOM MI');
     expect(service.columnLabel('Masjid Al-Taqwa', 'taqwa')).toBe('AL TAQWA');
     expect(service.columnLabel('Masjid Al-Furqaan', 'furqaan')).toBe('AL FURQAAN');
@@ -108,10 +109,11 @@ describe('MosqueIqamahService', () => {
       'mii',
       'taqwa',
       'fath',
+      'mcm',
       'madania',
     ]);
     expect(listed[0].address).toBe('28630 Ryan Rd');
-    expect(listed[6]).toEqual({ slug: 'madania', name: 'Madania Masjid', city: 'Warren', state: 'MI' });
+    expect(listed[7]).toEqual({ slug: 'madania', name: 'Madania Masjid', city: 'Warren', state: 'MI' });
   });
 
   it('keeps known masjids when the API list is a stale two-mosque roster', () => {
@@ -130,6 +132,7 @@ describe('MosqueIqamahService', () => {
       'mii',
       'taqwa',
       'fath',
+      'mcm',
     ]);
   });
 
