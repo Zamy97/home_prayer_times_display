@@ -51,6 +51,7 @@ const FALLBACK_MOSQUES: MosqueOption[] = [
   { slug: 'taqwa', name: 'Masjid Al-Taqwa', city: 'Warren', state: 'MI', address: '27130 Campbell Rd' },
   { slug: 'fath', name: 'Masjid Al Fath', city: 'Warren', state: 'MI', address: '24703 Ryan Rd' },
   { slug: 'mcm', name: 'MCM Masjid', city: 'Sterling Heights', state: 'MI', address: '38810 Ryan Rd' },
+  { slug: 'amda', name: 'AMDA', city: 'Sterling Heights', state: 'MI', address: '44760 Ryan Rd' },
 ];
 /** Posted Furqaan Maghrib iqamah is “10 minutes after sunset”, not a clock time.
  *  AthanPlus monthly sheets print Sunset; iqamah is sunset + 5. */
@@ -61,6 +62,7 @@ const MAGHRIB_IQAMAH_AFTER_SUNSET_MIN: Record<string, number> = {
   taqwa: 5,
   fath: 5,
   mcm: 5,
+  amda: 5,
 };
 /** Render free-tier cold start is often 30–50s; keep trying while yesterday stays on screen. */
 const FETCH_RETRY_COUNT = 4;
@@ -158,6 +160,7 @@ export class MosqueIqamahService {
     taqwa: 'AL TAQWA',
     fath: 'AL FATH',
     mcm: 'MCM',
+    amda: 'AMDA',
   };
 
   /** Short kiosk label for the iqamah column header (fits like STARTS). */
