@@ -69,7 +69,7 @@ describe('HomeComponent', () => {
         {
           provide: PrayerTimesService,
           useValue: {
-            getLocalDateKey: () => '2026-08-31',
+            getLocalDateKey: () => '2026-10-14',
             getCachedTodayTimes: () => null,
             computeAndCacheTodayTimes: () => ({
               times: {
@@ -198,5 +198,20 @@ describe('HomeComponent', () => {
       (fixture.nativeElement as HTMLElement).querySelectorAll('.iqamah-cell .time')
     ).map((el) => el.textContent?.replace(/\s+/g, ' ').trim());
     expect(labels).toEqual(['6:45AM', '2:00PM', '5:30PM', '7:00PM', '8:30PM']);
+  });
+
+  it('hides the iqamah column when the masjid has no times for today', () => {
+    component.iqamah = {
+      fajr: null,
+      dhuhr: null,
+      asr: null,
+      maghrib: null,
+      isha: null,
+    };
+    fixture.detectChanges();
+    expect(component.showIqamahColumn).toBeFalse();
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelectorAll('.iqamah-cell').length
+    ).toBe(0);
   });
 });

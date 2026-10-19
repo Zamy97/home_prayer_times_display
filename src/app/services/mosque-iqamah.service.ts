@@ -64,7 +64,7 @@ const MAGHRIB_IQAMAH_AFTER_SUNSET_MIN: Record<string, number> = {
   mcm: 5,
   amda: 5,
 };
-/** Render free-tier cold start is often 30–50s; keep trying while yesterday stays on screen. */
+/** Render free-tier cold start is often 30–50s; keep today’s cached times, never yesterday. */
 const FETCH_RETRY_COUNT = 4;
 
 type StoredDays = {
@@ -100,7 +100,6 @@ export class MosqueIqamahService {
   loadToday(source: MosqueIqamahSource, date = this.todayKey()): Observable<MosqueIqamahTimes | null> {
     if (source === 'off' || !isMosqueSlug(source)) return of(null);
     const exact = this.readDay(source, date);
-    const stale = exact ?? this.readLatestDay(source);
     const remote$ = this.fetchDay(source, date).pipe(
       retry({
         count: FETCH_RETRY_COUNT,
@@ -111,10 +110,10 @@ export class MosqueIqamahService {
         this.writeDay(source, times);
         this.prefetchNextDay(source, times.date);
       }),
-      map((times) => times ?? stale ?? null),
-      catchError(() => (stale ? of(stale) : EMPTY))
+      map((times) => times ?? exact),
+      catchError(() => of(exact))
     );
-    return stale ? remote$.pipe(startWith(stale)) : remote$;
+    return remote$.pipe(startWith(exact));
   }
 
   formatIqamah(value?: string | null): { time: string; ampm: string } | null {
@@ -202,7 +201,7 @@ export class MosqueIqamahService {
     const url =
       `/api/mosques/${encodeURIComponent(source)}/times` +
       `?date=${encodeURIComponent(date)}&days=0`;
-    return this.http.get<MosqueTimesResponse>(url).pipe(map((res) => this.fromResponse(source, res)));
+    return this.http.get<MosqueTimesResponse>(url).pipe(map((res) => this.fromResponse(source, date, res)));
   }
 
   private prefetchNextDay(source: string, todayDate: string): void {
@@ -225,12 +224,15 @@ export class MosqueIqamahService {
 
   private fromResponse(
     source: MosqueIqamahSource,
+    date: string,
     res: MosqueTimesResponse
   ): MosqueIqamahTimes | null {
+    const slug = res.mosque?.slug || source;
     const today = res.today;
-    if (!today?.date) return null;
-    return {
-      slug: res.mosque?.slug || source,
+    if (!isMosqueSlug(slug) || slug !== source) return null;
+    if (!today?.date || today.date !== date) return null;
+    const mapped: MosqueIqamahTimes = {
+      slug,
       name: res.mosque?.name || source,
       date: today.date,
       fajr: today.fajr?.iqamah ?? undefined,
@@ -239,6 +241,10 @@ export class MosqueIqamahService {
       maghrib: this.maghribIqamah(source, today.maghrib),
       isha: today.isha?.iqamah ?? undefined,
     };
+    if (!mapped.fajr && !mapped.dhuhr && !mapped.asr && !mapped.maghrib && !mapped.isha) {
+      return null;
+    }
+    return mapped;
   }
 
   private maghribIqamah(source: string, pair?: TimePair): string | undefined {
@@ -324,14 +330,6 @@ export class MosqueIqamahService {
     const store = this.readStore();
     if (store?.slug !== source) return null;
     return store.days[date] ?? null;
-  }
-
-  private readLatestDay(source: string): MosqueIqamahTimes | null {
-    const store = this.readStore();
-    if (store?.slug !== source) return null;
-    const dates = Object.keys(store.days).sort();
-    const latest = dates[dates.length - 1];
-    return latest ? store.days[latest] : null;
   }
 
   private writeDay(source: string, times: MosqueIqamahTimes): void {

@@ -282,7 +282,7 @@ export class HomeComponent implements OnInit {
 
   private mosqueTimes: MosqueIqamahTimes | null = null;
 
-  /** Mosque iqamah overlay (12-hour), null when the setting is Off or the API has no day. */
+  /** Mosque iqamah overlay (12-hour). Null when Off or the API has no day; empty times hide the column. */
   iqamah: {
     fajr: { time: string; ampm: string } | null;
     dhuhr: { time: string; ampm: string } | null;
@@ -292,7 +292,8 @@ export class HomeComponent implements OnInit {
   } | null = null;
   /** Third prayer-grid column is showing mosque iqamah times. */
   get showIqamahColumn(): boolean {
-    return this.iqamah != null;
+    const row = this.iqamah;
+    return !!(row && (row.fajr || row.dhuhr || row.asr || row.maghrib || row.isha));
   }
   /** Short masjid name for the iqamah column header (e.g. IONA). */
   iqamahColumnLabel = 'IQAMAH';
@@ -701,7 +702,10 @@ export class HomeComponent implements OnInit {
   }
 
   private applyMosqueTimes(times: MosqueIqamahTimes | null): void {
-    this.mosqueTimes = times;
+    const source = this.settings.mosqueIqamahSource ?? 'off';
+    const today = this.prayerTimes.getLocalDateKey();
+    this.mosqueTimes =
+      times && source !== 'off' && times.slug === source && times.date === today ? times : null;
     this.renderIqamah();
   }
 

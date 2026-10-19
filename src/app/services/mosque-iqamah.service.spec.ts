@@ -1,10 +1,18 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { MosqueIqamahService } from './mosque-iqamah.service';
 
 describe('MosqueIqamahService', () => {
   let service: MosqueIqamahService;
   let http: HttpTestingController;
+
+  function failTimes(slug: string, date: string): void {
+    const url = `/api/mosques/${slug}/times?date=${date}&days=0`;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      http.expectOne(url).flush('no', { status: 502, statusText: 'Bad Gateway' });
+      if (attempt < 4) tick(Math.min(4000 * 2 ** attempt, 40000));
+    }
+  }
 
   beforeEach(() => {
     localStorage.removeItem('mosqueIqamah.v1');
@@ -192,7 +200,7 @@ describe('MosqueIqamahService', () => {
     });
   });
 
-  it('shows yesterday immediately, then swaps in today and saves tomorrow', () => {
+  it('does not show yesterday as today while waiting for the API', () => {
     localStorage.setItem(
       'mosqueIqamah.v3',
       JSON.stringify({
@@ -209,7 +217,7 @@ describe('MosqueIqamahService', () => {
     );
     const seen: Array<{ date?: string; fajr?: string } | null> = [];
     service.loadToday('iona', '2026-10-15').subscribe((times) => seen.push(times));
-    expect(seen[0]).toEqual(jasmine.objectContaining({ date: '2026-10-14', fajr: '06:45' }));
+    expect(seen[0]).toBeNull();
     http.expectOne('/api/mosques/iona/times?date=2026-10-15&days=0').flush({
       mosque: { slug: 'iona', name: 'IONA Masjid' },
       today: {
@@ -222,6 +230,81 @@ describe('MosqueIqamahService', () => {
       mosque: { slug: 'iona', name: 'IONA Masjid' },
       today: { date: '2026-10-16', fajr: { iqamah: '06:51' } },
     });
+  });
+
+  it('keeps today’s cached iqamah if the API fails', fakeAsync(() => {
+    localStorage.setItem(
+      'mosqueIqamah.v3',
+      JSON.stringify({
+        slug: 'iona',
+        days: {
+          '2026-10-19': {
+            slug: 'iona',
+            name: 'IONA Masjid',
+            date: '2026-10-19',
+            fajr: '06:50',
+          },
+        },
+      })
+    );
+    const seen: Array<{ date?: string; fajr?: string } | null> = [];
+    service.loadToday('iona', '2026-10-19').subscribe((times) => seen.push(times));
+    expect(seen[0]).toEqual(jasmine.objectContaining({ date: '2026-10-19', fajr: '06:50' }));
+    failTimes('iona', '2026-10-19');
+    expect(seen[seen.length - 1]).toEqual(
+      jasmine.objectContaining({ date: '2026-10-19', fajr: '06:50' })
+    );
+  }));
+
+  it('emits null when the API fails and there is no today cache', fakeAsync(() => {
+    const seen: Array<{ date?: string } | null> = [];
+    service.loadToday('amda', '2026-10-19').subscribe((times) => seen.push(times));
+    expect(seen[0]).toBeNull();
+    failTimes('amda', '2026-10-19');
+    expect(seen[seen.length - 1]).toBeNull();
+  }));
+
+  it('keeps today’s cache when the API returns an empty day', () => {
+    localStorage.setItem(
+      'mosqueIqamah.v3',
+      JSON.stringify({
+        slug: 'amda',
+        days: {
+          '2026-10-19': {
+            slug: 'amda',
+            name: 'AMDA',
+            date: '2026-10-19',
+            fajr: '07:00',
+          },
+        },
+      })
+    );
+    const seen: Array<{ fajr?: string } | null> = [];
+    service.loadToday('amda', '2026-10-19').subscribe((times) => seen.push(times));
+    expect(seen[0]).toEqual(jasmine.objectContaining({ fajr: '07:00' }));
+    http.expectOne('/api/mosques/amda/times?date=2026-10-19&days=0').flush({
+      mosque: { slug: 'amda', name: 'AMDA' },
+      today: { date: '2026-10-19' },
+    });
+    expect(seen[seen.length - 1]).toEqual(jasmine.objectContaining({ fajr: '07:00' }));
+  });
+
+  it('ignores a payload for a different masjid or date', () => {
+    let result: unknown = 'unset';
+    service.loadToday('amda', '2026-10-19').subscribe((times) => (result = times));
+    expect(result).toBeNull();
+    http.expectOne('/api/mosques/amda/times?date=2026-10-19&days=0').flush({
+      mosque: { slug: 'mcm', name: 'MCM Masjid' },
+      today: { date: '2026-10-19', fajr: { iqamah: '07:00' } },
+    });
+    expect(result).toBeNull();
+
+    service.loadToday('amda', '2026-10-19').subscribe((times) => (result = times));
+    http.expectOne('/api/mosques/amda/times?date=2026-10-19&days=0').flush({
+      mosque: { slug: 'amda', name: 'AMDA' },
+      today: { date: '2026-10-18', fajr: { iqamah: '07:00' } },
+    });
+    expect(result).toBeNull();
   });
 
   it('uses a prefetched next day as soon as the date rolls over', () => {
