@@ -132,6 +132,8 @@ describe('MosqueIqamahService', () => {
     expect(service.columnLabel('Masjid Al-Fath Lincoln Park', 'alfath-lp')).toBe('AL FATH LP');
     expect(service.columnLabel('Islamic Community of As Salaam', 'as-salaam')).toBe('AS SALAAM');
     expect(service.columnLabel('MCCD', 'mccd')).toBe('MCCD');
+    expect(service.columnLabel('Masjid As Sunnah Grand Rapids', 'sunnah-gr')).toBe('SUNNAH GR');
+    expect(service.columnLabel('Masjid AlNoor Melvindale', 'alnoor-melvindale')).toBe('ALNOOR MEL');
     expect(service.columnLabel('Madania Masjid', 'madania')).toBe('MADANIA');
   });
 
