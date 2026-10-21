@@ -97,6 +97,12 @@ describe('MosqueIqamahService', () => {
     expect(service.columnLabel('Darul Uloom Michigan', 'darul-uloom')).toBe('DARUL ULOOM MI');
     expect(service.columnLabel('Masjid Al-Taqwa', 'taqwa')).toBe('AL TAQWA');
     expect(service.columnLabel('Masjid Al-Furqaan', 'furqaan')).toBe('AL FURQAAN');
+    expect(service.columnLabel('Islamic Association of Greater Detroit', 'iagd')).toBe('IAGD');
+    expect(service.columnLabel('Masjid Uthman Bin Affan', 'uthman')).toBe('UTHMAN');
+    expect(service.columnLabel('Muslim Community Association of Ann Arbor', 'mca')).toBe('MCA');
+    expect(service.columnLabel('Tawheed Center', 'tawheed')).toBe('TAWHEED');
+    expect(service.columnLabel('MCWS', 'mcws')).toBe('MCWS');
+    expect(service.columnLabel('Muslim Unity Center', 'unity')).toBe('UNITY');
     expect(service.columnLabel('Madania Masjid', 'madania')).toBe('MADANIA');
   });
 

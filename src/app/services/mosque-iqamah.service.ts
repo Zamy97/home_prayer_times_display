@@ -63,6 +63,19 @@ const MAGHRIB_IQAMAH_AFTER_SUNSET_MIN: Record<string, number> = {
   fath: 5,
   mcm: 5,
   amda: 5,
+  uthman: 5,
+  iagd: 5,
+  flint: 5,
+  kalamazoo: 5,
+  'taqwa-aa': 5,
+  lansing: 5,
+  mca: 5,
+  'mas-tarbiyah': 5,
+  canton: 5,
+  'grand-blanc': 5,
+  'mcm-ica': 5,
+  ibrahim: 5,
+  mcws: 5,
 };
 /** Render free-tier cold start is often 30–50s; keep today’s cached times, never yesterday. */
 const FETCH_RETRY_COUNT = 4;
@@ -160,6 +173,21 @@ export class MosqueIqamahService {
     fath: 'AL FATH',
     mcm: 'MCM',
     amda: 'AMDA',
+    uthman: 'UTHMAN',
+    iagd: 'IAGD',
+    flint: 'FLINT IC',
+    kalamazoo: 'KIC',
+    'taqwa-aa': 'AL TAQWA AA',
+    lansing: 'LANSING',
+    mca: 'MCA',
+    'mas-tarbiyah': 'MAS TARBIYAH',
+    canton: 'CIC',
+    'grand-blanc': 'GRAND BLANC',
+    'mcm-ica': 'MCM ICA',
+    ibrahim: 'IBRAHIM',
+    tawheed: 'TAWHEED',
+    mcws: 'MCWS',
+    unity: 'UNITY',
   };
 
   /** Short kiosk label for the iqamah column header (fits like STARTS). */
