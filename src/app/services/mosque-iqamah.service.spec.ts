@@ -113,6 +113,12 @@ describe('MosqueIqamahService', () => {
     expect(service.columnLabel('Jamiah Masjid of Troy', 'jamiah-troy')).toBe('JAMIAH TROY');
     expect(service.columnLabel('Masjid Bilal Canton', 'bilal-canton')).toBe('BILAL CANTON');
     expect(service.columnLabel('Masjid Bilal Ypsilanti', 'bilal-ypsi')).toBe('BILAL YPSI');
+    expect(service.columnLabel('Masjid Madinatul Ilm', 'mmi')).toBe('MMI');
+    expect(service.columnLabel('Dar Al Salam Islamic Center', 'dar-al-salam')).toBe('DAR AL SALAM');
+    expect(service.columnLabel('Sterling Heights Islamic Center', 'sic')).toBe('SIC');
+    expect(service.columnLabel('Al Falah Institute', 'al-falah')).toBe('AL FALAH');
+    expect(service.columnLabel('Islamic House of Wisdom', 'ihw')).toBe('IHW');
+    expect(service.columnLabel('Islamic Center of Saginaw', 'saginaw')).toBe('SAGINAW');
     expect(service.columnLabel('Madania Masjid', 'madania')).toBe('MADANIA');
   });
 
