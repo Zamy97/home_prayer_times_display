@@ -186,6 +186,7 @@ export class MosqueIqamahService {
     'mcm-ica': 'MCM ICA',
     ibrahim: 'IBRAHIM',
     tawheed: 'TAWHEED',
+    'tawheed-novi': 'TAWHEED NOVI',
     mcws: 'MCWS',
     unity: 'UNITY',
   };
