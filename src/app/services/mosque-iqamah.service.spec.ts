@@ -134,6 +134,7 @@ describe('MosqueIqamahService', () => {
     expect(service.columnLabel('MCCD', 'mccd')).toBe('MCCD');
     expect(service.columnLabel('Masjid As Sunnah Grand Rapids', 'sunnah-gr')).toBe('SUNNAH GR');
     expect(service.columnLabel('Masjid AlNoor Melvindale', 'alnoor-melvindale')).toBe('ALNOOR MEL');
+    expect(service.columnLabel('Traverse City Islamic Center', 'tcic')).toBe('TCIC');
     expect(service.columnLabel('Madania Masjid', 'madania')).toBe('MADANIA');
   });
 

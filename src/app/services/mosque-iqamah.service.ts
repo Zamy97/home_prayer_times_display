@@ -92,6 +92,7 @@ const MAGHRIB_IQAMAH_AFTER_SUNSET_MIN: Record<string, number> = {
   mccd: 10,
   'sunnah-gr': 15,
   'alnoor-melvindale': 10,
+  tcic: 5,
 };
 /** Render free-tier cold start is often 30–50s; keep today’s cached times, never yesterday. */
 const FETCH_RETRY_COUNT = 4;
@@ -235,6 +236,7 @@ export class MosqueIqamahService {
     mccd: 'MCCD',
     'sunnah-gr': 'SUNNAH GR',
     'alnoor-melvindale': 'ALNOOR MEL',
+    tcic: 'TCIC',
   };
 
   /** Short kiosk label for the iqamah column header (fits like STARTS). */
