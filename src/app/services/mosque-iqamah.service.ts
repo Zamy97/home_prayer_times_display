@@ -80,8 +80,10 @@ const MAGHRIB_IQAMAH_AFTER_SUNSET_MIN: Record<string, number> = {
   rayyan: 5,
   'jamiah-troy': 5,
   mmi: 5,
+  'gr-masjid': 5,
   'al-falah': 10,
   saginaw: 5,
+  ucc: 10,
 };
 /** Render free-tier cold start is often 30–50s; keep today’s cached times, never yesterday. */
 const FETCH_RETRY_COUNT = 4;
@@ -210,6 +212,8 @@ export class MosqueIqamahService {
     'al-falah': 'AL FALAH',
     ihw: 'IHW',
     saginaw: 'SAGINAW',
+    'gr-masjid': 'GR MASJID',
+    ucc: 'UCC',
   };
 
   /** Short kiosk label for the iqamah column header (fits like STARTS). */
