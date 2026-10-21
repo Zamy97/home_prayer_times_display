@@ -221,6 +221,9 @@ export class MosqueIqamahService {
     coldwater: 'COLDWATER',
     albanian: 'ALBANIAN',
     midland: 'MIDLAND',
+    mdlc: 'MDLC',
+    altaqwa: 'ALTAQWA',
+    alnour: 'ALNOUR',
     ucc: 'UCC',
     baic: 'BAIC',
   };

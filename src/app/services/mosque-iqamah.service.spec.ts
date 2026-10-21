@@ -124,6 +124,9 @@ describe('MosqueIqamahService', () => {
     expect(service.columnLabel('AMS Coldwater Masjid', 'coldwater')).toBe('COLDWATER');
     expect(service.columnLabel('Albanian Islamic Center', 'albanian')).toBe('ALBANIAN');
     expect(service.columnLabel('Islamic Center of Midland', 'midland')).toBe('MIDLAND');
+    expect(service.columnLabel('MDLC', 'mdlc')).toBe('MDLC');
+    expect(service.columnLabel('Altaqwa Islamic Center', 'altaqwa')).toBe('ALTAQWA');
+    expect(service.columnLabel('Masjed AlNour', 'alnour')).toBe('ALNOUR');
     expect(service.columnLabel('United Community Center / Great Mosque', 'ucc')).toBe('UCC');
     expect(service.columnLabel('BAIC Detroit', 'baic')).toBe('BAIC');
     expect(service.columnLabel('Madania Masjid', 'madania')).toBe('MADANIA');
