@@ -83,6 +83,7 @@ const MAGHRIB_IQAMAH_AFTER_SUNSET_MIN: Record<string, number> = {
   'gr-masjid': 5,
   shelby: 5,
   coldwater: 5,
+  albanian: 5,
   'al-falah': 10,
   saginaw: 5,
   ucc: 10,
@@ -218,6 +219,8 @@ export class MosqueIqamahService {
     'gr-masjid': 'GR MASJID',
     shelby: 'SHELBY',
     coldwater: 'COLDWATER',
+    albanian: 'ALBANIAN',
+    midland: 'MIDLAND',
     ucc: 'UCC',
     baic: 'BAIC',
   };
