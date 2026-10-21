@@ -107,6 +107,12 @@ describe('MosqueIqamahService', () => {
     expect(service.columnLabel('Muslim Unity Center', 'unity')).toBe('UNITY');
     expect(service.columnLabel('American Moslem Society', 'ams')).toBe('AMS');
     expect(service.columnLabel('Masjid Al-Salaam', 'al-salaam')).toBe('AL SALAAM');
+    expect(service.columnLabel('Islamic Center of Detroit', 'icd')).toBe('ICD');
+    expect(service.columnLabel('UMMA', 'umma')).toBe('UMMA');
+    expect(service.columnLabel('Rayyan Center', 'rayyan')).toBe('RAYYAN');
+    expect(service.columnLabel('Jamiah Masjid of Troy', 'jamiah-troy')).toBe('JAMIAH TROY');
+    expect(service.columnLabel('Masjid Bilal Canton', 'bilal-canton')).toBe('BILAL CANTON');
+    expect(service.columnLabel('Masjid Bilal Ypsilanti', 'bilal-ypsi')).toBe('BILAL YPSI');
     expect(service.columnLabel('Madania Masjid', 'madania')).toBe('MADANIA');
   });
 

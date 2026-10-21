@@ -77,6 +77,8 @@ const MAGHRIB_IQAMAH_AFTER_SUNSET_MIN: Record<string, number> = {
   ibrahim: 5,
   mcws: 5,
   'al-salaam': 5,
+  rayyan: 5,
+  'jamiah-troy': 5,
 };
 /** Render free-tier cold start is often 30–50s; keep today’s cached times, never yesterday. */
 const FETCH_RETRY_COUNT = 4;
@@ -193,6 +195,12 @@ export class MosqueIqamahService {
     unity: 'UNITY',
     ams: 'AMS',
     'al-salaam': 'AL SALAAM',
+    icd: 'ICD',
+    umma: 'UMMA',
+    rayyan: 'RAYYAN',
+    'jamiah-troy': 'JAMIAH TROY',
+    'bilal-canton': 'BILAL CANTON',
+    'bilal-ypsi': 'BILAL YPSI',
   };
 
   /** Short kiosk label for the iqamah column header (fits like STARTS). */
