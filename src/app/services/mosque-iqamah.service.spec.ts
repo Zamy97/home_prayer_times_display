@@ -129,6 +129,9 @@ describe('MosqueIqamahService', () => {
     expect(service.columnLabel('Masjed AlNour', 'alnour')).toBe('ALNOUR');
     expect(service.columnLabel('United Community Center / Great Mosque', 'ucc')).toBe('UCC');
     expect(service.columnLabel('BAIC Detroit', 'baic')).toBe('BAIC');
+    expect(service.columnLabel('Masjid Al-Fath Lincoln Park', 'alfath-lp')).toBe('AL FATH LP');
+    expect(service.columnLabel('Islamic Community of As Salaam', 'as-salaam')).toBe('AS SALAAM');
+    expect(service.columnLabel('MCCD', 'mccd')).toBe('MCCD');
     expect(service.columnLabel('Madania Masjid', 'madania')).toBe('MADANIA');
   });
 
