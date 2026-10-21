@@ -102,8 +102,11 @@ describe('MosqueIqamahService', () => {
     expect(service.columnLabel('Muslim Community Association of Ann Arbor', 'mca')).toBe('MCA');
     expect(service.columnLabel('Tawheed Center', 'tawheed')).toBe('TAWHEED');
     expect(service.columnLabel('Tawheed Center of Novi', 'tawheed-novi')).toBe('TAWHEED NOVI');
+    expect(service.columnLabel('Tawheed Center of Southfield', 'tawheed-southfield')).toBe('TAWHEED SF');
     expect(service.columnLabel('MCWS', 'mcws')).toBe('MCWS');
     expect(service.columnLabel('Muslim Unity Center', 'unity')).toBe('UNITY');
+    expect(service.columnLabel('American Moslem Society', 'ams')).toBe('AMS');
+    expect(service.columnLabel('Masjid Al-Salaam', 'al-salaam')).toBe('AL SALAAM');
     expect(service.columnLabel('Madania Masjid', 'madania')).toBe('MADANIA');
   });
 
