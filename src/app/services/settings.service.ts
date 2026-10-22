@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { PrayTimeMethod } from '../lib/praytime';
-import { MosqueIqamahSource, isMosqueIqamahSource } from './mosque-iqamah.service';
+import {
+  MosqueIqamahSource,
+  isMosqueIqamahSource,
+  isMosquePlaceFilter,
+} from './mosque-iqamah.service';
 
 export type { MosqueIqamahSource };
 
@@ -546,6 +550,10 @@ export type PrayerSettings = {
    * Home adhan stays from PrayTime; 'off' hides the second line.
    */
   mosqueIqamahSource: MosqueIqamahSource;
+  /** Last mosque-iqamah state filter (settings picker only). */
+  mosqueIqamahState?: string;
+  /** Last mosque-iqamah city filter (settings picker only). */
+  mosqueIqamahCity?: string;
   /** id from cities list, or empty string when using "Other" / manual coords */
   cityId?: string;
 };
@@ -922,6 +930,12 @@ export class SettingsService {
       mosqueIqamahSource: isMosqueIqamahSource(parsed.mosqueIqamahSource)
         ? parsed.mosqueIqamahSource
         : DEFAULT_SETTINGS.mosqueIqamahSource,
+      mosqueIqamahState: isMosquePlaceFilter(parsed.mosqueIqamahState)
+        ? parsed.mosqueIqamahState.trim()
+        : undefined,
+      mosqueIqamahCity: isMosquePlaceFilter(parsed.mosqueIqamahCity)
+        ? parsed.mosqueIqamahCity.trim()
+        : undefined,
       cityId: typeof parsed.cityId === 'string' ? parsed.cityId : undefined,
     };
   }

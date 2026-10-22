@@ -17,21 +17,37 @@
         Location
       </h2>
       <div class="fields">
-        <label class="field">
-          <span class="label">City</span>
-          <select
-            class="input"
-            [ngModel]="selectedCityId"
-            (ngModelChange)="selectedCityId = $event; onCityChange()"
-            name="city"
-            title="Pick a city or choose Other to enter latitude and longitude"
-          >
-            <option [ngValue]="otherCityId">Other (enter coordinates below)</option>
-            @for (city of cities; track city.id) {
-              <option [ngValue]="city.id">{{ city.name }}</option>
-            }
-          </select>
-        </label>
+        <div class="displayGrid displayGrid--2">
+          <label class="field">
+            <span class="label">Location state</span>
+            <select
+              class="input"
+              [(ngModel)]="locationState"
+              name="locationState"
+              title="Pick a state first so the city list stays short."
+              (ngModelChange)="onLocationStateChange()"
+            >
+              <option value="" disabled>Select state</option>
+              <option *ngFor="let state of locationStates" [ngValue]="state">{{ state }}</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="label">Location city</span>
+            <select
+              class="input"
+              [ngModel]="selectedCityId"
+              (ngModelChange)="selectedCityId = $event; onCityChange()"
+              name="city"
+              title="Then pick a city to use its coordinates for calculated prayer times."
+              [disabled]="!locationState"
+            >
+              <option [ngValue]="otherCityId">{{ locationState ? 'Other (enter coordinates below)' : 'Pick a state first' }}</option>
+              @for (city of locationCities; track city.id) {
+                <option [ngValue]="city.id">{{ city.cityName }}</option>
+              }
+            </select>
+          </label>
+        </div>
 
         @if (selectedCityId === otherCityId) {
           <div class="coordRow">
@@ -106,17 +122,47 @@
           </select>
         </label>
 
-        <label class="field">
-          <span class="label">Mosque iqamah</span>
-          <select
-            class="input"
-            [(ngModel)]="mosqueIqamahSource"
-            name="mosqueIqamahSource"
-            title="Choose which masjid's posted iqamah to show in the third column. Home adhan times stay as calculated. Off hides the column."
-          >
-            <option *ngFor="let option of mosqueIqamahOptions" [ngValue]="option.value">{{ option.label }}</option>
-          </select>
-        </label>
+        <div class="displayGrid displayGrid--3">
+          <label class="field">
+            <span class="label">Iqamah state</span>
+            <select
+              class="input"
+              [(ngModel)]="mosqueIqamahState"
+              name="mosqueIqamahState"
+              title="Pick a state first so the city list stays short."
+              (ngModelChange)="onMosqueStateChange()"
+            >
+              <option value="" disabled>Select state</option>
+              <option *ngFor="let state of mosqueIqamahStates" [ngValue]="state">{{ state }}</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="label">Iqamah city</span>
+            <select
+              class="input"
+              [(ngModel)]="mosqueIqamahCity"
+              name="mosqueIqamahCity"
+              title="Then pick a city to see only that city's masjids."
+              [disabled]="!mosqueIqamahState"
+              (ngModelChange)="onMosqueCityChange()"
+            >
+              <option value="" disabled>{{ mosqueIqamahState ? 'Select city' : 'Pick a state first' }}</option>
+              <option *ngFor="let city of mosqueIqamahCities" [ngValue]="city">{{ city }}</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="label">Mosque iqamah</span>
+            <select
+              class="input"
+              [(ngModel)]="mosqueIqamahSource"
+              name="mosqueIqamahSource"
+              title="Posted iqamah for the third column. Home adhan stays calculated. Off hides the column."
+              [disabled]="!mosqueIqamahCity"
+            >
+              <option *ngFor="let option of mosqueIqamahOptions" [ngValue]="option.value">{{ option.label }}</option>
+            </select>
+          </label>
+        </div>
       </div>
     </section>
 

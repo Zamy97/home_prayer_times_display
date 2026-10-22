@@ -1,6 +1,11 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { MosqueIqamahService } from './mosque-iqamah.service';
+import {
+  MosqueIqamahService,
+  mosqueCityOptions,
+  mosqueStateOptions,
+  mosquesInCity,
+} from './mosque-iqamah.service';
 
 describe('MosqueIqamahService', () => {
   let service: MosqueIqamahService;
@@ -71,6 +76,21 @@ describe('MosqueIqamahService', () => {
     let result: unknown = 'unset';
     service.loadToday('off').subscribe((times) => (result = times));
     expect(result).toBeNull();
+  });
+
+  it('filters masjids by state and city', () => {
+    const rows = [
+      { slug: 'iona', name: 'IONA Masjid', city: 'Warren', state: 'MI' },
+      { slug: 'mcm', name: 'MCM Masjid', city: 'Sterling Heights', state: 'MI' },
+      { slug: 'sic', name: 'Sterling Heights Islamic Center', city: 'Sterling Heights', state: 'MI' },
+    ];
+    expect(mosqueStateOptions(rows)).toEqual(['MI']);
+    expect(mosqueCityOptions(rows, 'MI')).toEqual(['Sterling Heights', 'Warren']);
+    expect(mosquesInCity(rows, 'MI', 'Sterling Heights').map((mosque) => mosque.slug)).toEqual([
+      'mcm',
+      'sic',
+    ]);
+    expect(mosquesInCity(rows, 'MI', '')).toEqual([]);
   });
 
   it('labels dropdown options with city, state, and street', () => {

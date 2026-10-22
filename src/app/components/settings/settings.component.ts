@@ -1,8 +1,14 @@
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { PrayTimeMethod } from '../../lib/praytime';
-import { CITIES, OTHER_CITY_ID } from '../../data/cities';
+import { CITIES, OTHER_CITY_ID, citiesInState, cityStateOptions } from '../../data/cities';
 import { GeoError, GeolocationService } from '../../services/geolocation.service';
-import { MosqueIqamahService } from '../../services/mosque-iqamah.service';
+import {
+  MosqueIqamahService,
+  MosqueOption,
+  mosqueCityOptions,
+  mosqueStateOptions,
+  mosquesInCity,
+} from '../../services/mosque-iqamah.service';
 import {
   AsrMethod,
   ClockPanelScale,
@@ -65,10 +71,20 @@ export class SettingsComponent implements OnInit {
     { value: 'Standard', label: 'Standard' },
   ];
 
+  mosqueCatalog: MosqueOption[] = [];
+  mosqueIqamahState = '';
+  mosqueIqamahCity = '';
   mosqueIqamahOptions: Array<{ value: MosqueIqamahSource; label: string }> = [
     { value: 'off', label: 'Off' },
-    { value: 'iona', label: 'IONA Masjid, Warren, MI — 28630 Ryan Rd' },
   ];
+
+  get mosqueIqamahStates(): string[] {
+    return mosqueStateOptions(this.mosqueCatalog);
+  }
+
+  get mosqueIqamahCities(): string[] {
+    return mosqueCityOptions(this.mosqueCatalog, this.mosqueIqamahState);
+  }
 
   readonly fajrAngleOptions: Array<{ value: FajrAngleOption; label: string }> = [
     { value: 'method', label: 'From calculation method' },
@@ -231,12 +247,20 @@ export class SettingsComponent implements OnInit {
     { value: 'deep-plum', label: 'Deep plum' },
   ];
 
-  readonly cities = CITIES;
   readonly otherCityId = OTHER_CITY_ID;
   readonly deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+  locationState = '';
   /** Selected city id, or OTHER_CITY_ID for manual coordinates */
   selectedCityId: string = OTHER_CITY_ID;
+
+  get locationStates(): string[] {
+    return cityStateOptions();
+  }
+
+  get locationCities() {
+    return citiesInState(CITIES, this.locationState);
+  }
   method: PrayTimeMethod = 'ISNA';
   asr: AsrMethod = 'Hanafi';
   mosqueIqamahSource: MosqueIqamahSource = 'off';
@@ -283,6 +307,8 @@ export class SettingsComponent implements OnInit {
     this.method = s.method;
     this.asr = s.asr;
     this.mosqueIqamahSource = s.mosqueIqamahSource ?? 'off';
+    this.mosqueIqamahState = s.mosqueIqamahState ?? '';
+    this.mosqueIqamahCity = s.mosqueIqamahCity ?? '';
     this.loadMosqueOptions();
     this.fajrAngle = s.fajrAngle ?? 'method';
     this.ishaAngle = s.ishaAngle ?? 'method';
@@ -311,11 +337,21 @@ export class SettingsComponent implements OnInit {
     const city = savedCityId !== OTHER_CITY_ID ? CITIES.find((c) => c.id === savedCityId) : null;
     if (city) {
       this.selectedCityId = city.id;
+      this.locationState = city.state;
       this.lat = String(city.lat);
       this.lng = String(city.lng);
       this.timezone = city.timezone;
     } else {
       this.selectedCityId = OTHER_CITY_ID;
+      this.locationState = this.locationStates.includes('MI') ? 'MI' : this.locationStates[0] || '';
+    }
+  }
+
+  onLocationStateChange(): void {
+    const stillInState = this.locationCities.some((city) => city.id === this.selectedCityId);
+    if (!stillInState && this.selectedCityId !== OTHER_CITY_ID) {
+      this.selectedCityId = OTHER_CITY_ID;
+      this.timezone = this.deviceTimezone;
     }
   }
 
@@ -550,6 +586,8 @@ export class SettingsComponent implements OnInit {
       method: this.method,
       asr: this.asr,
       mosqueIqamahSource: this.mosqueIqamahSource,
+      mosqueIqamahState: this.mosqueIqamahState || undefined,
+      mosqueIqamahCity: this.mosqueIqamahCity || undefined,
       fajrAngle: this.fajrAngle,
       ishaAngle: this.ishaAngle,
       timezone,
@@ -577,26 +615,51 @@ export class SettingsComponent implements OnInit {
     window.location.assign('/');
   }
 
+  onMosqueStateChange(): void {
+    const cities = this.mosqueIqamahCities;
+    if (!cities.includes(this.mosqueIqamahCity)) {
+      this.mosqueIqamahCity = cities.length === 1 ? cities[0] : '';
+    }
+    this.rebuildMosqueOptions();
+  }
+
+  onMosqueCityChange(): void {
+    this.rebuildMosqueOptions();
+  }
+
   private loadMosqueOptions(): void {
     this.mosqueIqamahService.listMosques().subscribe((mosques) => {
-      const options: Array<{ value: MosqueIqamahSource; label: string }> = [
-        { value: 'off', label: 'Off' },
-        ...mosques.map((mosque) => ({
-          value: mosque.slug,
-          label: this.mosqueIqamahService.mosqueOptionLabel(mosque),
-        })),
-      ];
-      if (
-        this.mosqueIqamahSource !== 'off' &&
-        !options.some((option) => option.value === this.mosqueIqamahSource)
-      ) {
-        options.splice(1, 0, {
-          value: this.mosqueIqamahSource,
-          label: this.mosqueIqamahSource,
-        });
+      this.mosqueCatalog = mosques;
+      const selected = mosques.find((mosque) => mosque.slug === this.mosqueIqamahSource);
+      if (selected?.state) this.mosqueIqamahState = selected.state;
+      if (selected) this.mosqueIqamahCity = selected.city?.trim() || 'Other';
+      if (!this.mosqueIqamahState) {
+        const states = this.mosqueIqamahStates;
+        this.mosqueIqamahState = states.includes('MI') ? 'MI' : states[0] || '';
       }
-      this.mosqueIqamahOptions = options;
+      if (this.mosqueIqamahState && !this.mosqueIqamahCities.includes(this.mosqueIqamahCity)) {
+        this.mosqueIqamahCity = this.mosqueIqamahCities.length === 1 ? this.mosqueIqamahCities[0] : '';
+      }
+      this.rebuildMosqueOptions();
     });
+  }
+
+  private rebuildMosqueOptions(): void {
+    const cityMosques = mosquesInCity(this.mosqueCatalog, this.mosqueIqamahState, this.mosqueIqamahCity);
+    const options: Array<{ value: MosqueIqamahSource; label: string }> = [
+      { value: 'off', label: 'Off' },
+      ...cityMosques.map((mosque) => ({
+        value: mosque.slug,
+        label: this.mosqueIqamahService.mosqueCityOptionLabel(mosque),
+      })),
+    ];
+    if (
+      this.mosqueIqamahSource !== 'off' &&
+      !options.some((option) => option.value === this.mosqueIqamahSource)
+    ) {
+      this.mosqueIqamahSource = 'off';
+    }
+    this.mosqueIqamahOptions = options;
   }
 
   private parseCoords(): PrayerSettings['coords'] {

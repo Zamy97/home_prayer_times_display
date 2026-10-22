@@ -110,6 +110,41 @@ export function isMosqueIqamahSource(value: unknown): value is MosqueIqamahSourc
   return value === 'off' || isMosqueSlug(value);
 }
 
+export function isMosquePlaceFilter(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0 && value.trim().length <= 80;
+}
+
+export function mosqueStateOptions(mosques: MosqueOption[]): string[] {
+  return uniqueSorted(mosques.map((mosque) => mosque.state?.trim()).filter(isPresent));
+}
+
+export function mosqueCityOptions(mosques: MosqueOption[], state: string): string[] {
+  return uniqueSorted(
+    mosques
+      .filter((mosque) => samePlace(mosque.state, state))
+      .map((mosque) => mosque.city?.trim() || 'Other')
+  );
+}
+
+export function mosquesInCity(mosques: MosqueOption[], state: string, city: string): MosqueOption[] {
+  if (!state.trim() || !city.trim()) return [];
+  return mosques.filter(
+    (mosque) => samePlace(mosque.state, state) && samePlace(mosque.city?.trim() || 'Other', city)
+  );
+}
+
+function isPresent(value: string | undefined): value is string {
+  return !!value;
+}
+
+function samePlace(left: string | undefined, right: string): boolean {
+  return (left ?? '').trim().toLowerCase() === right.trim().toLowerCase();
+}
+
+function uniqueSorted(values: string[]): string[] {
+  return [...new Set(values)].sort((a, b) => a.localeCompare(b));
+}
+
 @Injectable({ providedIn: 'root' })
 export class MosqueIqamahService {
   private readonly http = inject(HttpClient);
@@ -258,6 +293,11 @@ export class MosqueIqamahService {
     if (place) return `${mosque.name}, ${place}`;
     if (street) return `${mosque.name} — ${street}`;
     return mosque.name;
+  }
+
+  mosqueCityOptionLabel(mosque: MosqueOption): string {
+    const street = mosque.address?.trim();
+    return street ? `${mosque.name} — ${street}` : mosque.name;
   }
 
   private todayKey(date = new Date()): string {
