@@ -273,6 +273,7 @@ export class MosqueIqamahService {
     'alnoor-melvindale': 'ALNOOR MEL',
     tcic: 'TCIC',
     'darul-quran': 'DARUL QURAN',
+    'al-ihsaan': 'AL IHSAAN',
   };
 
   /** Short kiosk label for the iqamah column header (fits like STARTS). */
