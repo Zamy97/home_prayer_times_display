@@ -94,7 +94,7 @@ elif [[ -n "${DISPLAY:-}" ]]; then
   OZONE_ARGS=(--ozone-platform=x11)
 fi
 
-command -v xset >/dev/null 2>&1 && {
+if command -v xset >/dev/null 2>&1; then
   xset s off 2>/dev/null || true
   xset s noblank 2>/dev/null || true
   xset -dpms 2>/dev/null || true
