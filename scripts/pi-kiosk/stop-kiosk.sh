@@ -4,23 +4,32 @@
 set -euo pipefail
 
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/prayer-times-kiosk"
+ONLINE_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/prayer-times-kiosk-online"
 PAUSE_FILE="$CONFIG_DIR/paused"
+ONLINE_PAUSE_FILE="$ONLINE_CONFIG_DIR/paused"
 PROFILE_DIR="$CONFIG_DIR/chromium"
+ONLINE_PROFILE_DIR="$ONLINE_CONFIG_DIR/chromium"
 
-mkdir -p "$CONFIG_DIR"
-touch "$PAUSE_FILE"
+mkdir -p "$CONFIG_DIR" "$ONLINE_CONFIG_DIR"
+touch "$PAUSE_FILE" "$ONLINE_PAUSE_FILE"
 
 # Stop the restart loop first so Chromium cannot come back.
 pkill -f "scripts/pi-kiosk/start-kiosk.sh" 2>/dev/null || true
+pkill -f "scripts/pi-kiosk/start-online-kiosk.sh" 2>/dev/null || true
+pkill -f "prayer-kiosk.sh" 2>/dev/null || true
 sleep 0.3
 
 # Local static server
 pkill -f "scripts/pi-kiosk/serve.py" 2>/dev/null || true
 
-# Chromium using our kiosk profile (and any leftover windows)
+# Chromium using our kiosk profiles (and any leftover windows)
 pkill -f "prayer-times-kiosk/chromium" 2>/dev/null || true
+pkill -f "prayer-times-kiosk-online/chromium" 2>/dev/null || true
 if [[ -d "$PROFILE_DIR" ]]; then
   pkill -f "--user-data-dir=$PROFILE_DIR" 2>/dev/null || true
+fi
+if [[ -d "$ONLINE_PROFILE_DIR" ]]; then
+  pkill -f "--user-data-dir=$ONLINE_PROFILE_DIR" 2>/dev/null || true
 fi
 # Last resort on a dedicated display Pi
 pkill -f "chromium.*--kiosk" 2>/dev/null || true

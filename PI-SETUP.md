@@ -187,9 +187,25 @@ This removes desktop/labwc autostart and stops `serve.py` + Chromium. The local 
 
 #### B1.7 Switch to online (B2) later
 
-1. Run `./scripts/pi-kiosk/uninstall.sh` so the local kiosk no longer autostarts.
-2. Follow **B2** below (Chromium opens the Vercel URL).
-3. Keep Wi‑Fi on. Reconfigure Settings once — B2 uses a different Chromium profile, so house settings do not carry over automatically.
+Do **not** only paste the B2 nano files. The offline installer also writes `~/.config/labwc/autostart`, and on current Raspberry Pi OS that is what actually starts the kiosk. If that leftover line still calls `start-kiosk.sh`, Chromium keeps opening `http://127.0.0.1:4173/` and the online script never wins. The B2 `.desktop` example also uses `/home/REPLACE_USER/...` — if that placeholder is left as-is, nothing starts.
+
+On the Pi, pull the latest scripts and run the switcher (it uninstalls B1, then installs B2 with your real `$HOME`):
+
+```bash
+cd ~/home_prayer_times_display
+git pull
+chmod +x scripts/pi-kiosk/*.sh
+./scripts/pi-kiosk/install-online.sh
+sudo reboot
+```
+
+After reboot you should see the hosted site, not `127.0.0.1:4173`. Keep Wi‑Fi on. Hold top-left → Settings and set the house again — B2 uses a different Chromium profile (`~/.config/prayer-times-kiosk-online/chromium`), so offline settings do not carry over.
+
+To confirm what is launching:
+
+```bash
+grep -E 'kiosk|4173|vercel' ~/.config/autostart/prayer-times-kiosk.desktop ~/.config/labwc/autostart ~/prayer-times-kiosk.log
+```
 
 ---
 
@@ -199,7 +215,11 @@ Use when the Pi always has internet. Closest to the official [kiosk mode tutoria
 
 **URL:** `https://home-prayer-times-display.vercel.app`
 
+If this Pi was first set up with **B1 offline**, skip the nano steps and run **B1.7** (`install-online.sh`). Manual B2 files do not remove the B1 labwc line, so both kiosks fight.
+
 #### B2.1 Create a start script
+
+Prefer `./scripts/pi-kiosk/install-online.sh` (B1.7). Manual steps below if you are not using this repo on the Pi.
 
 ```bash
 mkdir -p ~/bin
@@ -253,17 +273,19 @@ nano ~/.config/autostart/prayer-times-kiosk.desktop
 
 Paste:
 
-```ini
+```bash
+cat > ~/.config/autostart/prayer-times-kiosk.desktop <<EOF
 [Desktop Entry]
 Type=Application
 Name=Prayer Times Kiosk
 Comment=Full-screen prayer times display
-Exec=/home/REPLACE_USER/bin/prayer-kiosk.sh
+Exec=$HOME/bin/prayer-kiosk.sh
 Terminal=false
 X-GNOME-Autostart-enabled=true
+EOF
 ```
 
-Replace `REPLACE_USER` with your username (`echo $USER`).
+That writes your real home path. Do not leave a `REPLACE_USER` placeholder.
 
 #### B2.3 Optional: labwc autostart (Bookworm / Trixie default compositor)
 
@@ -277,10 +299,10 @@ nano ~/.config/labwc/autostart
 Add a line like:
 
 ```bash
-/home/REPLACE_USER/bin/prayer-kiosk.sh &
+"$HOME/bin/prayer-kiosk.sh" &
 ```
 
-Do **not** enable both this and the `.desktop` autostart unless you want two browsers.
+First **remove** any leftover `start-kiosk.sh` line from the B1 install. Do **not** enable both this and the `.desktop` autostart unless you want two browsers.
 
 #### B2.4 Configure Settings once
 

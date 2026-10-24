@@ -184,11 +184,16 @@ To remove autostart (and stop the local server from coming back):
 
 ### Switch offline → online later
 
-If you later want the Pi to open the hosted site instead of the local build:
+If the Pi now has internet and you want the hosted site instead of `http://127.0.0.1:4173/`:
 
-1. Run `./scripts/pi-kiosk/uninstall.sh` (stops autostart + `serve.py`).
-2. Follow **B2** in [PI-SETUP.md](./PI-SETUP.md) — Chromium kiosk to `https://home-prayer-times-display.vercel.app`.
-3. Keep Wi‑Fi on and re-enter Settings once (online uses a different Chromium profile).
+```bash
+cd ~/home_prayer_times_display
+git pull
+./scripts/pi-kiosk/install-online.sh
+sudo reboot
+```
+
+That uninstalls the offline autostart (including the labwc leftover that usually keeps the local kiosk running) and starts [home-prayer-times-display.vercel.app](https://home-prayer-times-display.vercel.app). Keep Wi‑Fi on and re-enter Settings once — online uses a different Chromium profile.
 
 Live hosted URL: https://home-prayer-times-display.vercel.app
 
