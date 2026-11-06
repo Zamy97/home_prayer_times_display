@@ -278,6 +278,7 @@ export class MosqueIqamahService {
     tcic: 'TCIC',
     'darul-quran': 'DARUL QURAN',
     'al-ihsaan': 'AL IHSAAN',
+    'al-islah': 'AL-ISLAH',
   };
 
   /** Short kiosk label for the iqamah column header (fits like STARTS). */
