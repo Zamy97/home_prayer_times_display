@@ -159,6 +159,7 @@ describe('MosqueIqamahService', () => {
     expect(service.columnLabel('Al Ihsaan Islamic Center', 'al-ihsaan')).toBe('AL IHSAAN');
     expect(service.columnLabel('Al-Islah Islamic Center', 'al-islah')).toBe('AL-ISLAH');
     expect(service.columnLabel('Center for Dawah and Research (CDR)', 'cdr')).toBe('CDR');
+    expect(service.columnLabel('Masjid Al-Tawbah', 'tawbah')).toBe('TAWBAH');
     expect(service.columnLabel('Islamic Center of Lansing', 'icl')).toBe('ICL');
     expect(service.columnLabel('Wali Mahmoud Islamic Center', 'wali-mahmoud')).toBe('WALI MAHMOUD');
     expect(service.columnLabel('Madania Masjid', 'madania')).toBe('MADANIA');
