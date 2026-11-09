@@ -279,6 +279,7 @@ export class MosqueIqamahService {
     'darul-quran': 'DARUL QURAN',
     'al-ihsaan': 'AL IHSAAN',
     'al-islah': 'AL-ISLAH',
+    cdr: 'CDR',
   };
 
   /** Short kiosk label for the iqamah column header (fits like STARTS). */
