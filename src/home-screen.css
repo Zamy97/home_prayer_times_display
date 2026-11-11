@@ -79,6 +79,7 @@ app-home {
   --text: #111111;
 
   --font-ui: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  --font-bn: "Noto Sans Bengali", "Noto Sans", system-ui, sans-serif;
   --font-num: var(--font-ui);
   --cell-pad-x: 18px;
   --pair-band-padding-y: 10px;
@@ -92,6 +93,23 @@ app-home:not(.night) {
 
 app-home * {
   box-sizing: border-box;
+}
+
+/* Bangla labels need a Bengali-capable face; numerals stay Latin. */
+app-home.lang-bn {
+  --font-ui: var(--font-bn);
+}
+
+app-home.lang-bn .prayer,
+app-home.lang-bn .prayerPairAfter,
+app-home.lang-bn .sunLabel,
+app-home.lang-bn .hijri,
+app-home.lang-bn .greg,
+app-home.lang-bn .bedroomFactLabel,
+app-home.lang-bn .countdown,
+app-home.lang-bn .colLabel {
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 app-home .board {

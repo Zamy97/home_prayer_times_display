@@ -72,11 +72,11 @@
     role="status"
     [attr.aria-label]="'It is time for ' + announcingLabel + '. Next ' + nextPrayerLabel + ' in ' + nextPrayerCountdown"
   >
-    <div class="prayerAnnounceSub">IT'S TIME FOR</div>
+    <div class="prayerAnnounceSub">{{ labels.itsTimeFor }}</div>
     <div class="prayerAnnounceNow">{{ announcingLabel }}</div>
     <div class="prayerAnnounceNext">
-      NEXT <span class="prayerAnnounceNextName">{{ nextPrayerLabel }}</span>
-      IN <span class="prayerAnnounceNextTime">{{ nextPrayerCountdown || '--:--:--' }}</span>
+      {{ labels.next }} <span class="prayerAnnounceNextName">{{ nextPrayerLabel }}</span>
+      {{ labels.in }} <span class="prayerAnnounceNextTime">{{ nextPrayerCountdown || '--:--:--' }}</span>
     </div>
   </div>
   }
@@ -108,7 +108,7 @@
               role="status"
               [attr.aria-label]="'Do not pray now. ' + prayerBanUntilLabel"
             >
-              <span class="bedroomFactLabel">DO NOT PRAY NOW</span>
+              <span class="bedroomFactLabel">{{ labels.doNotPray }}</span>
               <span class="bedroomFactTime bedroomFactTime--ban">{{
                 prayerBanUntilLabel
               }}</span>
@@ -116,12 +116,12 @@
           } @else if (sleepOvernightCards) {
             <div class="bedroomFact">
               @if (sleepShowSunriseCountdown) {
-                <span class="bedroomFactLabel">UNTIL SUNRISE</span>
+                <span class="bedroomFactLabel">{{ labels.untilSunrise }}</span>
                 <span class="bedroomFactTime bedroomFactTime--countdown">{{
                   sunriseCountdown || '--:--'
                 }}</span>
               } @else {
-                <span class="bedroomFactLabel">FAJR STARTS</span>
+                <span class="bedroomFactLabel">{{ labels.fajrStarts }}</span>
                 <span class="bedroomFactTime"
                   >{{ sleepFajr?.time ?? '-----'
                   }}<span class="ampm">{{ sleepFajr?.ampm }}</span></span
@@ -129,7 +129,7 @@
               }
             </div>
             <div class="bedroomFact">
-              <span class="bedroomFactLabel">SUNRISE</span>
+              <span class="bedroomFactLabel">{{ labels.sunrise }}</span>
               <span class="bedroomFactTime"
                 >{{ sleepSunrise?.time ?? '-----'
                 }}<span class="ampm">{{ sleepSunrise?.ampm }}</span></span
@@ -137,14 +137,14 @@
             </div>
           } @else {
             <div class="bedroomFact">
-              <span class="bedroomFactLabel">{{ simpleLeft?.label ?? 'NEXT' }}</span>
+              <span class="bedroomFactLabel">{{ simpleLeft?.label ?? labels.next }}</span>
               <span class="bedroomFactTime"
                 >{{ simpleLeft?.time ?? '-----'
                 }}<span class="ampm">{{ simpleLeft?.ampm }}</span></span
               >
             </div>
             <div class="bedroomFact">
-              <span class="bedroomFactLabel">{{ simpleRight?.label ?? 'THEN' }}</span>
+              <span class="bedroomFactLabel">{{ simpleRight?.label ?? labels.then }}</span>
               <span class="bedroomFactTime"
                 >{{ simpleRight?.time ?? '-----'
                 }}<span class="ampm">{{ simpleRight?.ampm }}</span></span
@@ -164,15 +164,15 @@
       >
         @if (nextPrayerKey === 'fajr') {
           <div class="prayerPairBand" aria-hidden="true"></div>
-          <span class="prayerPairAfter">FAJR</span>
+          <span class="prayerPairAfter">{{ labels.fajr }}</span>
         } @else {
-          FAJR
+          {{ labels.fajr }}
         }
       </div>
       <div class="cell dark" [class.is-next]="nextPrayerKey === 'fajr'" [class.is-now]="announcingPrayer === 'fajr'">
         <div class="timeStack">
           <div class="startsBand">
-            <div class="colLabel">STARTS</div>
+            <div class="colLabel">{{ labels.starts }}</div>
           </div>
           <div class="time">
             <span class="timeCluster"
@@ -197,7 +197,7 @@
       }
 
       <!-- Row 2 (DHUHR) -->
-      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'dhuhr'" [class.is-now]="announcingPrayer === 'dhuhr'">DHUHR</div>
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'dhuhr'" [class.is-now]="announcingPrayer === 'dhuhr'">{{ labels.dhuhr }}</div>
       <div class="cell dark" [class.is-next]="nextPrayerKey === 'dhuhr'" [class.is-now]="announcingPrayer === 'dhuhr'">
         <div class="time">
           <span class="timeCluster"
@@ -216,7 +216,7 @@
       }
 
       <!-- Row 3 (ASR) -->
-      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'asr'" [class.is-now]="announcingPrayer === 'asr'">ASR</div>
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'asr'" [class.is-now]="announcingPrayer === 'asr'">{{ labels.asr }}</div>
       <div class="cell dark" [class.is-next]="nextPrayerKey === 'asr'" [class.is-now]="announcingPrayer === 'asr'">
         <div class="time">
           <span class="timeCluster"
@@ -235,7 +235,7 @@
       }
 
       <!-- Row 4 (MAGHRIB) -->
-      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'maghrib'" [class.is-now]="announcingPrayer === 'maghrib'">MAGHRIB</div>
+      <div class="cell dark prayer" [class.is-next]="nextPrayerKey === 'maghrib'" [class.is-now]="announcingPrayer === 'maghrib'">{{ labels.maghrib }}</div>
       <div class="cell dark" [class.is-next]="nextPrayerKey === 'maghrib'" [class.is-now]="announcingPrayer === 'maghrib'">
         <div class="time">
           <span class="timeCluster"
@@ -259,7 +259,7 @@
         [class.is-next]="nextPrayerKey === 'isha'"
         [class.is-now]="announcingPrayer === 'isha'"
       >
-        ISHA
+        {{ labels.isha }}
       </div>
       <div class="cell dark row-last" [class.is-next]="nextPrayerKey === 'isha'" [class.is-now]="announcingPrayer === 'isha'">
         <div class="time">
@@ -293,7 +293,7 @@
       </header>
       <div class="panelTempStrip" aria-label="Current temperature">
         <div class="panelTempCol">
-          <span class="panelTempLabel">Current:</span>
+          <span class="panelTempLabel">{{ labels.current }}</span>
           <span class="panelTempValue">
             @if (currentTempF !== null) {
               {{ currentTempF | number:'1.0-0' }}°F
@@ -304,7 +304,7 @@
         </div>
         <div class="panelTempCol">
           @if (feelsLikeTempF !== null) {
-            <span class="panelTempLabel">Feels like:</span>
+            <span class="panelTempLabel">{{ labels.feelsLike }}</span>
             <span class="panelTempValue">{{ feelsLikeTempF | number:'1.0-0' }}°F</span>
           }
         </div>
@@ -330,10 +330,10 @@
             <div class="countdownRow">
               <div class="countdown">
                 @if (announcingPrayer) {
-                  <span class="countdownNow">{{ announcingLabel }} NOW</span>
+                  <span class="countdownNow">{{ announcingLabel }} {{ labels.now }}</span>
                   <span class="countdownDot" aria-hidden="true">·</span>
                 }
-                NEXT <span class="countdownPrayer">{{ nextPrayerLabel }}</span> IN
+                {{ labels.next }} <span class="countdownPrayer">{{ nextPrayerLabel }}</span> {{ labels.in }}
                 <span class="countdownTime">{{ nextPrayerCountdown || '--:--:--' }}</span>
               </div>
             </div>
@@ -346,7 +346,7 @@
             role="status"
             [attr.aria-label]="'Do not pray now. ' + prayerBanUntilLabel"
           >
-            <div class="prayerBanTitle">DO NOT PRAY NOW</div>
+            <div class="prayerBanTitle">{{ labels.doNotPray }}</div>
             <div class="prayerBanUntil">{{ prayerBanUntilLabel }}</div>
           </div>
         } @else {
@@ -354,15 +354,15 @@
             <div class="rule jumuRuleTop" aria-hidden="true"></div>
 
             <div class="jum">
-              <p class="jumTitle">JUMU'AH</p>
+              <p class="jumTitle">{{ labels.jumuah }}</p>
               <div class="jumGrid">
                 <div>
                   <p class="jumTime">1:30<span class="ampm">PM</span></p>
-                  <p class="jumLabel">STARTS</p>
+                  <p class="jumLabel">{{ labels.starts }}</p>
                 </div>
                 <div>
                   <p class="jumTime">2:00<span class="ampm">PM</span></p>
-                  <p class="jumLabel">JUMU'AH</p>
+                  <p class="jumLabel">{{ labels.jumuah }}</p>
                 </div>
               </div>
             </div>
@@ -422,7 +422,7 @@
               opacity="0.85"
             />
           </svg>
-          <span class="sunLabel">SUNRISE</span>
+          <span class="sunLabel">{{ labels.sunrise }}</span>
           <span class="sunTime"
             >{{ sunrise?.time ?? '-----' }}<span class="ampm">{{ sunrise?.ampm }}</span></span
           >
@@ -467,7 +467,7 @@
               opacity="0.85"
             />
           </svg>
-          <span class="sunLabel">SUNSET</span>
+          <span class="sunLabel">{{ labels.sunset }}</span>
           <span class="sunTime"
             >{{ sunset?.time ?? '-----' }}<span class="ampm">{{ sunset?.ampm }}</span></span
           >

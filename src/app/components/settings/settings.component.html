@@ -175,7 +175,7 @@
       <div class="displayGroups">
         <div class="displayGroup">
           <h3 class="displayGroupTitle" title="How the board is arranged on the wall.">Layout</h3>
-          <div class="displayGrid displayGrid--2">
+          <div class="displayGrid displayGrid--3">
             <label class="field">
               <span class="label">Screen</span>
               <select
@@ -198,6 +198,18 @@
               >
                 <option [ngValue]="true">Left</option>
                 <option [ngValue]="false">Right</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="label">Language</span>
+              <select
+                class="input"
+                [(ngModel)]="displayLanguage"
+                name="displayLanguage"
+                title="Prayer names, sunrise/sunset, and date labels. Clock digits stay 0–9."
+              >
+                <option *ngFor="let o of displayLanguageOptions" [ngValue]="o.value">{{ o.label }}</option>
               </select>
             </label>
           </div>

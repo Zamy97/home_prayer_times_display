@@ -27,6 +27,7 @@ describe('HomeComponent', () => {
     prayerBanAlert: true,
     sleepModeScale: { clock: 1, clockDouble: 1, facts: 1, labels: 1 },
     screenLayout: 'landscape',
+    displayLanguage: 'en',
     clockPanelScale: { date: 1, temp: 1, clock: 1, clockDouble: 1, countdown: 1, sun: 1 },
     prayerPanelScale: { names: 1, times: 1, labels: 1 },
     dayClockColor: 'black',

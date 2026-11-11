@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { DisplayLanguage, isDisplayLanguage } from '../data/display-labels';
 import { PrayTimeMethod } from '../lib/praytime';
 import {
   MosqueIqamahSource,
@@ -7,7 +8,7 @@ import {
   isMosquePlaceFilter,
 } from './mosque-iqamah.service';
 
-export type { MosqueIqamahSource };
+export type { MosqueIqamahSource, DisplayLanguage };
 
 export type AsrMethod = 'Standard' | 'Hanafi';
 
@@ -523,6 +524,11 @@ export type PrayerSettings = {
   sleepModeScale: SleepModeScale;
   /** Wall vs stacked layout. Auto follows device orientation. */
   screenLayout: ScreenLayout;
+  /**
+   * Board label language for prayer names, sun labels, and dates.
+   * Clock / countdown digits stay Western Arabic numerals.
+   */
+  displayLanguage: DisplayLanguage;
   /** Clock-panel typography multipliers (date, weather, clock, countdown, sunrise/sunset). */
   clockPanelScale: ClockPanelScale;
   /** Prayer-grid typography multipliers (names, times, column labels). */
@@ -573,6 +579,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   prayerBanAlert: true,
   sleepModeScale: { ...DEFAULT_SLEEP_MODE_SCALE },
   screenLayout: 'auto',
+  displayLanguage: 'en',
   clockPanelScale: { ...DEFAULT_CLOCK_PANEL_SCALE },
   prayerPanelScale: { ...DEFAULT_PRAYER_PANEL_SCALE },
   dayClockColor: 'black',
@@ -889,6 +896,9 @@ export class SettingsService {
       screenLayout: isScreenLayout(parsed.screenLayout)
         ? parsed.screenLayout
         : DEFAULT_SETTINGS.screenLayout,
+      displayLanguage: isDisplayLanguage(parsed.displayLanguage)
+        ? parsed.displayLanguage
+        : DEFAULT_SETTINGS.displayLanguage,
       clockPanelScale: resolveClockPanelScale(parsed),
       prayerPanelScale: resolvePrayerPanelScale(parsed),
       dayClockColor: isDayClockColor(parsed.dayClockColor)

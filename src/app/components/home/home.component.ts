@@ -12,6 +12,17 @@ import {
   MosqueIqamahService,
   MosqueIqamahTimes,
 } from '../../services/mosque-iqamah.service';
+import {
+  DisplayLanguage,
+  boardCopy,
+  eventLabel,
+  formatGregorianLabel,
+  formatHijriLabel,
+  prayerLabel,
+  untilClockLabel,
+  untilPrayerLabel,
+  type EventLabelKey,
+} from '../../data/display-labels';
 
 @Component({
   selector: 'app-home',
@@ -30,6 +41,9 @@ export class HomeComponent implements OnInit {
 
   hijriDateLabel = '';
   gregDateLabel = '';
+
+  /** Bound board strings (prayer grid, sun bar, countdown chrome). */
+  labels = boardCopy('en');
 
   nowTime = '';
   nowSeconds = '';
@@ -111,6 +125,14 @@ export class HomeComponent implements OnInit {
   @HostBinding('class.sleep-mode')
   get sleepModeClass(): boolean {
     return this.sleepModeActive;
+  }
+  @HostBinding('class.lang-bn')
+  get banglaLabelsClass(): boolean {
+    return this.displayLanguage === 'bn';
+  }
+
+  get displayLanguage(): DisplayLanguage {
+    return this.settings.displayLanguage ?? 'en';
   }
   /**
    * Dark chrome for the sparse layout / night grid.
@@ -360,11 +382,6 @@ export class HomeComponent implements OnInit {
     hour12: true,
   });
 
-  private readonly gregDateFormatter = new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    month: 'short',
-    day: 'numeric',
-  });
 
   private readonly portraitMediaQuery = window.matchMedia('(orientation: portrait)');
   private readonly onPortraitMediaChange = (): void => this.updateScreenLayout();
@@ -398,6 +415,7 @@ export class HomeComponent implements OnInit {
         const prev = this.settings;
         this.settings = s;
         if (s.coords) this.showGeoPrompt = false;
+        this.labels = boardCopy(this.displayLanguage);
 
         const prayerInputsChanged =
           prev.coords !== s.coords ||
@@ -415,6 +433,10 @@ export class HomeComponent implements OnInit {
 
         if (prev.mosqueIqamahSource !== s.mosqueIqamahSource) {
           this.mosqueRefresh$.next();
+        }
+
+        if (prev.displayLanguage !== s.displayLanguage) {
+          this.refreshLocalizedLabels(new Date());
         }
 
         this.updateNightMode(new Date());
@@ -802,7 +824,7 @@ export class HomeComponent implements OnInit {
 
     this.nextPrayerKey = nextKey;
     this.nextPrayerAtMs = nextAt;
-    this.nextPrayerLabel = nextKey.toUpperCase();
+    this.nextPrayerLabel = nextKey ? prayerLabel(this.displayLanguage, nextKey) : this.nextPrayerLabel;
 
     if (this.skipNextAnnounce) {
       this.skipNextAnnounce = false;
@@ -818,7 +840,7 @@ export class HomeComponent implements OnInit {
     nowMs: number
   ): void {
     this.announcingPrayer = prayer;
-    this.announcingLabel = prayer.toUpperCase();
+    this.announcingLabel = prayerLabel(this.displayLanguage, prayer);
     this.announceLeaving = false;
     this.announceHoldUntilMs = nowMs + this.announceHoldMs;
     this.announceClearAtMs = this.announceHoldUntilMs + this.announceFadeMs;
@@ -853,15 +875,34 @@ export class HomeComponent implements OnInit {
   }
 
   private updateDateLabels(date: Date): void {
-    // Gregorian label like: "SUNDAY, DEC 8"
-    const gParts = this.gregDateFormatter.formatToParts(date);
-    const weekday = gParts.find((p) => p.type === 'weekday')?.value ?? '';
-    const month = gParts.find((p) => p.type === 'month')?.value ?? '';
-    const day = gParts.find((p) => p.type === 'day')?.value ?? '';
-    this.gregDateLabel = `${weekday.toUpperCase()}, ${month.toUpperCase()} ${day}`;
+    this.labels = boardCopy(this.displayLanguage);
+    // Gregorian: weekday + month + day + year (Western digits).
+    this.gregDateLabel = formatGregorianLabel(this.displayLanguage, date);
 
-    // Prefer CHC moonsighting calendar (https://hilalcommittee.org/); Intl is fallback.
-    this.hijriDateLabel = this.hijriDate.formatForDate(date).label;
+    // Prefer CHC moonsighting calendar; format month names for the active language.
+    const hijri = this.hijriDate.formatForDate(date);
+    this.hijriDateLabel = formatHijriLabel(
+      this.displayLanguage,
+      hijri.day,
+      hijri.monthIndex,
+      hijri.year,
+      hijri.monthName
+    );
+  }
+
+  /** Re-apply prayer / sleep / ban labels after the display language changes. */
+  private refreshLocalizedLabels(now: Date): void {
+    this.updateDateLabels(now);
+    if (this.nextPrayerKey) {
+      this.nextPrayerLabel = prayerLabel(this.displayLanguage, this.nextPrayerKey);
+    }
+    if (this.announcingPrayer) {
+      this.announcingLabel = prayerLabel(this.displayLanguage, this.announcingPrayer);
+    }
+    this.updatePrayerBan(now);
+    if (this.sleepModeActive) {
+      this.updateSimpleLayoutCards(now);
+    }
   }
 
   private setNow(date: Date): void {
@@ -995,8 +1036,8 @@ export class HomeComponent implements OnInit {
     // FAJR | SUNRISE until sunrise time — do not promote sunrise to the left.
     if (
       index > 0 &&
-      events[index]?.label === 'SUNRISE' &&
-      events[index - 1]?.label === 'FAJR'
+      events[index]?.key === 'sunrise' &&
+      events[index - 1]?.key === 'fajr'
     ) {
       index = index - 1;
     }
@@ -1004,34 +1045,34 @@ export class HomeComponent implements OnInit {
     const left = events[index] ?? null;
     const right = events[index + 1] ?? null;
     this.simpleLeft = left
-      ? { label: left.label, time: left.time, ampm: left.ampm }
+      ? { label: eventLabel(this.displayLanguage, left.key), time: left.time, ampm: left.ampm }
       : null;
     this.simpleRight = right
-      ? { label: right.label, time: right.time, ampm: right.ampm }
+      ? { label: eventLabel(this.displayLanguage, right.key), time: right.time, ampm: right.ampm }
       : null;
   }
 
   private buildSimpleLayoutEvents(now: Date): Array<{
-    label: string;
+    key: EventLabelKey;
     time: string;
     ampm: string;
     atMs: number;
   }> {
-    const events: Array<{ label: string; time: string; ampm: string; atMs: number }> = [];
+    const events: Array<{ key: EventLabelKey; time: string; ampm: string; atMs: number }> = [];
     const push = (
-      label: string,
+      key: EventLabelKey,
       split: { time: string; ampm: string } | null | undefined,
       atMs: number | null | undefined
     ) => {
       if (!split || atMs == null) return;
-      events.push({ label, time: split.time, ampm: split.ampm, atMs });
+      events.push({ key, time: split.time, ampm: split.ampm, atMs });
     };
 
-    push('FAJR', this.times?.fajr, this.prayerInstants.fajr);
-    push('SUNRISE', this.sunrise, this.sunriseAtMs);
-    push('DHUHR', this.times?.dhuhr, this.prayerInstants.dhuhr);
-    push('ASR', this.times?.asr, this.prayerInstants.asr);
-    push('SUNSET', this.sunset, this.sunsetAtMs);
+    push('fajr', this.times?.fajr, this.prayerInstants.fajr);
+    push('sunrise', this.sunrise, this.sunriseAtMs);
+    push('dhuhr', this.times?.dhuhr, this.prayerInstants.dhuhr);
+    push('asr', this.times?.asr, this.prayerInstants.asr);
+    push('sunset', this.sunset, this.sunsetAtMs);
 
     const maghribAt = this.prayerInstants.maghrib ?? null;
     const sunsetAt = this.sunsetAtMs;
@@ -1040,15 +1081,15 @@ export class HomeComponent implements OnInit {
       sunsetAt != null &&
       Math.abs(maghribAt - sunsetAt) > 60_000;
     if (maghribDistinct) {
-      push('MAGHRIB', this.times?.maghrib, maghribAt);
+      push('maghrib', this.times?.maghrib, maghribAt);
     }
 
-    push('ISHA', this.times?.isha, this.prayerInstants.isha);
+    push('isha', this.times?.isha, this.prayerInstants.isha);
 
     this.ensureTomorrowSunTimes(now);
     if (this.tomorrowFajr && this.tomorrowFajrAtMs != null) {
       events.push({
-        label: 'FAJR',
+        key: 'fajr',
         time: this.tomorrowFajr.time,
         ampm: this.tomorrowFajr.ampm,
         atMs: this.tomorrowFajrAtMs,
@@ -1056,7 +1097,7 @@ export class HomeComponent implements OnInit {
     }
     if (this.tomorrowSunrise && this.tomorrowSunriseAtMs != null) {
       events.push({
-        label: 'SUNRISE',
+        key: 'sunrise',
         time: this.tomorrowSunrise.time,
         ampm: this.tomorrowSunrise.ampm,
         atMs: this.tomorrowSunriseAtMs,
@@ -1096,7 +1137,10 @@ export class HomeComponent implements OnInit {
       const end = sunrise + this.sunriseBanMs;
       if (nowMs >= sunrise && nowMs < end) {
         this.prayerBanActive = true;
-        this.prayerBanUntilLabel = `UNTIL ${this.formatClockLabel(end)}`;
+        this.prayerBanUntilLabel = untilClockLabel(
+          this.displayLanguage,
+          this.formatClockLabel(end)
+        );
         return;
       }
     }
@@ -1105,7 +1149,7 @@ export class HomeComponent implements OnInit {
       const start = dhuhr - this.zawalBeforeDhuhrMs;
       if (nowMs >= start && nowMs < dhuhr) {
         this.prayerBanActive = true;
-        this.prayerBanUntilLabel = 'UNTIL DHUHR';
+        this.prayerBanUntilLabel = untilPrayerLabel(this.displayLanguage, 'dhuhr');
         return;
       }
     }
@@ -1114,7 +1158,7 @@ export class HomeComponent implements OnInit {
       const start = maghrib - this.maghribBanMs;
       if (nowMs >= start && nowMs < maghrib) {
         this.prayerBanActive = true;
-        this.prayerBanUntilLabel = 'UNTIL MAGHRIB';
+        this.prayerBanUntilLabel = untilPrayerLabel(this.displayLanguage, 'maghrib');
         return;
       }
     }

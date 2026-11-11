@@ -11,6 +11,7 @@ import {
 } from '../../services/mosque-iqamah.service';
 import {
   AsrMethod,
+  DisplayLanguage,
   ClockPanelScale,
   ColorRotation,
   DayClockColor,
@@ -103,6 +104,11 @@ export class SettingsComponent implements OnInit {
     { value: 'auto', label: 'Automatic (dark from sunset to sunrise)' },
     { value: 'on', label: 'Always on (dark)' },
     { value: 'off', label: 'Off (normal / light)' },
+  ];
+
+  readonly displayLanguageOptions: Array<{ value: DisplayLanguage; label: string }> = [
+    { value: 'en', label: 'English' },
+    { value: 'bn', label: 'Bangla (বাংলা)' },
   ];
 
   readonly sleepModeOptions: Array<{ value: SleepModeOption; label: string }> = [
@@ -279,6 +285,7 @@ export class SettingsComponent implements OnInit {
   sleepMode: SleepModeOption = 'off';
   prayerBanAlert = true;
   screenLayout: ScreenLayout = 'auto';
+  displayLanguage: DisplayLanguage = 'en';
   clockPanelScale: ClockPanelScale = { ...DEFAULT_CLOCK_PANEL_SCALE };
   sleepModeScale: SleepModeScale = { ...DEFAULT_SLEEP_MODE_SCALE };
   prayerPanelScale: PrayerPanelScale = { ...DEFAULT_PRAYER_PANEL_SCALE };
@@ -321,6 +328,7 @@ export class SettingsComponent implements OnInit {
     this.sleepMode = s.sleepMode ?? 'off';
     this.prayerBanAlert = s.prayerBanAlert !== false;
     this.screenLayout = s.screenLayout ?? 'auto';
+    this.displayLanguage = s.displayLanguage ?? 'en';
     this.clockPanelScale = { ...(s.clockPanelScale ?? DEFAULT_CLOCK_PANEL_SCALE) };
     this.sleepModeScale = { ...(s.sleepModeScale ?? DEFAULT_SLEEP_MODE_SCALE) };
     this.prayerPanelScale = { ...(s.prayerPanelScale ?? DEFAULT_PRAYER_PANEL_SCALE) };
@@ -597,6 +605,7 @@ export class SettingsComponent implements OnInit {
       sleepMode: this.sleepMode,
       prayerBanAlert: this.prayerBanAlert,
       screenLayout: this.screenLayout,
+      displayLanguage: this.displayLanguage,
       clockPanelScale: { ...this.clockPanelScale },
       sleepModeScale: { ...this.sleepModeScale },
       prayerPanelScale: { ...this.prayerPanelScale },
