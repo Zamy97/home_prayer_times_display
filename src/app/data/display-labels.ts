@@ -87,7 +87,10 @@ const EN: BoardCopy = {
   ],
 };
 
-/** Common Bangladesh prayer-app spellings; digits stay Latin. */
+/**
+ * Bangla for prayer names, sun labels, and calendar words.
+ * Chrome like NEXT / IN / STARTS / weather stays English (easier to scan).
+ */
 const BN: BoardCopy = {
   fajr: 'ফজর',
   dhuhr: 'যোহর',
@@ -96,19 +99,19 @@ const BN: BoardCopy = {
   isha: 'এশা',
   sunrise: 'সূর্যোদয়',
   sunset: 'সূর্যাস্ত',
-  starts: 'শুরু',
-  next: 'পরবর্তী',
-  in: 'বাকি',
-  now: 'এখন',
-  then: 'এরপর',
-  jumuah: 'জুমআ',
-  doNotPray: 'এখন নামাজ পড়বেন না',
-  itsTimeFor: 'সময় হয়েছে',
-  until: 'পর্যন্ত',
-  fajrStarts: 'ফজর শুরু',
-  untilSunrise: 'সূর্যোদয় পর্যন্ত',
-  current: 'এখন:',
-  feelsLike: 'অনুভূত:',
+  starts: 'STARTS',
+  next: 'NEXT',
+  in: 'IN',
+  now: 'NOW',
+  then: 'THEN',
+  jumuah: "JUMU'AH",
+  doNotPray: 'DO NOT PRAY NOW',
+  itsTimeFor: "IT'S TIME FOR",
+  until: 'UNTIL',
+  fajrStarts: 'ফজর STARTS',
+  untilSunrise: 'UNTIL সূর্যোদয়',
+  current: 'Current:',
+  feelsLike: 'Feels like:',
   weekdays: ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'],
   gregMonths: [
     'জানুয়ারি',
@@ -197,13 +200,11 @@ export function formatHijriLabel(
 
 export function untilPrayerLabel(lang: DisplayLanguage, key: PrayerNameKey): string {
   const copy = boardCopy(lang);
-  const name = copy[key];
-  if (lang === 'bn') return `${name} ${copy.until}`;
-  return `${copy.until} ${name}`;
+  // UNTIL stays English in Bangla mode — keep English word order.
+  return `${copy.until} ${copy[key]}`;
 }
 
 export function untilClockLabel(lang: DisplayLanguage, clock: string): string {
   const copy = boardCopy(lang);
-  if (lang === 'bn') return `${clock} ${copy.until}`;
   return `${copy.until} ${clock}`;
 }

@@ -1,4 +1,5 @@
 import {
+  boardCopy,
   formatGregorianLabel,
   formatHijriLabel,
   prayerLabel,
@@ -34,6 +35,15 @@ describe('display-labels', () => {
 
   it('orders until-prayer phrases for each language', () => {
     expect(untilPrayerLabel('en', 'dhuhr')).toBe('UNTIL DHUHR');
-    expect(untilPrayerLabel('bn', 'dhuhr')).toBe('যোহর পর্যন্ত');
+    expect(untilPrayerLabel('bn', 'dhuhr')).toBe('UNTIL যোহর');
+  });
+
+  it('keeps countdown and weather chrome English in Bangla mode', () => {
+    const bn = boardCopy('bn');
+    expect(bn.next).toBe('NEXT');
+    expect(bn.in).toBe('IN');
+    expect(bn.starts).toBe('STARTS');
+    expect(bn.current).toBe('Current:');
+    expect(bn.feelsLike).toBe('Feels like:');
   });
 });
